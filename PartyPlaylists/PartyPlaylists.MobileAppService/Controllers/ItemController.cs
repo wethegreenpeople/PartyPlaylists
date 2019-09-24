@@ -7,7 +7,7 @@ using PartyPlaylists.Models;
 
 namespace PartyPlaylists.Controllers
 {
-    [Route("api/item")]
+    [Route("partyplaylists/api/item")]
     [ApiController]
     public class ItemController : ControllerBase
     {
