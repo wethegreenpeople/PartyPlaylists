@@ -10,9 +10,24 @@
     <Compile Remove="Migrations\20190925070622_AddOwnerColumn.Designer.cs" />
     <Compile Remove="Migrations\20190925070821_AddOwnerColumn.cs" />
     <Compile Remove="Migrations\20190925070821_AddOwnerColumn.Designer.cs" />
+    <Compile Remove="Migrations\20190925160942_AddPlaylistTable.cs" />
+    <Compile Remove="Migrations\20190925160942_AddPlaylistTable.Designer.cs" />
+    <Compile Remove="Migrations\20190925174009_AddSongTable.cs" />
+    <Compile Remove="Migrations\20190925174009_AddSongTable.Designer.cs" />
+    <Compile Remove="Migrations\20190925204318_NameKey.cs" />
+    <Compile Remove="Migrations\20190925204318_NameKey.Designer.cs" />
+    <Compile Remove="Migrations\20190925204652_NameKey.cs" />
+    <Compile Remove="Migrations\20190925204652_NameKey.Designer.cs" />
+    <Compile Remove="Migrations\20190925204838_NameKey.cs" />
+    <Compile Remove="Migrations\20190925204838_NameKey.Designer.cs" />
+    <Compile Remove="Migrations\20190925210640_KeyUpdate.cs" />
+    <Compile Remove="Migrations\20190925210640_KeyUpdate.Designer.cs" />
+    <Compile Remove="Migrations\20190925215247_Fluent.cs" />
+    <Compile Remove="Migrations\20190925215247_Fluent.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.6" />
@@ -21,8 +36,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.9" />
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.17" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 

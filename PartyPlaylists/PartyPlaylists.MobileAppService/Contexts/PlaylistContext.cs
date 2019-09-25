@@ -1,19 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using PartyPlaylists.MobileAppService.Models;
 using PartyPlaylists.MobileAppService.Models.DataModels;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PartyPlaylists.MobileAppService.Contexts
 {
     public class PlaylistContext : DbContext
     {
         public DbSet<Room> Rooms { get; set; }
+        public DbSet<Song> Songs{ get; set; }
 
         public PlaylistContext(DbContextOptions<PlaylistContext> options) : base(options)
         {
@@ -22,6 +19,17 @@ namespace PartyPlaylists.MobileAppService.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<RoomSong>()
+                .HasKey(e => new { e.RoomId, e.SongId });
+            modelBuilder.Entity<RoomSong>()
+                .HasOne(e => e.Room)
+                .WithMany(e => e.RoomSongs)
+                .HasForeignKey(e => e.RoomId);
+            modelBuilder.Entity<RoomSong>()
+                .HasOne(e => e.Song)
+                .WithMany(e => e.RoomSongs)
+                .HasForeignKey(e => e.SongId);
+
             base.OnModelCreating(modelBuilder);
         }
     }
@@ -37,7 +45,7 @@ namespace PartyPlaylists.MobileAppService.Contexts
 
             var optionsBuilder = new DbContextOptionsBuilder<PlaylistContext>();
             var connectionString = configuration.GetConnectionString("PartyPlaylistConnectionString");
-            optionsBuilder.UseMySQL(connectionString);
+            optionsBuilder.UseMySql(connectionString);
             return new PlaylistContext(optionsBuilder.Options);
         }
     }
