@@ -1,4 +1,6 @@
-﻿using PartyPlaylists.MobileAppService.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.MobileAppService.Interfaces;
 using PartyPlaylists.MobileAppService.Models.DataModels;
 using System;
 using System.Collections.Generic;
@@ -9,9 +11,17 @@ namespace PartyPlaylists.MobileAppService.Models
 {
     public class RoomRepository : IRoomRepository
     {
-        public void Create(Room room)
+        private readonly PlaylistContext _playlistContext;
+
+        public RoomRepository(PlaylistContext context)
         {
-            throw new NotImplementedException();
+            _playlistContext = context;
+        }
+
+        public async Task Create(Room room)
+        {
+            await _playlistContext.Rooms.AddAsync(room);
+            await _playlistContext.SaveChangesAsync();
         }
 
         public Room Get(string id)
@@ -19,9 +29,9 @@ namespace PartyPlaylists.MobileAppService.Models
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Room> GetAll()
+        public async Task<List<Room>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _playlistContext.Rooms.ToListAsync();
         }
 
         public void Remove(string id)

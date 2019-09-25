@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PartyPlaylists.MobileAppService.Interfaces;
@@ -21,10 +22,18 @@ namespace PartyPlaylists.MobileAppService.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult<IEnumerable<Room>> List()
+        public async Task<ActionResult<List<Room>>> GetAllRooms()
         {
-            return _roomRepository.GetAll().ToList();
+            return await _roomRepository.GetAll();
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ActionResult<Room> Create([FromBody]Room room)
+        {
+            _roomRepository.Create(room);
+            return CreatedAtAction(nameof(GetAllRooms), new { room.Id }, room);
         }
     }
 }

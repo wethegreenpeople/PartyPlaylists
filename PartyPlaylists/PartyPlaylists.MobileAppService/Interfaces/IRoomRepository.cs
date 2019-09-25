@@ -1,14 +1,15 @@
 ﻿using PartyPlaylists.MobileAppService.Models.DataModels;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace PartyPlaylists.MobileAppService.Interfaces
 {
     public interface IRoomRepository
     {
-        void Create(Room room);
+        Task Create(Room room);
         void Update(Room room);
         void Remove(string id);
         Room Get(string id);
-        IEnumerable<Room> GetAll();
+        Task<List<Room>> GetAll();
     }
 }

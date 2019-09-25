@@ -45,7 +45,8 @@ namespace PartyPlaylists.MobileAppService
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
-            services.AddDbContext<PlaylistContext>();
+            var connectionString = Configuration.GetConnectionString("PartyPlaylistConnectionString");
+            services.AddDbContext<PlaylistContext>(options => options.UseMySQL(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
