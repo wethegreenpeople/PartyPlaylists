@@ -8,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.HttpOverrides;
 using PartyPlaylists.MobileAppService.Interfaces;
-using PartyPlaylists.MobileAppService.Models;
 using PartyPlaylists.MobileAppService.Contexts;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,8 +31,9 @@ namespace PartyPlaylists.MobileAppService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
-            services.AddSingleton<IRoomRepository, RoomRepository>();
+            services
+                .AddMvc()
+                .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddSwaggerGen(c =>
             {
@@ -46,7 +46,7 @@ namespace PartyPlaylists.MobileAppService
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
             var connectionString = Configuration.GetConnectionString("PartyPlaylistConnectionString");
-            services.AddDbContext<PlaylistContext>(options => options.UseMySQL(connectionString));
+            services.AddDbContext<PlaylistContext>(options => options.UseMySql(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

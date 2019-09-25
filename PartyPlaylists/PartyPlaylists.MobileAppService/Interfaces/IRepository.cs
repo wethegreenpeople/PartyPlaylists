@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace PartyPlaylists.MobileAppService.Interfaces
 {
-    public interface IRoomRepository
+    public interface IRepository
     {
         Task Create(Room room);
         void Update(Room room);
