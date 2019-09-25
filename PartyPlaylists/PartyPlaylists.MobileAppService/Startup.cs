@@ -6,8 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
-
-using PartyPlaylists.Models;
+using Microsoft.AspNetCore.HttpOverrides;
+using PartyPlaylists.MobileAppService.Interfaces;
+using PartyPlaylists.MobileAppService.Models;
+using PartyPlaylists.MobileAppService.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace PartyPlaylists.MobileAppService
 {
@@ -30,28 +33,37 @@ namespace PartyPlaylists.MobileAppService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton<IItemRepository, ItemRepository>();
+            services.AddSingleton<IRoomRepository, RoomRepository>();
 
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
+            services.AddDbContext<PlaylistContext>(opt => opt.UseMySQL(""));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseForwardedHeaders();
+
+            app.UsePathBase("/partyplaylists");
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            app.UseMvc();
-            app.UsePathBase("/partyplaylists");
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/partyplaylists/swagger/v1/swagger.json", "My API V1");
             });
+
+            app.UseMvc();
 
             app.Run(async (context) => await Task.Run(() => context.Response.Redirect("swagger")));
         }
