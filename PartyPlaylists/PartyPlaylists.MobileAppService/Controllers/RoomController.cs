@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PartyPlaylists.MobileAppService.Contexts;
 using PartyPlaylists.MobileAppService.Models.DataModels;
+using PartyPlaylists.MobileAppService.Models;
 
 namespace PartyPlaylists.MobileAppService.Controllers
 {
@@ -38,6 +39,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
 
             if (room == null)
                 return NotFound();
+
             foreach (var roomsong in room.RoomSongs)
             {
                 roomsong.Song = await _context.Songs.FindAsync(roomsong.SongId);
@@ -63,6 +65,38 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 throw new SystemWeb.HttpResponseException(HttpStatusCode.InternalServerError);
             }
             return CreatedAtAction(nameof(GetSingleRoom), new { room.Id }, room);
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Room>> AddSongToRoom(string id, [FromBody]Song song)
+        {
+            try
+            {
+                var roomId = Convert.ToInt32(id);
+                var room = await _context.Rooms
+                    .Include(e => e.RoomSongs)
+                    .SingleOrDefaultAsync(s => s.Id == roomId);
+
+                if (room == null)
+                    return NotFound();
+
+                var roomSong = new RoomSong()
+                {
+                    RoomId = roomId,
+                    Song = song
+                };
+                room.RoomSongs.Add(roomSong);
+                await _context.SaveChangesAsync();
+
+                return room;
+            }
+            catch
+            {
+                throw new SystemWeb.HttpResponseException(HttpStatusCode.InternalServerError);
+            }
         }
     }
 }
