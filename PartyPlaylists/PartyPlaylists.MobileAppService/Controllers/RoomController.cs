@@ -67,15 +67,14 @@ namespace PartyPlaylists.MobileAppService.Controllers
             return CreatedAtAction(nameof(GetSingleRoom), new { room.Id }, room);
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{roomId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Room>> AddSongToRoom(string id, [FromBody]Song song)
+        public async Task<ActionResult<Room>> AddSongToRoom(int roomId, [FromBody]Song song)
         {
             try
             {
-                var roomId = Convert.ToInt32(id);
                 var room = await _context.Rooms
                     .Include(e => e.RoomSongs)
                     .SingleOrDefaultAsync(s => s.Id == roomId);
@@ -92,6 +91,37 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 await _context.SaveChangesAsync();
 
                 return room;
+            }
+            catch
+            {
+                throw new SystemWeb.HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPatch("{roomId}/{songId}/{songRating}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<RoomSong>> AddVoteToSong(int roomId, int songId, short songRating)
+        {
+            if (songRating != -1 && songRating != 1)
+                throw new ArgumentException("Invalid vote", nameof(songRating));
+
+            try
+            {
+                var room = await _context.Rooms
+                    .Include(e => e.RoomSongs)
+                    .SingleOrDefaultAsync(s => s.Id == roomId);
+
+                if (room == null)
+                    return NotFound();
+
+                var roomSong = room.RoomSongs
+                    .SingleOrDefault(s => s.SongId == songId);
+                roomSong.SongRating += songRating;
+                await _context.SaveChangesAsync();
+
+                return roomSong;
             }
             catch
             {

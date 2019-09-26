@@ -14,5 +14,6 @@ namespace PartyPlaylists.MobileAppService.Models
 
         public int SongId { get; set; }
         public Song Song { get; set; }
+        public int SongRating { get; set; }
     }
 }
