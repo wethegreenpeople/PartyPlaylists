@@ -54,14 +54,14 @@ namespace PartyPlaylists.MobileAppService
         {
             app.UseForwardedHeaders();
 
-            app.UsePathBase("/partyplaylists");
+            app.UsePathBase("/partyplaylists/api");
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/partyplaylists/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/partyplaylists/api/swagger/v1/swagger.json", "My API V1");
             });
 
             app.UseMvc();

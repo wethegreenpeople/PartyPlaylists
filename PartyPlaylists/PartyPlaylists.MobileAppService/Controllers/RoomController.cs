@@ -13,7 +13,7 @@ using PartyPlaylists.MobileAppService.Models;
 
 namespace PartyPlaylists.MobileAppService.Controllers
 {
-    [Route("api/room")]
+    [Route("[controller]")]
     [ApiController]
     public class RoomController : ControllerBase
     {
