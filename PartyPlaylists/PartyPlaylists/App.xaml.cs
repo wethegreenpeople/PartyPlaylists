@@ -19,11 +19,6 @@ namespace PartyPlaylists
         public App()
         {
             InitializeComponent();
-
-            if (UseMockDataStore)
-                DependencyService.Register<MockDataStore>();
-            else
-                DependencyService.Register<AzureDataStore>();
             MainPage = new MainPage();
         }
 

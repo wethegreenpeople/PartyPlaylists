@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PartyPlaylists.Models.DataModels;
+using PartyPlaylists.Services;
 
 namespace PartyPlaylists.Web
 {
@@ -39,6 +41,8 @@ namespace PartyPlaylists.Web
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
+
+            services.AddTransient<IDataStore<Room>, RoomDataStore>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

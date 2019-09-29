@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using PartyPlaylists.MobileAppService.Models;
-using PartyPlaylists.MobileAppService.Models.DataModels;
+using PartyPlaylists.Models;
+using PartyPlaylists.Models.DataModels;
 using System.IO;
 
 namespace PartyPlaylists.MobileAppService.Contexts

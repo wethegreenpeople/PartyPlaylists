@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PartyPlaylists.MobileAppService.Models.DataModels
+namespace PartyPlaylists.Models.DataModels
 {
     public class Room
     {
@@ -20,6 +20,6 @@ namespace PartyPlaylists.MobileAppService.Models.DataModels
 
         public string Name { get; set; }
 
-        public List<RoomSong> RoomSongs { get; set; } = new List<RoomSong>();
+        public List<RoomSong> RoomSongs { get; set; }
     }
 }

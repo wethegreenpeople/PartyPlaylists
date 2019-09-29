@@ -4,15 +4,41 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using PartyPlaylists.Models;
+using PartyPlaylists.Models.DataModels;
+using PartyPlaylists.Services;
 using PartyPlaylists.Web.Models;
 
 namespace PartyPlaylists.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IDataStore<Room> _roomDataStore;
+
+        public HomeController(IDataStore<Room> roomDataStore)
         {
+            _roomDataStore = roomDataStore;
+        }
+
+        public IActionResult Index()
+        {   
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> JoinRoom(string roomId)
+        {
+            var room = await _roomDataStore.GetItemAsync(roomId);
+
+            return View("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRoom(Room room)
+        {
+            await _roomDataStore.AddItemAsync(room);
+
+            return View("Index");
         }
 
         public IActionResult About()

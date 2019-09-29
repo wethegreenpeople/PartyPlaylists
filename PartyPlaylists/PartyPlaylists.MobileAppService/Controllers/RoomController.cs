@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PartyPlaylists.MobileAppService.Contexts;
-using PartyPlaylists.MobileAppService.Models.DataModels;
-using PartyPlaylists.MobileAppService.Models;
+using PartyPlaylists.Models.DataModels;
+using PartyPlaylists.Models;
 
 namespace PartyPlaylists.MobileAppService.Controllers
 {
@@ -54,9 +54,15 @@ namespace PartyPlaylists.MobileAppService.Controllers
         {
             try
             {
-                var song = _context.Songs.FirstOrDefault(s => $"{s.Name} {s.Artist}" == $"{room.RoomSongs[0].Song.Name} {room.RoomSongs[0].Song.Artist}");
-                if (song != null)
-                    room.RoomSongs[0].SongId = song.Id;
+                if (room?.RoomSongs?.Any(s => s.Song != null) ?? false)
+                {
+                    foreach (var roomSong in room.RoomSongs)
+                    {
+                        var song = await _context.Songs.FirstOrDefaultAsync(s => $"{s.Name} {s.Artist}" == $"{roomSong.Song.Name} {roomSong.Song.Artist}");
+                        if (song != null)
+                            roomSong.SongId = song.Id;
+                    }
+                }
                 _context.Rooms.Add(room);
                 await _context.SaveChangesAsync();
             }
