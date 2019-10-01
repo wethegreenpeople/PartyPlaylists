@@ -1,0 +1,28 @@
+﻿@model PartyPlaylists.Models.DataModels.Room
+@{
+    ViewData["Title"] = "Room Page";
+}
+
+<h1>@Model.Name</h1>
+<h2>@Model.Owner</h2>
+
+<table>
+    @if (Model.RoomSongs != null && Model.RoomSongs.Count > 0)
+    {
+        <tr>
+            <th>Artist</th>
+            <th>Title</th>
+            <th>Playlist Rating</th>
+            <th>Added By</th>
+        </tr>
+        @foreach (var roomSong in Model.RoomSongs)
+        {
+            <tr>
+                <td>@roomSong.Song.Artist</td>
+                <td>@roomSong.Song.Name</td>
+                <td>@roomSong.SongRating</td>
+                <td>@Model.Owner</td>
+            </tr>
+        }
+    }
+</table>
