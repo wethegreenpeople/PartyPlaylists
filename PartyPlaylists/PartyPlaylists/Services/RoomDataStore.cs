@@ -29,7 +29,7 @@ namespace PartyPlaylists.Services
                 return false;
 
             var serializedItem = JsonConvert.SerializeObject(room);
-            var response = await client.PostAsync($@"http://40.117.143.83/partyplaylists/api/room", new StringContent(serializedItem, Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync($@"room", new StringContent(serializedItem, Encoding.UTF8, "application/json"));
 
             return response.IsSuccessStatusCode;
         }

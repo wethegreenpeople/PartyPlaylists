@@ -2,7 +2,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-<form asp-controller="Home" asp-action="CreateRoom" method="post">
+<form asp-controller="Room" asp-action="Create" method="post">
     <label>Owner Name:</label>
     <br>
     <input type="text" name="Owner" value="">
@@ -15,10 +15,10 @@
 </form>
 <br />
 <br />
-<form asp-controller="Home" asp-action="JoinRoom" method="post">
+<form asp-controller="Room" asp-action="Join" method="get">
     <label>Room ID:</label>
     <br>
-    <input type="text" name="roomId" value="0">
+    <input type="text" name="id" value="0">
     <br><br>
     <input type="submit" value="Submit">
 </form>
