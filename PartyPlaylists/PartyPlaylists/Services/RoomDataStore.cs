@@ -23,15 +23,17 @@ namespace PartyPlaylists.Services
             _rooms = new List<Room>();
         }
 
-        public async Task<bool> AddItemAsync(Room room)
+        public async Task<Room> AddItemAsync(Room room)
         {
             if (room == null)
-                return false;
+                return null;
 
             var serializedItem = JsonConvert.SerializeObject(room);
             var response = await client.PostAsync($@"room", new StringContent(serializedItem, Encoding.UTF8, "application/json"));
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var respondedRoom = JsonConvert.DeserializeObject<Room>(responseBody);
 
-            return response.IsSuccessStatusCode;
+            return respondedRoom;
         }
 
         public Task<bool> DeleteItemAsync(string id)
@@ -50,9 +52,30 @@ namespace PartyPlaylists.Services
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateItemAsync(Room item)
+        public Task<Room> UpdateItemAsync(Room room)
         {
-            throw new NotImplementedException();
+            return null;
+        }
+
+        public async Task<Room> AddSongToRoomAsync(string roomId, Song song)
+        {
+            if (roomId == null || song == null)
+                return null;
+
+            song.Artist = "Artist";
+            var patchMethod = new HttpMethod("PATCH");
+            var serializedItem = JsonConvert.SerializeObject(song);
+            var content = new StringContent(serializedItem, Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}")
+            {
+                Content = content,
+            };
+
+            var response = await client.SendAsync(request);
+            var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());
+
+            return respondedRoom;
         }
     }
 }

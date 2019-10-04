@@ -57,10 +57,10 @@ namespace PartyPlaylists.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateItemAsync(Item item)
+        public async Task<Item> UpdateItemAsync(Item item)
         {
             if (item == null || item.Id == null || !IsConnected)
-                return false;
+                return null;
 
             var serializedItem = JsonConvert.SerializeObject(item);
             var buffer = Encoding.UTF8.GetBytes(serializedItem);
@@ -68,7 +68,7 @@ namespace PartyPlaylists.Services
 
             var response = await client.PutAsync(new Uri($"api/item/{item.Id}"), byteContent);
 
-            return response.IsSuccessStatusCode;
+            return null;
         }
 
         public async Task<bool> DeleteItemAsync(string id)
@@ -79,6 +79,11 @@ namespace PartyPlaylists.Services
             var response = await client.DeleteAsync($"api/item/{id}");
 
             return response.IsSuccessStatusCode;
+        }
+
+        Task<Item> IDataStore<Item>.AddItemAsync(Item item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

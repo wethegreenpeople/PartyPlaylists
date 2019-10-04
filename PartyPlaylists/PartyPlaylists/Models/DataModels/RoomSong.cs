@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PartyPlaylists.Models
+namespace PartyPlaylists.Models.DataModels
 {
     public class RoomSong
     {

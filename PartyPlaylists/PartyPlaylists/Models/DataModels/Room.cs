@@ -12,7 +12,6 @@ namespace PartyPlaylists.Models.DataModels
     {
         [Key]
         [Required]
-        [JsonIgnore]
         public int Id { get; set; }
 
         [Required(AllowEmptyStrings = false)]

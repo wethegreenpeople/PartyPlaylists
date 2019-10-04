@@ -36,9 +36,32 @@ namespace PartyPlaylists.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Room room)
         {
-            await _roomDataStore.AddItemAsync(room);
+            var createdRoom = await _roomDataStore.AddItemAsync(room);
 
-            return RedirectToAction("Join", "Room", routeValues: new { id = room.Id.ToString() });
+            return RedirectToAction("Join", "Room", routeValues: new { id = createdRoom.Id.ToString() });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddSong(string id, string songName)
+        {
+            var song = new Song()
+            {
+                Name = songName,
+            };
+            var updatedRoom = await ((RoomDataStore)_roomDataStore).AddSongToRoomAsync(id, song);
+            if (updatedRoom == null)
+                return NotFound();
+
+            return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSongsInRoom(string id)
+        {
+            var room = await _roomDataStore.GetItemAsync(id);
+            var roomSongs = room.RoomSongs.ToList();
+
+            return PartialView("_SongsInRoom", roomSongs);
         }
     }
 }
