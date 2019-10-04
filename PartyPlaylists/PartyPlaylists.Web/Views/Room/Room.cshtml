@@ -6,23 +6,51 @@
 <h1>@Model.Name</h1>
 <h2>@Model.Owner</h2>
 
-<table>
-    @if (Model.RoomSongs != null && Model.RoomSongs.Count > 0)
-    {
-        <tr>
-            <th>Artist</th>
-            <th>Title</th>
-            <th>Playlist Rating</th>
-            <th>Added By</th>
-        </tr>
-        @foreach (var roomSong in Model.RoomSongs)
-        {
-            <tr>
-                <td>@roomSong.Song.Artist</td>
-                <td>@roomSong.Song.Name</td>
-                <td>@roomSong.SongRating</td>
-                <td>@Model.Owner</td>
-            </tr>
+<div id="partial">
+    <partial name="_SongsInRoom" model="@Model.RoomSongs" id="roomSongs" />
+</div>
+
+<br />
+<br />
+<form id="songForm" onsubmit="addSongToRoom()" method="get">
+    <label>Song:</label>
+    <br>
+    <input type="text" name="songName" value="">
+    <input type="hidden" name="id" value="@Model.Id">
+    <br><br>
+    <button type="button" onclick="addSongToRoom()">Add Song</button>
+</form>
+
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(window).keydown(function (event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault();
+                    addSongToRoom();
+                    return false;
+                }
+            });
+        });
+
+        function addSongToRoom() {
+            $.ajax({
+                url: '/PartyPlaylists/Room/AddSong/@Model.Id',
+                type: "POST",
+                data: $("#songForm").serialize(),
+                success: function (result) {
+                    $.ajax({
+                        url: '/PartyPlaylists/Room/GetSongsInRoom/@Model.Id',
+                        type: "GET",
+                        success: function (r) {
+                            $("#partial").html(r);
+                        }
+                    });
+                }
+            });
+            
         }
-    }
-</table>
+    </script>
+}
