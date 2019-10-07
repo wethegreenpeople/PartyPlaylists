@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2050
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29326.143
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartyPlaylists.Android", "PartyPlaylists\PartyPlaylists.Android\PartyPlaylists.Android.csproj", "{79442216-3C84-42AF-AC3F-023B594FCC7D}"
 EndProject
@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyPlaylists.MobileAppSer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyPlaylists", "PartyPlaylists\PartyPlaylists\PartyPlaylists.csproj", "{FCE6125E-D412-41D4-8AC8-B4C5E6A54DDE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyPlaylists.Web", "PartyPlaylists\PartyPlaylists.Web\PartyPlaylists.Web.csproj", "{91B1FADA-800F-4C2A-BBE0-BF69FEE1BBF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartyPlaylists.BlazorWeb", "PartyPlaylists\PartyPlaylists.BlazorWeb\PartyPlaylists.BlazorWeb.csproj", "{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -107,6 +107,18 @@ Global
 		{91B1FADA-800F-4C2A-BBE0-BF69FEE1BBF2}.Release|iPhone.Build.0 = Release|Any CPU
 		{91B1FADA-800F-4C2A-BBE0-BF69FEE1BBF2}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{91B1FADA-800F-4C2A-BBE0-BF69FEE1BBF2}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Release|iPhone.Build.0 = Release|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{C28F0973-7EDB-4C12-B08F-C7EB3D3FD2B6}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

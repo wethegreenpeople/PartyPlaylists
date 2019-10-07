@@ -1,0 +1,26 @@
+﻿@using PartyPlaylists.Models.DataModels;
+
+<table>
+    @if (Room != null && Room.RoomSongs.ToList().Count > 0)
+    {
+        <tr>
+            <th>Artist</th>
+            <th>Title</th>
+            <th>Playlist Rating</th>
+            <th>Added By</th>
+        </tr>
+        @foreach (var roomSong in Room.RoomSongs)
+        {
+            <tr>
+                <td>@roomSong.Song.Artist</td>
+                <td>@roomSong.Song.Name</td>
+                <td>@roomSong.SongRating</td>
+                <td>Ahh</td>
+            </tr>
+        }
+    }
+</table>
+
+@code {
+    [Parameter] public Room Room { get; set; }
+}

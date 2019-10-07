@@ -1,0 +1,51 @@
+﻿@page "/"
+@using DataModel = PartyPlaylists.Models.DataModels
+@using PartyPlaylists.Services;
+@inject NavigationManager NavigationManager
+@inject RoomDataStore RoomDataStore
+
+
+<h1>PartyPlaylists</h1>
+
+<EditForm Model="@room" OnValidSubmit="CreateRoom">
+    <label>Room Name:</label>
+    <br />
+    <InputText @bind-Value="room.Name" />
+    <br />
+    <label>Owner:</label>
+    <br />
+    <InputText @bind-Value="room.Owner" />
+    <br />
+    <br />
+    <button type="submit">Create Room</button>
+</EditForm>
+
+<br />
+<br />
+<label>Room ID</label>
+<br />
+<input type="text" @bind-value="roomId" />
+<br />
+<br />
+<button type="button" @onclick="JoinRoom">Join Room</button>
+
+@code
+{
+    private string roomId;
+    private DataModel.Room room = new DataModel.Room();
+
+    private void JoinRoom()
+    {
+        if (!string.IsNullOrWhiteSpace(roomId))
+        {
+            NavigationManager.NavigateTo($"/room/{roomId}");
+        }
+    }
+
+    private async Task CreateRoom()
+    {
+        room = await RoomDataStore.AddItemAsync(room);
+        NavigationManager.NavigateTo($"/room/{room?.Id.ToString()}");
+        JoinRoom();
+    }
+}
