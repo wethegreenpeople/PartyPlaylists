@@ -38,14 +38,14 @@
     {
         if (!string.IsNullOrWhiteSpace(roomId))
         {
-            NavigationManager.NavigateTo($"/room/{roomId}");
+            NavigationManager.NavigateTo($"/partyplaylists/room/{roomId}");
         }
     }
 
     private async Task CreateRoom()
     {
         room = await RoomDataStore.AddItemAsync(room);
-        NavigationManager.NavigateTo($"/room/{room?.Id.ToString()}");
+        NavigationManager.NavigateTo($"/partyplaylists/room/{room?.Id.ToString()}");
         JoinRoom();
     }
 }
