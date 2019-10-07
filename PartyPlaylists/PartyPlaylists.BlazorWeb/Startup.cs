@@ -32,6 +32,7 @@ namespace PartyPlaylists.BlazorWeb
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<RoomDataStore>();
+            services.AddSingleton<SpotifyService>();
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {

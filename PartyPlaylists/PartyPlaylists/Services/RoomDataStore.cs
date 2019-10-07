@@ -62,7 +62,6 @@ namespace PartyPlaylists.Services
             if (roomId == null || song == null)
                 return null;
 
-            song.Artist = "Artist";
             var patchMethod = new HttpMethod("PATCH");
             var serializedItem = JsonConvert.SerializeObject(song);
             var content = new StringContent(serializedItem, Encoding.UTF8, "application/json");
