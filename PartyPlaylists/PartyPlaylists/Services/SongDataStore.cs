@@ -45,7 +45,7 @@ namespace PartyPlaylists.Services
 
         public async Task<Song> UpdateItemAsync(Song song)
         {
-            return null;
+            throw new NotImplementedException();
         }
     }
 }
