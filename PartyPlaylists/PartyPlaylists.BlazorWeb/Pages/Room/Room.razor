@@ -1,0 +1,24 @@
+﻿@page "/room/{roomId}"
+@using PartyPlaylists.Services
+@using DataModel = PartyPlaylists.Models.DataModels
+@using PartyPlaylists.BlazorWeb.Pages.Room.Components
+@inject RoomDataStore RoomDataStore
+
+<h2>@room?.Name</h2>
+<h3>@room?.Owner</h3>
+
+<SongList Room="@room" />
+<br />
+<br />
+<AddSongToRoom @bind-Room="@room"/>
+
+@code {
+    [Parameter] public string roomId { get; set; }
+
+    private DataModel.Room room;
+
+    protected override async Task OnInitializedAsync()
+    {
+        room = await RoomDataStore.GetItemAsync(roomId);
+    }
+}

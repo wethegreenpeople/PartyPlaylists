@@ -84,6 +84,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 var room = await _context.Rooms
                     .Include(e => e.RoomSongs)
                     .SingleOrDefaultAsync(s => s.Id == roomId);
+                var matchingSong = await _context.Songs.FirstOrDefaultAsync(s => $"{s.Artist}{s.Name}" == $"{song.Artist}{song.Name}");
 
                 if (room == null)
                     return NotFound();
@@ -91,10 +92,14 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 var roomSong = new RoomSong()
                 {
                     RoomId = roomId,
-                    Song = song
+                    SongId = matchingSong?.Id ?? 0,
+                    Song = song,
                 };
-                room.RoomSongs.Add(roomSong);
-                await _context.SaveChangesAsync();
+                if (!room.RoomSongs.Any(s => s.SongId == roomSong.SongId))
+                {
+                    room.RoomSongs.Add(roomSong);
+                    await _context.SaveChangesAsync();
+                }
 
                 return room;
             }
