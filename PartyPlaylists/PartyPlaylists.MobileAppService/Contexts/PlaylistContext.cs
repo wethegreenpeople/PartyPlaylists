@@ -10,7 +10,7 @@ namespace PartyPlaylists.MobileAppService.Contexts
     public class PlaylistContext : DbContext
     {
         public DbSet<Room> Rooms { get; set; }
-        public DbSet<Song> Songs{ get; set; }
+        public DbSet<Song> Songs { get; set; }
 
         public PlaylistContext(DbContextOptions<PlaylistContext> options) : base(options)
         {
