@@ -27,17 +27,10 @@
         NavigationManager.NavigateTo($"{url}&show_dialog=true");
     }
 
-    private async Task Doot()
+    private async Task SaveTokenToRoom()
     {
         BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
-        var http = new HttpClient();
-        var player = new PlayerApi(http);
-        Device[] devices = await player.GetDevices<Device[]>(accessToken: token.AccessToken);
 
-        foreach(Device device in devices)
-        {
-
-        }
     }
 
     public EventHandler<LocationChangedEventArgs> LocationChanged()
@@ -46,7 +39,7 @@
         _parsedAuthCode = HttpUtility.ParseQueryString(uri.Query).Get("code");
         _parsedStateCode = HttpUtility.ParseQueryString(uri.Query).Get("state");
         if (_parsedAuthCode != null && _parsedStateCode != null)
-            Doot();
+            SaveTokenToRoom();
 
         return null;
     }

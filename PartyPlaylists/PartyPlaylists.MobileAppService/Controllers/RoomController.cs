@@ -109,6 +109,35 @@ namespace PartyPlaylists.MobileAppService.Controllers
             }
         }
 
+        [HttpPatch("{roomId}/spotify/")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<Room>> AddSpotifyAuthToRoom(int roomId, string spotifyAuth)
+        {
+            try
+            {
+                var room = await _context.Rooms
+                    .SingleOrDefaultAsync(s => s.Id == roomId);
+
+                if (room == null)
+                    return NotFound();
+
+
+                if (string.IsNullOrEmpty(room.SpotifyAuthorization))
+                {
+                    room.SpotifyAuthorization = spotifyAuth;
+                    await _context.SaveChangesAsync();
+                }
+
+                return room;
+            }
+            catch
+            {
+                throw new SystemWeb.HttpResponseException(HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpPatch("{roomId}/{songId}/{songRating}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
