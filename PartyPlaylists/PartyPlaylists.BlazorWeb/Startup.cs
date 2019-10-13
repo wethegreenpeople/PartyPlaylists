@@ -12,6 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PartyPlaylists.BlazorWeb.Data;
 using PartyPlaylists.Services;
+using System.Net.Http;
+using SpotifyApi.NetCore;
 
 namespace PartyPlaylists.BlazorWeb
 {
@@ -33,6 +35,7 @@ namespace PartyPlaylists.BlazorWeb
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<RoomDataStore>();
             services.AddSingleton<SpotifyService>();
+            services.AddSingleton(new UserAccountsService(new HttpClient(), Configuration));
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {

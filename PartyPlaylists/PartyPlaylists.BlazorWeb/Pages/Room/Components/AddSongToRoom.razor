@@ -19,8 +19,11 @@
     private async Task AddSong()
     {
         song = await Spotify.GetSong(song.Name);
-        await RoomDataStore.AddSongToRoomAsync(Room.Id.ToString(), song);
-        Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
-        await RoomChanged.InvokeAsync(Room);
+        if (song != null)
+        {
+            await RoomDataStore.AddSongToRoomAsync(Room.Id.ToString(), song);
+            Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
+            await RoomChanged.InvokeAsync(Room);
+        }
     }
 }

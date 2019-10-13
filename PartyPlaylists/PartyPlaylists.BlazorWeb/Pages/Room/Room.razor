@@ -2,7 +2,11 @@
 @using PartyPlaylists.Services
 @using DataModel = PartyPlaylists.Models.DataModels
 @using PartyPlaylists.BlazorWeb.Pages.Room.Components
+@using Microsoft.AspNetCore.Authorization;
+@attribute [Authorize]
+
 @inject RoomDataStore RoomDataStore
+
 
 <h2>@room?.Name</h2>
 <h3>@room?.Owner</h3>
@@ -10,7 +14,11 @@
 <SongList Room="@room" />
 <br />
 <br />
-<AddSongToRoom @bind-Room="@room"/>
+<AddSongToRoom @bind-Room="@room" />
+<br />
+<br />
+<br />
+<SpotifyAuthentication />
 
 @code {
     [Parameter] public string roomId { get; set; }
