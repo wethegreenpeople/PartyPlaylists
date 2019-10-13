@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PartyPlaylists.Models.DataModels;
 using SpotifyApi.NetCore;
 using SpotifyApi.NetCore.Models;
+using System.Web;
 
 namespace PartyPlaylists.Services
 {
@@ -16,6 +17,11 @@ namespace PartyPlaylists.Services
             throw new NotImplementedException();
         }
 
+        public Task Authenticate()
+        {
+            return null;
+        }
+
         public Task CreatePlaylist(string playlistName)
         {
             throw new NotImplementedException();
@@ -23,20 +29,27 @@ namespace PartyPlaylists.Services
 
         public async Task<Song> GetSong(string searchQuery)
         {
-            var http = new HttpClient();
-            var accounts = new AccountsService(http);
-
-            var search = new SearchApi(http, accounts);
-            var searchResult = await search.Search(searchQuery, "track", "", (1,0));
-
-            var song = new Song()
+            try
             {
-                Artist = searchResult.Tracks.Items[0].Artists[0].Name,
-                Name = searchResult.Tracks.Items[0].Name,
-                ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
-            };
+                var http = new HttpClient();
+                var accounts = new AccountsService(http);
 
-            return song;
+                var search = new SearchApi(http, accounts);
+                var searchResult = await search.Search(searchQuery, "track", "", (1, 0));
+
+                var song = new Song()
+                {
+                    Artist = searchResult?.Tracks?.Items[0].Artists[0].Name,
+                    Name = searchResult?.Tracks?.Items[0].Name,
+                    ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
+                };
+
+                return song;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

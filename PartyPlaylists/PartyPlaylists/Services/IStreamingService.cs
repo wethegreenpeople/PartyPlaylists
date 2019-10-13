@@ -11,6 +11,6 @@ namespace PartyPlaylists.Services
         Task<T> GetSong(string searchQuery);
         Task CreatePlaylist(string playlistName);
         Task AddSongToPlaylist(Song song);
-
+        Task Authenticate();
     }
 }
