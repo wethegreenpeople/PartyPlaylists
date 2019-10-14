@@ -76,5 +76,20 @@ namespace PartyPlaylists.Services
 
             return respondedRoom;
         }
+
+        public async Task<Room> AddSpotifyAuthCodeToRoomAsync(string roomId, string spotifyAuthCode)
+        {
+            if (roomId == null || spotifyAuthCode == null)
+                return null;
+
+            var patchMethod = new HttpMethod("PATCH");
+
+            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/spotify/{spotifyAuthCode}");
+
+            var response = await client.SendAsync(request);
+            var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());
+
+            return respondedRoom;
+        }
     }
 }

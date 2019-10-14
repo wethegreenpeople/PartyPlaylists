@@ -1,14 +1,18 @@
 ﻿@inject NavigationManager NavigationManager
 @inject IConfiguration Configuration
 @inject UserAccountsService UserAccountsService
+@inject RoomDataStore RoomDataStore
 
 @using SpotifyApi.NetCore;
 @using Microsoft.Extensions.Configuration;
 @using System.Web;
+@using PartyPlaylists.Services;
 
 <button @onclick="RedirectToSpotify">Authenticate</button>
 
 @code {
+    [Parameter] public PartyPlaylists.Models.DataModels.Room Room { get; set; }
+
     private IConfiguration _configuration;
     private string _parsedAuthCode;
     private string _parsedStateCode;
@@ -30,7 +34,7 @@
     private async Task SaveTokenToRoom()
     {
         BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
-
+        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(Room.Id.ToString(), _parsedAuthCode);
     }
 
     public EventHandler<LocationChangedEventArgs> LocationChanged()
