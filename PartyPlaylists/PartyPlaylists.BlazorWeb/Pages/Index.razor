@@ -1,8 +1,12 @@
 ﻿@page "/"
 @using DataModel = PartyPlaylists.Models.DataModels
 @using PartyPlaylists.Services;
+@using PartyPlaylists.Models;
+@using SpotifyApi.NetCore;
+@using System.Web;
 @inject NavigationManager NavigationManager
 @inject RoomDataStore RoomDataStore
+@inject UserAccountsService UserAccountsService
 
 
 <h1>PartyPlaylists</h1>
@@ -24,7 +28,7 @@
 <br />
 <label>Room ID</label>
 <br />
-<input type="text" @bind-value="roomId" />
+<input type="text" @bind-value="_roomId" />
 <br />
 <br />
 <button type="button" @onclick="JoinRoom">Join Room</button>
@@ -33,14 +37,16 @@
 
 @code
 {
-    private string roomId;
+    private string _parsedAuthCode;
+    private string _parsedStateCode;
+    private string _roomId;
     private DataModel.Room room = new DataModel.Room();
 
     private void JoinRoom()
     {
-        if (!string.IsNullOrWhiteSpace(roomId))
+        if (!string.IsNullOrWhiteSpace(_roomId))
         {
-            NavigationManager.NavigateTo($"/partyplaylists/room/{roomId}");
+            NavigationManager.NavigateTo($"/partyplaylists/room/{_roomId}");
         }
     }
 
@@ -49,5 +55,23 @@
         room = await RoomDataStore.AddItemAsync(room);
         NavigationManager.NavigateTo($"/partyplaylists/room/{room?.Id.ToString()}");
         JoinRoom();
+    }
+
+    private async Task SaveSpotifyTokenToRoom()
+    {
+        BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
+        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, _parsedAuthCode);
+        NavigationManager.NavigateTo($"/partyplaylists/room/{_parsedStateCode}");
+    }
+
+    public EventHandler<LocationChangedEventArgs> LocationChanged()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        _parsedAuthCode = HttpUtility.ParseQueryString(uri.Query).Get("code");
+        _parsedStateCode = HttpUtility.ParseQueryString(uri.Query).Get("state");
+        if (_parsedAuthCode != null && _parsedStateCode != null)
+            SaveSpotifyTokenToRoom();
+
+        return null;
     }
 }
