@@ -5,7 +5,6 @@
 
 @using SpotifyApi.NetCore;
 @using Microsoft.Extensions.Configuration;
-@using System.Web;
 @using PartyPlaylists.Services;
 
 <button @onclick="RedirectToSpotify">Authenticate</button>
@@ -14,37 +13,13 @@
     [Parameter] public PartyPlaylists.Models.DataModels.Room Room { get; set; }
 
     private IConfiguration _configuration;
-    private string _parsedAuthCode;
-    private string _parsedStateCode;
-
-    protected override void OnInitialized()
-    {
-        NavigationManager.LocationChanged += LocationChanged();
-    }
 
     public void RedirectToSpotify()
     {
-        var stateCode = Guid.NewGuid().ToString("N");
+        var stateCode = Room.Id.ToString();
         string url = UserAccountsService.AuthorizeUrl(stateCode, new[] { "user-read-playback-state" });
 
         var client = new HttpClient();
         NavigationManager.NavigateTo($"{url}&show_dialog=true");
-    }
-
-    private async Task SaveTokenToRoom()
-    {
-        BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
-        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(Room.Id.ToString(), _parsedAuthCode);
-    }
-
-    public EventHandler<LocationChangedEventArgs> LocationChanged()
-    {
-        var uri = new Uri(NavigationManager.Uri);
-        _parsedAuthCode = HttpUtility.ParseQueryString(uri.Query).Get("code");
-        _parsedStateCode = HttpUtility.ParseQueryString(uri.Query).Get("state");
-        if (_parsedAuthCode != null && _parsedStateCode != null)
-            SaveTokenToRoom();
-
-        return null;
     }
 }
