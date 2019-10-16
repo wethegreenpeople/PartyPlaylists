@@ -7,7 +7,10 @@
 @using Microsoft.Extensions.Configuration;
 @using PartyPlaylists.Services;
 
-<button @onclick="RedirectToSpotify">Authenticate</button>
+@if (string.IsNullOrEmpty(Room?.SpotifyAuthorization))
+{
+    <button @onclick="RedirectToSpotify">Authenticate Spotify</button>
+}
 
 @code {
     [Parameter] public PartyPlaylists.Models.DataModels.Room Room { get; set; }
@@ -17,9 +20,9 @@
     public void RedirectToSpotify()
     {
         var stateCode = Room.Id.ToString();
-        string url = UserAccountsService.AuthorizeUrl(stateCode, new[] { "user-read-playback-state" });
+        string url = UserAccountsService.AuthorizeUrl(stateCode, new[] { "user-read-playback-state user-read-private user-read-email playlist-read-private user-library-read playlist-modify-public playlist-modify-private" });
 
         var client = new HttpClient();
-        NavigationManager.NavigateTo($"{url}&show_dialog=true");
+        NavigationManager.NavigateTo($"{url}");
     }
 }

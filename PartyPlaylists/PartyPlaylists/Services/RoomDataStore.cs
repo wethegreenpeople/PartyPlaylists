@@ -84,7 +84,7 @@ namespace PartyPlaylists.Services
 
             var patchMethod = new HttpMethod("PATCH");
 
-            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/spotify/{spotifyAuthCode}");
+            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/spotify?spotifyAuth={spotifyAuthCode}");
 
             var response = await client.SendAsync(request);
             var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());

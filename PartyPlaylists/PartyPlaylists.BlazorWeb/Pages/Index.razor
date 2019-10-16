@@ -42,6 +42,11 @@
     private string _roomId;
     private DataModel.Room room = new DataModel.Room();
 
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += LocationChanged();
+    }
+
     private void JoinRoom()
     {
         if (!string.IsNullOrWhiteSpace(_roomId))
@@ -59,9 +64,9 @@
 
     private async Task SaveSpotifyTokenToRoom()
     {
-        BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
-        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, _parsedAuthCode);
         NavigationManager.NavigateTo($"/partyplaylists/room/{_parsedStateCode}");
+        BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
+        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, token.AccessToken);
     }
 
     public EventHandler<LocationChangedEventArgs> LocationChanged()
