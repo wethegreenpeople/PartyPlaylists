@@ -7,6 +7,7 @@ using PartyPlaylists.Models.DataModels;
 using SpotifyApi.NetCore;
 using SpotifyApi.NetCore.Models;
 using System.Web;
+using System.Net.Http.Headers;
 
 namespace PartyPlaylists.Services
 {
@@ -50,6 +51,15 @@ namespace PartyPlaylists.Services
             {
                 return null;
             }
+        }
+
+        public async Task<string> GetUserId(string token)
+        {
+            var http = new HttpClient();
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue($"Bearer {token}");
+            var result = await http.GetStringAsync(@"https://api.spotify.com/v1/me");
+
+            return result;
         }
     }
 }
