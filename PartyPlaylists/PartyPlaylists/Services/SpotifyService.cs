@@ -8,11 +8,25 @@ using SpotifyApi.NetCore;
 using SpotifyApi.NetCore.Models;
 using System.Web;
 using System.Net.Http.Headers;
+using RestSharp;
+using RestSharp.Authenticators;
 
 namespace PartyPlaylists.Services
 {
     public class SpotifyService : IStreamingService<Song>
     {
+        public string AuthToken { get; set; }
+
+        public SpotifyService()
+        {
+
+        }
+
+        public SpotifyService(string authCode)
+        {
+            AuthToken = authCode;
+        }
+
         public Task AddSongToPlaylist(Song song)
         {
             throw new NotImplementedException();
@@ -53,13 +67,16 @@ namespace PartyPlaylists.Services
             }
         }
 
-        public async Task<string> GetUserId(string token)
+        public async Task<string> GetUserId()
         {
-            var http = new HttpClient();
-            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue($"Bearer {token}");
-            var result = await http.GetStringAsync(@"https://api.spotify.com/v1/me");
+            var client = new RestClient(@"https://api.spotify.com");
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AuthToken);
+            var request = new RestRequest(@"v1/me", Method.GET);
 
-            return result;
+            var response = client.Execute(request);
+            var content = response.Content;
+
+            return content;
         }
     }
 }
