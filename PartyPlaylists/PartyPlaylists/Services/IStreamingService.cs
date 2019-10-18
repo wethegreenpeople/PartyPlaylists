@@ -9,7 +9,7 @@ namespace PartyPlaylists.Services
     public interface IStreamingService<T>
     {
         Task<T> GetSong(string searchQuery);
-        Task CreatePlaylist(string playlistName);
+        Task CreatePlaylist(string playlistName, string userId);
         Task AddSongToPlaylist(Song song);
         Task Authenticate();
     }

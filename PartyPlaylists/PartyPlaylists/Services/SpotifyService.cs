@@ -10,6 +10,7 @@ using System.Web;
 using System.Net.Http.Headers;
 using RestSharp;
 using RestSharp.Authenticators;
+using Newtonsoft.Json;
 
 namespace PartyPlaylists.Services
 {
@@ -37,9 +38,22 @@ namespace PartyPlaylists.Services
             return null;
         }
 
-        public Task CreatePlaylist(string playlistName)
+        public async Task CreatePlaylist(string name, string userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = new RestClient(@"https://api.spotify.com/v1");
+                client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
+                var request = new RestRequest($@"users/{userId}/playlists", Method.POST);
+                request.RequestFormat = DataFormat.Json;
+                request.AddJsonBody(new { name = name });
+
+                var response = await client.ExecuteTaskAsync(request);
+                var content = response.Content;
+            }
+            catch
+            {
+            }
         }
 
         public async Task<Song> GetSong(string searchQuery)
@@ -67,16 +81,19 @@ namespace PartyPlaylists.Services
             }
         }
 
-        public async Task<string> GetUserId()
+        public async Task<string> GetUserIdAsync()
         {
             var client = new RestClient(@"https://api.spotify.com");
-            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator(AuthToken);
+            client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
             var request = new RestRequest(@"v1/me", Method.GET);
 
-            var response = client.Execute(request);
+            var response = await client.ExecuteTaskAsync(request);
             var content = response.Content;
 
-            return content;
+            dynamic results = JsonConvert.DeserializeObject(content);
+            var userId = results.id;
+
+            return userId;
         }
     }
 }
