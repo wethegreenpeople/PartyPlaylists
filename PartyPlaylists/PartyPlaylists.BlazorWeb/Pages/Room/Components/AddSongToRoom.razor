@@ -16,6 +16,7 @@
     [Parameter] public EventCallback<Room> RoomChanged { get; set; }
 
     private Song song = new Song();
+    private string roomOwnersSpotifyId = null;
 
     private async Task AddSong()
     {
@@ -27,7 +28,9 @@
             await RoomChanged.InvokeAsync(Room);
 
             Spotify.AuthToken = Room.SpotifyAuthorization;
-            await Spotify.GetUserId();
+            if (roomOwnersSpotifyId == null)
+                roomOwnersSpotifyId = await Spotify.GetUserIdAsync();
+            await Spotify.CreatePlaylist(Room.Name, roomOwnersSpotifyId);
         }
     }
 }
