@@ -1,4 +1,5 @@
-﻿using PartyPlaylists.Models.DataModels;
+﻿using PartyPlaylists.Models;
+using PartyPlaylists.Models.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace PartyPlaylists.Services
 {
-    public interface IStreamingService<T>
+    public interface IStreamingService
     {
-        Task<T> GetSong(string searchQuery);
-        Task CreatePlaylist(string playlistName, string userId);
-        Task AddSongToPlaylist(Song song);
+        Task<Song> GetSong(string searchQuery);
+        Task<IPlaylist> CreatePlaylist(IPlaylist playlist);
+        Task AddSongToPlaylist(IPlaylist playlist, Song song);
         Task Authenticate();
     }
 }

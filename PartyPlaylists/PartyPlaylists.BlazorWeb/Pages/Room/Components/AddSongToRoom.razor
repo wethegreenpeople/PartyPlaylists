@@ -1,6 +1,8 @@
 ﻿@using PartyPlaylists.Models.DataModels
 @using PartyPlaylists.Services
 @using SpotifyApi.NetCore
+@using PartyPlaylists.Models
+
 @inject RoomDataStore RoomDataStore
 @inject SpotifyService Spotify
 
@@ -18,19 +20,36 @@
     private Song song = new Song();
     private string roomOwnersSpotifyId = null;
 
+    protected override async Task OnParametersSetAsync()
+    {
+        Spotify.AuthToken = Room?.SpotifyAuthorization;
+        if (roomOwnersSpotifyId == null)
+            roomOwnersSpotifyId = await Spotify.GetUserIdAsync();
+    }
+
     private async Task AddSong()
     {
+        IPlaylist spotifyPlaylist;
+        if (Room.RoomSongs.Count == 0)
+            spotifyPlaylist = await CreateSpotifyPlaylist();
+
         song = await Spotify.GetSong(song.Name);
         if (song != null)
         {
             await RoomDataStore.AddSongToRoomAsync(Room.Id.ToString(), song);
             Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
             await RoomChanged.InvokeAsync(Room);
-
-            Spotify.AuthToken = Room.SpotifyAuthorization;
-            if (roomOwnersSpotifyId == null)
-                roomOwnersSpotifyId = await Spotify.GetUserIdAsync();
-            await Spotify.CreatePlaylist(Room.Name, roomOwnersSpotifyId);
         }
+    }
+
+    private async Task<IPlaylist> CreateSpotifyPlaylist()
+    {
+        var playlist = new SpotifyPlaylist()
+        {
+            PlaylistName = Room.Name,
+            PlaylistOwnerID = roomOwnersSpotifyId,
+        };
+
+        return await Spotify.CreatePlaylist(playlist);
     }
 }

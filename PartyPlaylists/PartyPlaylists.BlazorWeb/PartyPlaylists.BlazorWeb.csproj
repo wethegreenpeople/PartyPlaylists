@@ -18,4 +18,11 @@
     <ProjectReference Include="..\PartyPlaylists\PartyPlaylists.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Pages\Room\Components\SpotifyAuthentication.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <Generator>MSBuild:RazorGenerateComponentDeclarationDesignTime</Generator>
+    </Content>
+  </ItemGroup>
+
 </Project>
