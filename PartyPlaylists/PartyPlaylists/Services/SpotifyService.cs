@@ -11,10 +11,11 @@ using System.Net.Http.Headers;
 using RestSharp;
 using RestSharp.Authenticators;
 using Newtonsoft.Json;
+using PartyPlaylists.Models;
 
 namespace PartyPlaylists.Services
 {
-    public class SpotifyService : IStreamingService<Song>
+    public class SpotifyService : IStreamingService
     {
         public string AuthToken { get; set; }
 
@@ -28,9 +29,25 @@ namespace PartyPlaylists.Services
             AuthToken = authCode;
         }
 
-        public Task AddSongToPlaylist(Song song)
+        public async Task AddSongToPlaylist(IPlaylist playlist, Song song)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = new RestClient(@"https://api.spotify.com/v1");
+                client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
+                var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.POST);
+                request.RequestFormat = DataFormat.Json;
+                request.AddJsonBody(new { name = playlist.PlaylistName });
+
+                var response = await client.ExecuteTaskAsync(request);
+                var content = response.Content;
+
+                dynamic results = JsonConvert.DeserializeObject(content);
+                playlist.PlaylistID = results.id;
+            }
+            catch
+            {
+            }
         }
 
         public Task Authenticate()
@@ -38,21 +55,26 @@ namespace PartyPlaylists.Services
             return null;
         }
 
-        public async Task CreatePlaylist(string name, string userId)
+        public async Task<IPlaylist> CreatePlaylist(IPlaylist playlist)
         {
             try
             {
                 var client = new RestClient(@"https://api.spotify.com/v1");
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
-                var request = new RestRequest($@"users/{userId}/playlists", Method.POST);
+                var request = new RestRequest($@"users/{playlist.PlaylistOwnerID}/playlists", Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                request.AddJsonBody(new { name = name });
+                request.AddJsonBody(new { name = playlist.PlaylistName });
 
                 var response = await client.ExecuteTaskAsync(request);
                 var content = response.Content;
+
+                dynamic results = JsonConvert.DeserializeObject(content);
+                playlist.PlaylistID = results.id;
+                return playlist;
             }
             catch
             {
+                return null;
             }
         }
 
