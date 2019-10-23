@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PartyPlaylists.Models.DataModels
 {
@@ -26,5 +27,9 @@ namespace PartyPlaylists.Models.DataModels
 
         [JsonIgnore]
         public List<RoomSong> RoomSongs { get; set; } = new List<RoomSong>();
+
+        [NotMapped]
+        [JsonIgnore]
+        public string SpotifyUri { get; set; }
     }
 }
