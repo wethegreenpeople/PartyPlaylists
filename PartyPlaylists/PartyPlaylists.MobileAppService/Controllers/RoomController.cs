@@ -45,6 +45,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
             {
                 roomsong.Song = await _context.Songs.FindAsync(roomsong.SongId);
             }
+
             return room;
         }
 
@@ -97,17 +98,22 @@ namespace PartyPlaylists.MobileAppService.Controllers
                     SongId = (await matchingSong)?.Id ?? 0,
                     Song = song,
                 };
-                if (!room.RoomSongs.Any(s => s.SongId == roomSong.SongId))
-                {
-                    room.RoomSongs.Add(roomSong);
-                    await _context.SaveChangesAsync();
-                }
-
                 if (await playlist != null)
                 {
                     var playlistTable = await playlist;
                     var service = new SpotifyService(playlistTable.AuthCode);
-                    await service.AddSongToPlaylist(playlistTable, song);
+                    if (string.IsNullOrEmpty(song.SpotifyUri))
+                    {
+                        var spotifySong = await service.GetSong(song.Name);
+                        await service.AddSongToPlaylist(playlistTable, spotifySong);
+                    }
+                    else
+                        await service.AddSongToPlaylist(playlistTable, song);
+                }
+                if (!room.RoomSongs.Any(s => s.SongId == roomSong.SongId))
+                {
+                    room.RoomSongs.Add(roomSong);
+                    await _context.SaveChangesAsync();
                 }
 
                 return room;
@@ -139,12 +145,13 @@ namespace PartyPlaylists.MobileAppService.Controllers
                     var playlist = await service.CreatePlaylist(room.Name, ownerId);
 
                     room.SpotifyPlaylist = (SpotifyPlaylist)playlist;
+                    room.IsSpotifyEnabled = true;
                     await _context.SaveChangesAsync();
                 }
 
                 return room;
             }
-            catch
+            catch (Exception ex)
             {
                 throw new SystemWeb.HttpResponseException(HttpStatusCode.InternalServerError);
             }

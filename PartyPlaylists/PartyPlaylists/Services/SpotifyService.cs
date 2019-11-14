@@ -12,6 +12,7 @@ using RestSharp;
 using RestSharp.Authenticators;
 using Newtonsoft.Json;
 using PartyPlaylists.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace PartyPlaylists.Services
 {
@@ -42,9 +43,6 @@ namespace PartyPlaylists.Services
 
                 var response = await client.ExecuteTaskAsync(request);
                 var content = response.Content;
-
-                dynamic results = JsonConvert.DeserializeObject(content);
-                playlist.PlaylistID = results.id;
             }
             catch
             {
@@ -90,7 +88,11 @@ namespace PartyPlaylists.Services
             try
             {
                 var http = new HttpClient();
-                var accounts = new AccountsService(http);
+                IConfiguration config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+                var accounts = new AccountsService(http, config);
 
                 var search = new SearchApi(http, accounts);
                 var searchResult = await search.Search(searchQuery, "track", "", (1, 0));
@@ -105,7 +107,7 @@ namespace PartyPlaylists.Services
 
                 return song;
             }
-            catch
+            catch (Exception ex)
             {
                 return null;
             }

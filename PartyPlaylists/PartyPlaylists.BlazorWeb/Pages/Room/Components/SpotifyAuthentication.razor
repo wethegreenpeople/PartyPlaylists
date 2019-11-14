@@ -7,9 +7,12 @@
 @using Microsoft.Extensions.Configuration;
 @using PartyPlaylists.Services;
 
-@if (string.IsNullOrEmpty(Room?.SpotifyPlaylist?.AuthCode))
+@if (Room != null)
 {
-    <button @onclick="RedirectToSpotify">Authenticate Spotify</button>
+    @if (!Room.IsSpotifyEnabled)
+    {
+        <button @onclick="RedirectToSpotify">Authenticate Spotify</button>
+    }
 }
 
 @code {
