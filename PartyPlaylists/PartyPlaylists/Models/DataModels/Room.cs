@@ -21,6 +21,8 @@ namespace PartyPlaylists.Models.DataModels
 
         public List<RoomSong> RoomSongs { get; set; }
 
+        public bool IsSpotifyEnabled { get; set; } = false;
+
         [JsonIgnore]
         public SpotifyPlaylist SpotifyPlaylist { get; set; }
     }
