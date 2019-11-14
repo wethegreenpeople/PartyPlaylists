@@ -21,36 +21,14 @@
     private string roomOwnersSpotifyId = null;
     private IPlaylist spotifyPlaylist;
 
-    protected override async Task OnParametersSetAsync()
-    {
-        Spotify.AuthToken = Room?.SpotifyAuthorization;
-        if (roomOwnersSpotifyId == null)
-            roomOwnersSpotifyId = await Spotify.GetUserIdAsync();
-        if (spotifyPlaylist == null && Room != null)
-            spotifyPlaylist = await CreateSpotifyPlaylist();
-        
-    }
-
     private async Task AddSong()
     {
         song = await Spotify.GetSong(song.Name);
         if (song != null)
         {
-            await Spotify.AddSongToPlaylist(spotifyPlaylist, song);
             await RoomDataStore.AddSongToRoomAsync(Room.Id.ToString(), song);
             Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
             await RoomChanged.InvokeAsync(Room);
         }
-    }
-
-    private async Task<IPlaylist> CreateSpotifyPlaylist()
-    {
-        var playlist = new SpotifyPlaylist()
-        {
-            PlaylistName = Room.Name,
-            PlaylistOwnerID = roomOwnersSpotifyId,
-        };
-
-        return await Spotify.CreatePlaylist(playlist);
     }
 }

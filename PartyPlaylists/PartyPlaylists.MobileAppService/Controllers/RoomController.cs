@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using PartyPlaylists.MobileAppService.Contexts;
 using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.Models;
+using PartyPlaylists.Services;
 
 namespace PartyPlaylists.MobileAppService.Controllers
 {
@@ -84,21 +85,29 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 var room = await _context.Rooms
                     .Include(e => e.RoomSongs)
                     .SingleOrDefaultAsync(s => s.Id == roomId);
-                var matchingSong = await _context.Songs.FirstOrDefaultAsync(s => $"{s.Artist}{s.Name}" == $"{song.Artist}{song.Name}");
+                var playlist = _context.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == roomId);
+                var matchingSong = _context.Songs.FirstOrDefaultAsync(s => $"{s.Artist}{s.Name}" == $"{song.Artist}{song.Name}");
 
-                if (room == null)
+                if  (room == null)
                     return NotFound();
 
                 var roomSong = new RoomSong()
                 {
                     RoomId = roomId,
-                    SongId = matchingSong?.Id ?? 0,
+                    SongId = (await matchingSong)?.Id ?? 0,
                     Song = song,
                 };
                 if (!room.RoomSongs.Any(s => s.SongId == roomSong.SongId))
                 {
                     room.RoomSongs.Add(roomSong);
                     await _context.SaveChangesAsync();
+                }
+
+                if (await playlist != null)
+                {
+                    var playlistTable = await playlist;
+                    var service = new SpotifyService(playlistTable.AuthCode);
+                    await service.AddSongToPlaylist(playlistTable, song);
                 }
 
                 return room;
@@ -123,10 +132,13 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 if (room == null)
                     return NotFound();
 
-
-                if (string.IsNullOrEmpty(room.SpotifyAuthorization))
+                if (room.SpotifyPlaylist == null)
                 {
-                    room.SpotifyAuthorization = spotifyAuth;
+                    var service = new SpotifyService(spotifyAuth);
+                    var ownerId = await service.GetUserIdAsync();
+                    var playlist = await service.CreatePlaylist(room.Name, ownerId);
+
+                    room.SpotifyPlaylist = (SpotifyPlaylist)playlist;
                     await _context.SaveChangesAsync();
                 }
 

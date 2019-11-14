@@ -24,6 +24,16 @@
     <Compile Remove="Migrations\20190925210640_KeyUpdate.Designer.cs" />
     <Compile Remove="Migrations\20190925215247_Fluent.cs" />
     <Compile Remove="Migrations\20190925215247_Fluent.Designer.cs" />
+    <Compile Remove="Migrations\20191113210040_AddSpotifyPlaylistTable.cs" />
+    <Compile Remove="Migrations\20191113210040_AddSpotifyPlaylistTable.Designer.cs" />
+    <Compile Remove="Migrations\20191113210216_AddSpotifyPlaylistTable.cs" />
+    <Compile Remove="Migrations\20191113210216_AddSpotifyPlaylistTable.Designer.cs" />
+    <Compile Remove="Migrations\20191113210636_OneToOneRoomSpotifyPlaylist.cs" />
+    <Compile Remove="Migrations\20191113210636_OneToOneRoomSpotifyPlaylist.Designer.cs" />
+    <Compile Remove="Migrations\20191113211222_OneToOneRoomSpotifyPlaylist.cs" />
+    <Compile Remove="Migrations\20191113211222_OneToOneRoomSpotifyPlaylist.Designer.cs" />
+    <Compile Remove="Migrations\20191113211804_AddSpotifyPlaylistTable.cs" />
+    <Compile Remove="Migrations\20191113211804_AddSpotifyPlaylistTable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
