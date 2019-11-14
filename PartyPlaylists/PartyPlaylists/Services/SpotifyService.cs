@@ -56,21 +56,27 @@ namespace PartyPlaylists.Services
             return null;
         }
 
-        public async Task<IPlaylist> CreatePlaylist(IPlaylist playlist)
+        public async Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId)
         {
             try
             {
                 var client = new RestClient(@"https://api.spotify.com/v1");
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
-                var request = new RestRequest($@"users/{playlist.PlaylistOwnerID}/playlists", Method.POST);
+                var request = new RestRequest($@"users/{ownerId}/playlists", Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                request.AddJsonBody(new { name = playlist.PlaylistName });
+                request.AddJsonBody(new { name = playlistName });
 
                 var response = await client.ExecuteTaskAsync(request);
                 var content = response.Content;
 
                 dynamic results = JsonConvert.DeserializeObject(content);
-                playlist.PlaylistID = results.id;
+                var playlist = new SpotifyPlaylist()
+                {
+                    AuthCode = AuthToken,
+                    PlaylistName = playlistName,
+                    PlaylistOwnerID = ownerId,
+                    PlaylistID = results.id,
+                };
                 return playlist;
             }
             catch

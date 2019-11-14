@@ -11,6 +11,7 @@ namespace PartyPlaylists.MobileAppService.Contexts
     {
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Song> Songs { get; set; }
+        public DbSet<SpotifyPlaylist> SpotifyPlaylist { get; set; }
 
         public PlaylistContext(DbContextOptions<PlaylistContext> options) : base(options)
         {
@@ -29,6 +30,11 @@ namespace PartyPlaylists.MobileAppService.Contexts
                 .HasOne(e => e.Song)
                 .WithMany(e => e.RoomSongs)
                 .HasForeignKey(e => e.SongId);
+
+            modelBuilder.Entity<Room>()
+                .HasOne(sp => sp.SpotifyPlaylist)
+                .WithOne(r => r.Room)
+                .HasForeignKey<SpotifyPlaylist>(r => r.RoomId);
 
             base.OnModelCreating(modelBuilder);
         }

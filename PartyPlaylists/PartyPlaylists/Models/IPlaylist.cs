@@ -9,5 +9,6 @@ namespace PartyPlaylists.Models
         string PlaylistOwnerID { get; set; }
         string PlaylistID { get; set; }
         string PlaylistName { get; set; }
+        string AuthCode { get; set; }
     }
 }
