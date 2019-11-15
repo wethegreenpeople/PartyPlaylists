@@ -91,5 +91,16 @@ namespace PartyPlaylists.Services
 
             return respondedRoom;
         }
+
+        public async Task<Room> AddVoteToSong(int roomId, int songId, short vote)
+        {
+            var patchMethod = new HttpMethod("PATCH");
+
+            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/{songId}/{vote}");
+
+            var response = await client.SendAsync(request);
+            var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());
+            return respondedRoom;
+        }
     }
 }

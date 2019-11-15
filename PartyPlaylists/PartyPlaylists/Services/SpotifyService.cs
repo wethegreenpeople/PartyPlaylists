@@ -13,6 +13,7 @@ using RestSharp.Authenticators;
 using Newtonsoft.Json;
 using PartyPlaylists.Models;
 using Microsoft.Extensions.Configuration;
+using System.Linq;
 
 namespace PartyPlaylists.Services
 {
@@ -38,7 +39,7 @@ namespace PartyPlaylists.Services
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
                 var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                string[] spotifyUris = { song.SpotifyUri };
+                string[] spotifyUris = { song.SpotifyId };
                 request.AddJsonBody(new { uris = spotifyUris });
 
                 var response = await client.ExecuteTaskAsync(request);
@@ -102,7 +103,7 @@ namespace PartyPlaylists.Services
                     Artist = searchResult?.Tracks?.Items[0].Artists[0].Name,
                     Name = searchResult?.Tracks?.Items[0].Name,
                     ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
-                    SpotifyUri = searchResult?.Tracks.Items[0].Uri,
+                    SpotifyId = searchResult?.Tracks.Items[0].Uri,
                 };
 
                 return song;
@@ -126,6 +127,28 @@ namespace PartyPlaylists.Services
             var userId = results.id;
 
             return userId;
+        }
+
+        public async Task ReorderPlaylist(IPlaylist playlist, Room room)
+        {
+            try
+            {
+                var orderedSongs = room.RoomSongs.OrderByDescending(s => s.SongRating);
+                var spotifyUris = orderedSongs.Select(s => s.Song.SpotifyId).ToArray();
+
+                var client = new RestClient(@"https://api.spotify.com/v1");
+                client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
+                var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.PUT);
+                request.RequestFormat = DataFormat.Json;
+                foreach (var song in room.RoomSongs)
+                    request.AddJsonBody(new { uris = spotifyUris });
+
+                var response = await client.ExecuteTaskAsync(request);
+                var content = response.Content;
+            }
+            catch
+            {
+            }
         }
     }
 }

@@ -1,4 +1,8 @@
 ﻿@using PartyPlaylists.Models.DataModels;
+@using PartyPlaylists.Services;
+
+@inject RoomDataStore RoomDataStore
+@inject RefreshService RefreshService
 
 <table>
     @if (Room != null && Room.RoomSongs.ToList().Count > 0)
@@ -8,14 +12,16 @@
             <th>Title</th>
             <th>Playlist Rating</th>
             <th>Added By</th>
+            <th>Add Vote</th>
         </tr>
-        @foreach (var roomSong in Room.RoomSongs)
+        @foreach (var roomSong in Room.RoomSongs.OrderByDescending(s => s.SongRating))
         {
             <tr>
                 <td>@roomSong.Song.Artist</td>
                 <td>@roomSong.Song.Name</td>
                 <td>@roomSong.SongRating</td>
                 <td>Ahh</td>
+                <td><button type="button" class="active" @onclick="@(() => AddVote(roomSong))"><img src="https://i.imgur.com/H5cbDvG.png" /></button></td>
             </tr>
         }
     }
@@ -23,4 +29,11 @@
 
 @code {
     [Parameter] public Room Room { get; set; }
+
+    public async Task AddVote(RoomSong roomSong)
+    {
+        await RoomDataStore.AddVoteToSong(Room.Id, roomSong.SongId, 1);
+        roomSong.SongRating += 1;
+        StateHasChanged();
+    }
 }
