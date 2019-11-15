@@ -25,11 +25,10 @@ namespace PartyPlaylists.Models.DataModels
         [Required]
         public StreamingServiceTypes ServiceAvailableOn { get; set; }
 
+        [Required]
+        public string SpotifyId { get; set; }
+
         [JsonIgnore]
         public List<RoomSong> RoomSongs { get; set; } = new List<RoomSong>();
-
-        [NotMapped]
-        [JsonIgnore]
-        public string SpotifyUri { get; set; }
     }
 }

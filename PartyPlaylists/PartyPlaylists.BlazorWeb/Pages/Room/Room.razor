@@ -6,7 +6,7 @@
 @attribute [Authorize]
 
 @inject RoomDataStore RoomDataStore
-
+@inject RefreshService RefreshService
 
 <h2>@room?.Name</h2>
 <h3>@room?.Owner</h3>
@@ -28,5 +28,11 @@
     protected override async Task OnInitializedAsync()
     {
         room = await RoomDataStore.GetItemAsync(roomId);
+        RefreshService.RefreshRequested += Refresh;
+    }
+
+    private void Refresh()
+    {
+        base.StateHasChanged();
     }
 }
