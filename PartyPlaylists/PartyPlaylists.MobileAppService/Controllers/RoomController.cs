@@ -11,6 +11,8 @@ using PartyPlaylists.MobileAppService.Contexts;
 using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.Models;
 using PartyPlaylists.Services;
+using Jose;
+using Newtonsoft.Json;
 
 namespace PartyPlaylists.MobileAppService.Controllers
 {
@@ -52,8 +54,14 @@ namespace PartyPlaylists.MobileAppService.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Room>> CreateRoom([FromBody]Room room)
+        public async Task<ActionResult<Room>> CreateRoom(string userToken, [FromBody]Room room)
         {
+            if (string.IsNullOrEmpty(userToken))
+                throw new ArgumentException();
+
+            var decodedToken = JWT.Decode(userToken);
+            var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
+
             try
             {
                 if (room?.RoomSongs?.Any(s => s.Song != null) ?? false)
@@ -65,6 +73,8 @@ namespace PartyPlaylists.MobileAppService.Controllers
                             roomSong.SongId = song.Id;
                     }
                 }
+
+                room.Owner = token.Name;
                 _context.Rooms.Add(room);
                 await _context.SaveChangesAsync();
             }
@@ -162,14 +172,20 @@ namespace PartyPlaylists.MobileAppService.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<RoomSong>> AddVoteToSong(int roomId, int songId, short songRating)
+        public async Task<ActionResult<RoomSong>> AddVoteToSong(string userToken, int roomId, int songId, short songRating)
         {
+            if (string.IsNullOrEmpty(userToken))
+                throw new ArgumentException();
             if (songRating != -1 && songRating != 1)
                 throw new ArgumentException("Invalid vote", nameof(songRating));
+
+            var token = await _context.Tokens.SingleOrDefaultAsync(s => s.JWTToken == userToken);
 
             try
             {
                 var room = await _context.Rooms
+                    .Include(e => e.RoomSongs)
+                    .ThenInclude(e => e.RoomSongTokens)
                     .Include(e => e.RoomSongs)
                     .ThenInclude(e => e.Song)
                     .Include(e => e.SpotifyPlaylist)
@@ -180,6 +196,14 @@ namespace PartyPlaylists.MobileAppService.Controllers
 
                 var roomSong = room.RoomSongs.SingleOrDefault(s => s.SongId == songId);
                 roomSong.SongRating += songRating;
+
+                var songToken = new RoomToken()
+                {
+                    RoomSong = roomSong,
+                    Token = token,
+                };
+                roomSong.RoomSongTokens.Add(songToken);
+
                 await _context.SaveChangesAsync();
                 if (room.IsSpotifyEnabled)
                 {
@@ -189,7 +213,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
 
                 return roomSong;
             }
-            catch
+            catch (Exception ex)
             {
                 throw new SystemWeb.HttpResponseException(HttpStatusCode.InternalServerError);
             }
