@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Jose;
+using Newtonsoft.Json;
 using PartyPlaylists.Models.DataModels;
 using System;
 using System.Collections.Generic;
@@ -25,11 +26,20 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddItemAsync(Room room)
         {
+            return null;
+        }
+
+        public async Task<Room> AddItemAsync(Room room, string userToken)
+        {
             if (room == null)
                 return null;
 
+            var decodedToken = JWT.Decode(userToken);
+            var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
+
+            room.Owner = token.Name;
             var serializedItem = JsonConvert.SerializeObject(room);
-            var response = await client.PostAsync($@"room", new StringContent(serializedItem, Encoding.UTF8, "application/json"));
+            var response = await client.PostAsync($@"room?userToken={userToken}", new StringContent(serializedItem, Encoding.UTF8, "application/json"));
             var responseBody = await response.Content.ReadAsStringAsync();
             var respondedRoom = JsonConvert.DeserializeObject<Room>(responseBody);
 
@@ -57,7 +67,7 @@ namespace PartyPlaylists.Services
             return null;
         }
 
-        public async Task<Room> AddSongToRoomAsync(string roomId, Song song)
+        public async Task<Room> AddSongToRoomAsync(string userToken, string roomId, Song song)
         {
             if (roomId == null || song == null)
                 return null;
@@ -66,7 +76,7 @@ namespace PartyPlaylists.Services
             var serializedItem = JsonConvert.SerializeObject(song);
             var content = new StringContent(serializedItem, Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}")
+            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}?userToken={userToken}")
             {
                 Content = content,
             };
@@ -92,11 +102,11 @@ namespace PartyPlaylists.Services
             return respondedRoom;
         }
 
-        public async Task<Room> AddVoteToSong(int roomId, int songId, short vote)
+        public async Task<Room> AddVoteToSong(string userToken, int roomId, int songId, short vote)
         {
             var patchMethod = new HttpMethod("PATCH");
 
-            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/{songId}/{vote}");
+            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/{songId}/{vote}?userToken={userToken}");
 
             var response = await client.SendAsync(request);
             var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());

@@ -13,6 +13,8 @@ namespace PartyPlaylists.MobileAppService.Contexts
         public DbSet<Song> Songs { get; set; }
         public DbSet<SpotifyPlaylist> SpotifyPlaylist { get; set; }
         public DbSet<Token> Tokens { get; set; }
+        public DbSet<RoomSong> RoomSongs { get; set; }
+        public DbSet<RoomSongToken> RoomSongTokens { get; set; }
 
         public PlaylistContext(DbContextOptions<PlaylistContext> options) : base(options)
         {
@@ -22,7 +24,7 @@ namespace PartyPlaylists.MobileAppService.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RoomSong>()
-                .HasKey(e => new { e.RoomId, e.SongId });
+                .HasKey(e => e.Id);
             modelBuilder.Entity<RoomSong>()
                 .HasOne(e => e.Room)
                 .WithMany(e => e.RoomSongs)
@@ -31,6 +33,17 @@ namespace PartyPlaylists.MobileAppService.Contexts
                 .HasOne(e => e.Song)
                 .WithMany(e => e.RoomSongs)
                 .HasForeignKey(e => e.SongId);
+
+            modelBuilder.Entity<RoomSongToken>()
+               .HasKey(e => e.Id);
+            modelBuilder.Entity<RoomSongToken>()
+                .HasOne(e => e.Token)
+                .WithMany(e => e.RoomSongTokens)
+                .HasForeignKey(e => e.TokenId);
+            modelBuilder.Entity<RoomSongToken>()
+                .HasOne(e => e.RoomSong)
+                .WithMany(e => e.RoomSongTokens)
+                .HasForeignKey(e => e.RoomSongId);
 
             modelBuilder.Entity<Room>()
                 .HasOne(sp => sp.SpotifyPlaylist)
@@ -41,16 +54,6 @@ namespace PartyPlaylists.MobileAppService.Contexts
                 .HasIndex(s => s.JWTToken)
                 .IsUnique();
 
-            modelBuilder.Entity<RoomToken>()
-                .HasKey(e => new { e.TokenId, e.RoomSongId });
-            modelBuilder.Entity<RoomToken>()
-                .HasOne(e => e.Token)
-                .WithMany(e => e.RoomSongTokens)
-                .HasForeignKey(e => e.TokenId);
-            modelBuilder.Entity<RoomToken>()
-                .HasOne(e => e.RoomSong)
-                .WithMany(e => e.RoomSongTokens)
-                .HasForeignKey(e => e.RoomSongId);
 
             base.OnModelCreating(modelBuilder);
         }

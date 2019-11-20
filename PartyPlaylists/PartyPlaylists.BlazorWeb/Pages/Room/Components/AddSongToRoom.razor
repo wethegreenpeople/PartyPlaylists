@@ -2,9 +2,11 @@
 @using PartyPlaylists.Services
 @using SpotifyApi.NetCore
 @using PartyPlaylists.Models
+@using Cloudcrate.AspNetCore.Blazor.Browser.Storage
 
 @inject RoomDataStore RoomDataStore
 @inject SpotifyService Spotify
+@inject SessionStorage SessionStorage
 
 <EditForm Model="@song" OnValidSubmit="@AddSong">
     <label>Song Name</label>
@@ -26,7 +28,8 @@
         song = await Spotify.GetSong(song.Name);
         if (song != null)
         {
-            await RoomDataStore.AddSongToRoomAsync(Room.Id.ToString(), song);
+            var token = await SessionStorage.GetItemAsync($"room{Room.Id}");
+            await RoomDataStore.AddSongToRoomAsync(token, Room.Id.ToString(), song);
             Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
             await RoomChanged.InvokeAsync(Room);
         }

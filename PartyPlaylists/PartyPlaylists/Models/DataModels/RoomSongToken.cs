@@ -4,14 +4,14 @@ using System.Text;
 
 namespace PartyPlaylists.Models.DataModels
 {
-    public class RoomToken
+    public class RoomSongToken
     {
+        public int Id { get; set; }
+
         public int TokenId { get; set; }
         public Token Token { get; set; }
 
-        public int RoomId { get; set; }
-        public Room Room { get; set; }
-
-        public List<Song> SongsVotedOn { get; set; }
+        public int RoomSongId { get; set; }
+        public RoomSong RoomSong { get; set; }
     }
 }
