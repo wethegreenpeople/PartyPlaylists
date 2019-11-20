@@ -26,12 +26,8 @@ namespace PartyPlaylists.MobileAppService.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<string>> CreateToken(int roomId)
+        public async Task<ActionResult<string>> CreateToken()
         {
-            var room = await _context.Rooms.SingleOrDefaultAsync(s => s.Id == roomId);
-            if (room == null)
-                return NotFound();
-
             var payload = new Dictionary<string, object>()
             {
                 { "id", Guid.NewGuid() },

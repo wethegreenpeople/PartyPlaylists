@@ -25,8 +25,5 @@ namespace PartyPlaylists.Models.DataModels
 
         [JsonIgnore]
         public SpotifyPlaylist SpotifyPlaylist { get; set; }
-
-        [JsonIgnore]
-        public List<RoomToken> RoomTokens { get; set; }
     }
 }

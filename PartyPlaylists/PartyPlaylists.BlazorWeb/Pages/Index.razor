@@ -4,10 +4,13 @@
 @using PartyPlaylists.Models;
 @using SpotifyApi.NetCore;
 @using System.Web;
+@using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
+
 @inject NavigationManager NavigationManager
 @inject RoomDataStore RoomDataStore
 @inject UserAccountsService UserAccountsService
-
+@inject TokenService TokenService
+@inject SessionStorage SessionStorage
 
 <h1>PartyPlaylists</h1>
 
@@ -15,10 +18,6 @@
     <label>Room Name:</label>
     <br />
     <InputText @bind-Value="room.Name" />
-    <br />
-    <label>Owner:</label>
-    <br />
-    <InputText @bind-Value="room.Owner" />
     <br />
     <br />
     <button type="submit">Create Room</button>
@@ -33,8 +32,6 @@
 <br />
 <button type="button" @onclick="JoinRoom">Join Room</button>
 
-
-
 @code
 {
     private string _parsedAuthCode;
@@ -47,19 +44,23 @@
         NavigationManager.LocationChanged += LocationChanged();
     }
 
-    private void JoinRoom()
+    private async Task JoinRoom()
     {
         if (!string.IsNullOrWhiteSpace(_roomId))
         {
+            if ((await SessionStorage.GetItemAsync($"room{_roomId}") == null))
+                await SessionStorage.SetItemAsync($"room{_roomId}", await TokenService.GetToken());
             NavigationManager.NavigateTo($"/partyplaylists/room/{_roomId}");
         }
     }
 
     private async Task CreateRoom()
     {
-        room = await RoomDataStore.AddItemAsync(room);
-        NavigationManager.NavigateTo($"/partyplaylists/room/{room?.Id.ToString()}");
-        JoinRoom();
+        var token = await TokenService.GetToken();
+        room = await RoomDataStore.AddItemAsync(room, token);
+        _roomId = room?.Id.ToString();
+        await SessionStorage.SetItemAsync($"room{_roomId}", token);
+        await JoinRoom();
     }
 
     private async Task SaveSpotifyTokenToRoom()

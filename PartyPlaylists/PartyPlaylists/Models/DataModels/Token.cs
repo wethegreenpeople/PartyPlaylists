@@ -17,6 +17,6 @@ namespace PartyPlaylists.Models.DataModels
         public string JWTToken { get; set; }
 
         [JsonIgnore]
-        public List<RoomToken> RoomSongTokens { get; set; }
+        public List<RoomSongToken> RoomSongTokens { get; set; }
     }
 }

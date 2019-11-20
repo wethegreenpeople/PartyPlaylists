@@ -34,6 +34,22 @@
     <Compile Remove="Migrations\20191113211222_OneToOneRoomSpotifyPlaylist.Designer.cs" />
     <Compile Remove="Migrations\20191113211804_AddSpotifyPlaylistTable.cs" />
     <Compile Remove="Migrations\20191113211804_AddSpotifyPlaylistTable.Designer.cs" />
+    <Compile Remove="Migrations\20191118200454_AddRoomTokenRelationship.cs" />
+    <Compile Remove="Migrations\20191118200454_AddRoomTokenRelationship.Designer.cs" />
+    <Compile Remove="Migrations\20191118212202_FixForignKey.cs" />
+    <Compile Remove="Migrations\20191118212202_FixForignKey.Designer.cs" />
+    <Compile Remove="Migrations\20191118213212_FixForignKey.cs" />
+    <Compile Remove="Migrations\20191118213212_FixForignKey.Designer.cs" />
+    <Compile Remove="Migrations\20191118213423_FixForignKey.cs" />
+    <Compile Remove="Migrations\20191118213423_FixForignKey.Designer.cs" />
+    <Compile Remove="Migrations\20191118213716_AddIdToRoomSong.cs" />
+    <Compile Remove="Migrations\20191118213716_AddIdToRoomSong.Designer.cs" />
+    <Compile Remove="Migrations\20191118213802_AddIdToRoomSong.cs" />
+    <Compile Remove="Migrations\20191118213802_AddIdToRoomSong.Designer.cs" />
+    <Compile Remove="Migrations\20191118214134_AddIdToRoomSong.cs" />
+    <Compile Remove="Migrations\20191118214134_AddIdToRoomSong.Designer.cs" />
+    <Compile Remove="Migrations\20191118214544_RemoveRoomSong.cs" />
+    <Compile Remove="Migrations\20191118214544_RemoveRoomSong.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

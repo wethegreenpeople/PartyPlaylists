@@ -87,9 +87,10 @@ namespace PartyPlaylists.MobileAppService.Controllers
 
         [HttpPatch("{roomId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<Room>> AddSongToRoom(int roomId, [FromBody]Song song)
+        public async Task<ActionResult<Room>> AddSongToRoom(string userToken, int roomId, [FromBody]Song song)
         {
             try
             {
@@ -98,6 +99,8 @@ namespace PartyPlaylists.MobileAppService.Controllers
                     .SingleOrDefaultAsync(s => s.Id == roomId);
                 var playlist = _context.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == roomId);
                 var matchingSong = _context.Songs.FirstOrDefaultAsync(s => $"{s.Artist}{s.Name}" == $"{song.Artist}{song.Name}");
+                var decodedToken = JWT.Decode(userToken);
+                var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
 
                 if  (room == null)
                     return NotFound();
@@ -107,6 +110,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
                     RoomId = roomId,
                     SongId = (await matchingSong)?.Id ?? 0,
                     Song = song,
+                    SongAddedBy = token.Name,
                 };
                 if (await playlist != null)
                 {
@@ -185,9 +189,9 @@ namespace PartyPlaylists.MobileAppService.Controllers
             {
                 var room = await _context.Rooms
                     .Include(e => e.RoomSongs)
-                    .ThenInclude(e => e.RoomSongTokens)
-                    .Include(e => e.RoomSongs)
                     .ThenInclude(e => e.Song)
+                    .Include(e => e.RoomSongs)
+                    .ThenInclude(e => e.RoomSongTokens)
                     .Include(e => e.SpotifyPlaylist)
                     .SingleOrDefaultAsync(s => s.Id == roomId);
 
@@ -195,14 +199,18 @@ namespace PartyPlaylists.MobileAppService.Controllers
                     return NotFound();
 
                 var roomSong = room.RoomSongs.SingleOrDefault(s => s.SongId == songId);
+
+                if (roomSong.RoomSongTokens != null && roomSong.RoomSongTokens.Any(s => s.Token == token))
+                    return BadRequest();
+
                 roomSong.SongRating += songRating;
 
-                var songToken = new RoomToken()
+                var roomSongToken = new RoomSongToken()
                 {
-                    RoomSong = roomSong,
                     Token = token,
+                    TokenId = token.Id,
                 };
-                roomSong.RoomSongTokens.Add(songToken);
+                roomSong.RoomSongTokens.Add(roomSongToken);
 
                 await _context.SaveChangesAsync();
                 if (room.IsSpotifyEnabled)
