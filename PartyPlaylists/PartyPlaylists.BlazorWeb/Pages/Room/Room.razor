@@ -8,17 +8,33 @@
 @inject RoomDataStore RoomDataStore
 @inject RefreshService RefreshService
 
-<h2>@room?.Name</h2>
-<h4>Created by: @room?.Owner</h4>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md">
+            <h2>@room?.Name</h2>
+            <h4>Created by: @room?.Owner</h4>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md">
+            <SongList Room="@room" />
+        </div>
+    </div>
 
-<SongList Room="@room" />
-<br />
-<br />
-<AddSongToRoom @bind-Room="@room" />
-<br />
-<br />
-<br />
-<SpotifyAuthentication Room="@room" />
+    <div class="row">
+        <div class="col-md-3" >
+            <AddSongToRoom @bind-Room="@room" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <SpotifyAuthentication Room="@room" />
+        </div>
+    </div>
+</div>
+
 
 @code {
     [Parameter] public string roomId { get; set; }

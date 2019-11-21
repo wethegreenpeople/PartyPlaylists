@@ -114,6 +114,40 @@ namespace PartyPlaylists.Services
             }
         }
 
+        public async Task<List<Song>> GetSongs(string searchQuery)
+        {
+            try
+            {
+                var http = new HttpClient();
+                IConfiguration config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+                var accounts = new AccountsService(http, config);
+
+                var search = new SearchApi(http, accounts);
+                var searchResults = await search.Search(searchQuery, "track", "", (3, 0));
+
+                var songList = new List<Song>();
+                foreach (var result in searchResults.Tracks.Items)
+                {
+                    songList.Add(new Song()
+                    {
+                        Artist = result.Artists[0].Name,
+                        Name = result.Name,
+                        ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
+                        SpotifyId = result.Uri,
+                    });
+                }
+
+                return songList;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public async Task<string> GetUserIdAsync()
         {
             var client = new RestClient(@"https://api.spotify.com");

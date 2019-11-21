@@ -3,17 +3,34 @@
 @using SpotifyApi.NetCore
 @using PartyPlaylists.Models
 @using Cloudcrate.AspNetCore.Blazor.Browser.Storage
+@using Blazored.Typeahead
 
 @inject RoomDataStore RoomDataStore
 @inject SpotifyService Spotify
 @inject SessionStorage SessionStorage
 
 <EditForm Model="@song" OnValidSubmit="@AddSong">
-    <label>Song Name</label>
-    <br />
-    <InputText @bind-Value="@song.Name" />
-    <button type="submit">Add song</button>
+    <BlazoredTypeahead 
+                       Placeholder="Search for song..." 
+                       SearchMethod="@FindSong" 
+                       @bind-Value="song" 
+                       Debounce="500">
+        <SelectedTemplate Context="typeAheadContext">
+            @typeAheadContext.Name
+        </SelectedTemplate>
+        <ResultTemplate Context="typeAheadContext">
+            @typeAheadContext.Name (@typeAheadContext.Artist)
+        </ResultTemplate>
+        <NotFoundTemplate>
+            Sorry, there weren't any search results.
+        </NotFoundTemplate>
+    </BlazoredTypeahead>
+
+    <button class="btn btn-primary" type="submit" style="margin:10px 0px 0px 0px;">Add Song</button>
 </EditForm>
+
+
+
 
 @code {
     [Parameter] public Room Room { get; set; }
@@ -25,13 +42,18 @@
 
     private async Task AddSong()
     {
-        song = await Spotify.GetSong(song.Name);
         if (song != null)
         {
             var token = await SessionStorage.GetItemAsync($"room{Room.Id}");
             await RoomDataStore.AddSongToRoomAsync(token, Room.Id.ToString(), song);
             Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
             await RoomChanged.InvokeAsync(Room);
+            song = new Song();
         }
+    }
+
+    private async Task<IEnumerable<Song>> FindSong(string searchText)
+    {
+        return await Spotify.GetSongs(searchText);
     }
 }
