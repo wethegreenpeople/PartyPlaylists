@@ -165,6 +165,22 @@ namespace PartyPlaylists.Services
 
         public async Task ReorderPlaylist(IPlaylist playlist, Room room)
         {
+            CurrentPlaybackContext currentPlayback = null;
+            try
+            {
+                var http = new HttpClient();
+                IConfiguration config = new ConfigurationBuilder()
+                    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                var player = new PlayerApi(http, AuthToken);
+                currentPlayback = await player.GetCurrentPlaybackInfo(AuthToken);
+            }
+            catch (Exception ex)
+            {
+            }
+
             try
             {
                 var orderedSongs = room.RoomSongs.OrderByDescending(s => s.SongRating);
@@ -174,6 +190,13 @@ namespace PartyPlaylists.Services
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
                 var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.PUT);
                 request.RequestFormat = DataFormat.Json;
+                if (currentPlayback != null)
+                {
+                    var groupedSpotifyUris = 
+                        spotifyUris
+                            .Select((value, i) => new { value, i }).GroupBy(s => s.i < spotifyUris.Select((v, i) => new { v, i }).First(d => d.v == currentPlayback.Context.Uri).i + 1);
+
+                }
                 foreach (var song in room.RoomSongs)
                     request.AddJsonBody(new { uris = spotifyUris });
 
