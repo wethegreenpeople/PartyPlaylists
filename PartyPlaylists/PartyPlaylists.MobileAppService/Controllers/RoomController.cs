@@ -212,6 +212,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 };
                 roomSong.RoomSongTokens.Add(roomSongToken);
 
+                room.RoomSongs.OrderByDescending(s => s.SongRating);
                 await _context.SaveChangesAsync();
                 if (room.IsSpotifyEnabled)
                 {
