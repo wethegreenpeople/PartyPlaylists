@@ -50,7 +50,7 @@
         {
             if ((await SessionStorage.GetItemAsync($"room{_roomId}") == null))
                 await SessionStorage.SetItemAsync($"room{_roomId}", await TokenService.GetToken());
-            NavigationManager.NavigateTo($"/partyplaylists/room/{_roomId}");
+            NavigationManager.NavigateTo($"/room/{_roomId}");
         }
     }
 
@@ -65,7 +65,7 @@
 
     private async Task SaveSpotifyTokenToRoom()
     {
-        NavigationManager.NavigateTo($"/partyplaylists/room/{_parsedStateCode}");
+        NavigationManager.NavigateTo($"/partyplaylists/room/{_parsedStateCode}", forceLoad: true);
         BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
         await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, token.AccessToken);
     }

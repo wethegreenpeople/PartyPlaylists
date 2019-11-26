@@ -65,7 +65,7 @@ namespace PartyPlaylists.BlazorWeb
             }
 
             app.UseForwardedHeaders();
-            app.UsePathBase("/partyplaylists");
+            app.UsePathBase("/");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
