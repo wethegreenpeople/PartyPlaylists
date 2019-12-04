@@ -65,7 +65,7 @@
 
     private async Task SaveSpotifyTokenToRoom()
     {
-        NavigationManager.NavigateTo($"/partyplaylists/room/{_parsedStateCode}", forceLoad: true);
+        NavigationManager.NavigateTo($"/room/{_parsedStateCode}", forceLoad: true);
         BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
         await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, token.AccessToken);
     }
