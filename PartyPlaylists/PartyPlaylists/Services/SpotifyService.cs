@@ -182,13 +182,12 @@ namespace PartyPlaylists.Services
 
             try
             {
-                var spotifyUris = room.RoomSongs.Select(s => s.Song.SpotifyId).ToList();
-
                 var client = new RestClient(@"https://api.spotify.com/v1");
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
                 var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.PUT);
                 request.RequestFormat = DataFormat.Json;
-                if (currentPlayback != null)
+                var spotifyUris = room.RoomSongs.Select(s => s.Song.SpotifyId).ToList();
+                if (currentPlayback != null && spotifyUris.Contains(currentPlayback.Item.Uri))
                 {
                     // Reorder songs, only after the current one we are playing.
                     // This ensures that if you're in the middle of a playlist, 
@@ -203,6 +202,8 @@ namespace PartyPlaylists.Services
                     spotifyUris = spotifyUris.OrderByDescending(s => s).ToList();
                     spotifyUris.AddRange(temp.OrderByDescending(s => s));
                 }
+                else
+                    spotifyUris = room.RoomSongs.OrderByDescending(s => s.Id).Select(s => s.Song.SpotifyId).ToList();
                 request.AddJsonBody(new { uris = spotifyUris });
 
                 var response = await client.ExecuteTaskAsync(request);

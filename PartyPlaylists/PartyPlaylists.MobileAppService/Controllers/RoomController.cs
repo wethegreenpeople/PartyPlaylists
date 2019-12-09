@@ -183,10 +183,9 @@ namespace PartyPlaylists.MobileAppService.Controllers
             if (songRating != -1 && songRating != 1)
                 throw new ArgumentException("Invalid vote", nameof(songRating));
 
-            var token = await _context.Tokens.SingleOrDefaultAsync(s => s.JWTToken == userToken);
-
             try
             {
+                var token = await _context.Tokens.SingleOrDefaultAsync(s => s.JWTToken == userToken);
                 var room = await _context.Rooms
                     .Include(e => e.RoomSongs)
                     .ThenInclude(e => e.Song)
@@ -212,13 +211,14 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 };
                 roomSong.RoomSongTokens.Add(roomSongToken);
 
-                room.RoomSongs.OrderByDescending(s => s.SongRating);
-                await _context.SaveChangesAsync();
                 if (room.IsSpotifyEnabled)
                 {
                     var service = new SpotifyService(room.SpotifyPlaylist.AuthCode);
                     await service.ReorderPlaylist(room.SpotifyPlaylist, room);
                 }
+                room.RoomSongs.OrderByDescending(s => s.SongRating);
+                await _context.SaveChangesAsync();
+                
 
                 return roomSong;
             }
