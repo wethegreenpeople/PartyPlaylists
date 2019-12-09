@@ -162,7 +162,6 @@ namespace PartyPlaylists.Services
 
             return userId;
         }
-
         public async Task ReorderPlaylist(IPlaylist playlist, Room room)
         {
             CurrentPlaybackContext currentPlayback = null;
@@ -183,8 +182,7 @@ namespace PartyPlaylists.Services
 
             try
             {
-                var orderedSongs = room.RoomSongs.OrderByDescending(s => s.SongRating);
-                var spotifyUris = orderedSongs.Select(s => s.Song.SpotifyId).ToArray();
+                var spotifyUris = room.RoomSongs.Select(s => s.Song.SpotifyId).ToList();
 
                 var client = new RestClient(@"https://api.spotify.com/v1");
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
@@ -192,18 +190,25 @@ namespace PartyPlaylists.Services
                 request.RequestFormat = DataFormat.Json;
                 if (currentPlayback != null)
                 {
-                    var groupedSpotifyUris = 
+                    // Reorder songs, only after the current one we are playing.
+                    // This ensures that if you're in the middle of a playlist, 
+                    // the next song you listen to is the highest rated song
+                    var indexOfCurrent =
                         spotifyUris
-                            .Select((value, i) => new { value, i }).GroupBy(s => s.i < spotifyUris.Select((v, i) => new { v, i }).First(d => d.v == currentPlayback.Context.Uri).i + 1);
-
+                            .Select((value, index) => new { value, index })
+                            .First(s => s.value == currentPlayback.Item.Uri)
+                            .index;
+                    var temp = spotifyUris.GetRange(indexOfCurrent + 1, spotifyUris.Count() - (indexOfCurrent + 1));
+                    spotifyUris.RemoveRange(indexOfCurrent + 1, spotifyUris.Count() - (indexOfCurrent + 1));
+                    spotifyUris = spotifyUris.OrderByDescending(s => s).ToList();
+                    spotifyUris.AddRange(temp.OrderByDescending(s => s));
                 }
-                foreach (var song in room.RoomSongs)
-                    request.AddJsonBody(new { uris = spotifyUris });
+                request.AddJsonBody(new { uris = spotifyUris });
 
                 var response = await client.ExecuteTaskAsync(request);
                 var content = response.Content;
             }
-            catch
+            catch (Exception ex)
             {
             }
         }
