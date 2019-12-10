@@ -216,7 +216,6 @@ namespace PartyPlaylists.MobileAppService.Controllers
                     var service = new SpotifyService(room.SpotifyPlaylist.AuthCode);
                     await service.ReorderPlaylist(room.SpotifyPlaylist, room);
                 }
-                room.RoomSongs.OrderByDescending(s => s.SongRating);
                 await _context.SaveChangesAsync();
                 
 

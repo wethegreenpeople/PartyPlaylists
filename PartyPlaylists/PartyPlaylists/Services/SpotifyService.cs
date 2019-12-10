@@ -192,15 +192,20 @@ namespace PartyPlaylists.Services
                     // Reorder songs, only after the current one we are playing.
                     // This ensures that if you're in the middle of a playlist, 
                     // the next song you listen to is the highest rated song
-                    var indexOfCurrent =
-                        spotifyUris
-                            .Select((value, index) => new { value, index })
-                            .First(s => s.value == currentPlayback.Item.Uri)
-                            .index;
-                    var temp = spotifyUris.GetRange(indexOfCurrent + 1, spotifyUris.Count() - (indexOfCurrent + 1));
-                    spotifyUris.RemoveRange(indexOfCurrent + 1, spotifyUris.Count() - (indexOfCurrent + 1));
-                    spotifyUris = spotifyUris.OrderByDescending(s => s).ToList();
-                    spotifyUris.AddRange(temp.OrderByDescending(s => s));
+                    var temp = new List<string>();
+                    for (int i = 0; i < spotifyUris.Count; ++i)
+                    {
+                        if (spotifyUris[0] == currentPlayback.Item.Uri)
+                        {
+                            temp.Add(spotifyUris[0]);
+                            spotifyUris.Remove(spotifyUris[0]);
+                            break;
+                        }
+                        temp.Add(spotifyUris[0]);
+                        spotifyUris.Remove(spotifyUris[0]);
+                    }
+                    temp.AddRange(spotifyUris.OrderByDescending(s => s));
+                    spotifyUris = temp;
                 }
                 else
                     spotifyUris = room.RoomSongs.OrderByDescending(s => s.Id).Select(s => s.Song.SpotifyId).ToList();
