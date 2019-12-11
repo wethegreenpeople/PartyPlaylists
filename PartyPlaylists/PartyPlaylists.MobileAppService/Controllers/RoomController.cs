@@ -211,12 +211,13 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 };
                 roomSong.RoomSongTokens.Add(roomSongToken);
 
+                await _context.SaveChangesAsync();
+
                 if (room.IsSpotifyEnabled)
                 {
                     var service = new SpotifyService(room.SpotifyPlaylist.AuthCode);
-                    await service.ReorderPlaylist(room.SpotifyPlaylist, room);
+                    await service.ReorderPlaylist(room.SpotifyPlaylist, room, roomSong);
                 }
-                await _context.SaveChangesAsync();
                 
 
                 return roomSong;

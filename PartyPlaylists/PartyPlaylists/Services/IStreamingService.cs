@@ -14,6 +14,6 @@ namespace PartyPlaylists.Services
         Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId);
         Task AddSongToPlaylist(IPlaylist playlist, Song song);
         Task Authenticate();
-        Task ReorderPlaylist(IPlaylist playlist, Room room);
+        Task ReorderPlaylist(IPlaylist playlist, Room room, RoomSong latestVotedSong = null);
     }
 }
