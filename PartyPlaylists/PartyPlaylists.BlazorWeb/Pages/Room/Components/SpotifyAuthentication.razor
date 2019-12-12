@@ -23,7 +23,7 @@
     public void RedirectToSpotify()
     {
         var stateCode = Room.Id.ToString();
-        string url = UserAccountsService.AuthorizeUrl(stateCode, new[] { "user-read-playback-state user-read-private user-read-email playlist-read-private user-library-read playlist-modify-public playlist-modify-private" });
+        string url = UserAccountsService.AuthorizeUrl(stateCode, new[] { "user-read-playback-state streaming user-read-private user-read-email playlist-read-private user-library-read playlist-modify-public playlist-modify-private" });
 
         var client = new HttpClient();
         NavigationManager.NavigateTo($"{url}");

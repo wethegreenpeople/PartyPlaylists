@@ -194,7 +194,6 @@ namespace PartyPlaylists.Services
                     .ToList();
                 if (currentPlayback != null && spotifyUris.Any(s => s == currentPlayback.Item.Uri))
                 {
-
                     // Reorder songs, only after the current one we are playing.
                     // This ensures that if you're in the middle of a playlist, 
                     // the next song you listen to is the highest rated song

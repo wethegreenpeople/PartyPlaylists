@@ -28,11 +28,11 @@
         };
     </script>
     <script>
-        window.doot = {
-            spotify: function () {
-                const token = 'BQC7JDbRQ7KjJxXSwzp2Xkpmak3EjAvBtg3vICK_iSSVOEAhWlm5xjqRacQIMMNRzQ9hq-J-w94LaHhH59-MGMCFqLx_ZuFjT2bTV2A9NbMdIVCdDvw10JGv4M9PWCOgt4mYlbjtl5LXia0z6Q2qabpK7u7dbALrwrU';
+        window.SpotifyPlayer = {
+            InitPlayer: function (authToken, username) {
+                const token = authToken;
                 const player = new Spotify.Player({
-                    name: 'Web Playback SDK Quick Start Player',
+                    name: username + '\'s PartyPlaylist room',
                     getOAuthToken: cb => { cb(token); }
                 });
 
