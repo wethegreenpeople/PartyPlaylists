@@ -3,6 +3,7 @@
 @inject UserAccountsService UserAccountsService
 @inject RoomDataStore RoomDataStore
 @inject IJSRuntime  JSRuntime
+@inject SpotifyService SpotifyService
 
 @using SpotifyApi.NetCore;
 @using Microsoft.Extensions.Configuration;
@@ -13,6 +14,7 @@
     @if (Room.IsSpotifyEnabled)
     {
         <button @onclick="AddWebPlayer">Add Web Player</button>
+        <button @onclick="StartPlaylist">Play</button>
     }
 }
 
@@ -21,6 +23,11 @@
 
     public async Task AddWebPlayer()
     {
-        await JSRuntime.InvokeVoidAsync("doot.spotify");
+        await JSRuntime.InvokeVoidAsync("SpotifyPlayer.InitPlayer", SpotifyService.AuthToken, Room.Owner);
+    }
+
+    public async Task StartPlaylist()
+    {
+
     }
 }
