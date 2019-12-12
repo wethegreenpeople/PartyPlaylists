@@ -33,7 +33,7 @@ namespace PartyPlaylists.BlazorWeb
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddServerSideBlazor().AddCircuitOptions(opt => { opt.DetailedErrors = true; });
             services.AddHttpContextAccessor();
             services.AddSingleton<WeatherForecastService>();
             services.AddSingleton<RoomDataStore>();
