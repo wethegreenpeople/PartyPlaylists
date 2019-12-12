@@ -21,5 +21,44 @@
     <script src="_framework/blazor.server.js"></script>
     <script src="_content/Cloudcrate.AspNetCore.Blazor.Browser.Storage/Storage.js"></script>
     <script src="_content/Blazored.Typeahead/blazored-typeahead.js"></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            
+        };
+    </script>
+    <script>
+        window.doot = {
+            spotify: function () {
+                const token = 'BQC7JDbRQ7KjJxXSwzp2Xkpmak3EjAvBtg3vICK_iSSVOEAhWlm5xjqRacQIMMNRzQ9hq-J-w94LaHhH59-MGMCFqLx_ZuFjT2bTV2A9NbMdIVCdDvw10JGv4M9PWCOgt4mYlbjtl5LXia0z6Q2qabpK7u7dbALrwrU';
+                const player = new Spotify.Player({
+                    name: 'Web Playback SDK Quick Start Player',
+                    getOAuthToken: cb => { cb(token); }
+                });
+
+                // Error handling
+                player.addListener('initialization_error', ({ message }) => { console.error(message); });
+                player.addListener('authentication_error', ({ message }) => { console.error(message); });
+                player.addListener('account_error', ({ message }) => { console.error(message); });
+                player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+                // Playback status updates
+                player.addListener('player_state_changed', state => { console.log(state); });
+
+                // Ready
+                player.addListener('ready', ({ device_id }) => {
+                    console.log('Ready with Device ID', device_id);
+                });
+
+                // Not Ready
+                player.addListener('not_ready', ({ device_id }) => {
+                    console.log('Device ID has gone offline', device_id);
+                });
+
+                // Connect to the player!
+                player.connect();
+            },
+        };
+    </script>
 </body>
 </html>

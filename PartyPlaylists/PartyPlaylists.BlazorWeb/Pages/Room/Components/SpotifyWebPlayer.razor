@@ -1,0 +1,26 @@
+﻿@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+@inject UserAccountsService UserAccountsService
+@inject RoomDataStore RoomDataStore
+@inject IJSRuntime  JSRuntime
+
+@using SpotifyApi.NetCore;
+@using Microsoft.Extensions.Configuration;
+@using PartyPlaylists.Services;
+
+@if (Room != null)
+{
+    @if (Room.IsSpotifyEnabled)
+    {
+        <button @onclick="AddWebPlayer">Add Web Player</button>
+    }
+}
+
+@code {
+    [Parameter] public PartyPlaylists.Models.DataModels.Room Room { get; set; }
+
+    public async Task AddWebPlayer()
+    {
+        await JSRuntime.InvokeVoidAsync("doot.spotify");
+    }
+}
