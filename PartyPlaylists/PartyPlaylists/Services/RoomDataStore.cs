@@ -1,5 +1,7 @@
 ﻿using Jose;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using PartyPlaylists.MobileAppService.Contexts;
 using PartyPlaylists.Models.DataModels;
 using System;
 using System.Collections.Generic;
@@ -13,9 +15,11 @@ namespace PartyPlaylists.Services
     {
         private readonly HttpClient client;
         private readonly IEnumerable<Room> _rooms;
+        private readonly PlaylistContext _playlistsContext;
 
-        public RoomDataStore()
+        public RoomDataStore(PlaylistContext playlistsContext)
         {
+            _playlistsContext = playlistsContext;
             client = new HttpClient()
             {
                 BaseAddress = new Uri(@"http://40.117.143.83/partyplaylists/api/")
@@ -53,8 +57,19 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> GetItemAsync(string id)
         {
-            var json = await client.GetStringAsync($@"room/{id}");
-            return await Task.Run(() => JsonConvert.DeserializeObject<Room>(json));
+            var room = await _playlistsContext.Rooms
+                .Include(e => e.RoomSongs)
+                .SingleOrDefaultAsync(s => s.Id == Convert.ToInt32(id));
+
+            if (room == null)
+                throw new ArgumentException("Could not find room from given ID");
+
+            foreach (var roomsong in room.RoomSongs)
+            {
+                roomsong.Song = await _playlistsContext.Songs.FindAsync(roomsong.SongId);
+            }
+
+            return room;
         }
 
         public Task<IEnumerable<Room>> GetItemsAsync(bool forceRefresh = false)
