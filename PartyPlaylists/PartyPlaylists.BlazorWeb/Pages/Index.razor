@@ -11,6 +11,7 @@
 @inject UserAccountsService UserAccountsService
 @inject TokenService TokenService
 @inject SessionStorage SessionStorage
+@inject SpotifyService SpotifyService
 
 <h1>PartyPlaylists</h1>
 
@@ -66,8 +67,8 @@
     private async Task SaveSpotifyTokenToRoom()
     {
         NavigationManager.NavigateTo($"/room/{_parsedStateCode}", forceLoad: true);
-        BearerAccessRefreshToken token = await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode);
-        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, token.AccessToken);
+        SpotifyService.AuthToken = (await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode)).AccessToken;
+        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, SpotifyService.AuthToken);
     }
 
     public EventHandler<LocationChangedEventArgs> LocationChanged()
