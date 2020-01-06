@@ -150,13 +150,56 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddVoteToSong(string userToken, int roomId, int songId, short vote)
         {
-            var patchMethod = new HttpMethod("PATCH");
 
-            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/{songId}/{vote}?userToken={userToken}");
+            if (string.IsNullOrEmpty(userToken))
+                throw new ArgumentException();
+            if (vote != -1 && vote != 1)
+                throw new ArgumentException("Invalid vote", nameof(vote));
 
-            var response = await client.SendAsync(request);
-            var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());
-            return respondedRoom;
+            try
+            {
+                var token = await _playlistsContext.Tokens.SingleOrDefaultAsync(s => s.JWTToken == userToken);
+                var room = await _playlistsContext.Rooms
+                    .Include(e => e.RoomSongs)
+                    .ThenInclude(e => e.Song)
+                    .Include(e => e.RoomSongs)
+                    .ThenInclude(e => e.RoomSongTokens)
+                    .Include(e => e.SpotifyPlaylist)
+                    .SingleOrDefaultAsync(s => s.Id == roomId);
+
+                if (room == null)
+                    throw new Exception("Could not find room");
+
+                var roomSong = room.RoomSongs.SingleOrDefault(s => s.SongId == songId);
+
+                if (roomSong.RoomSongTokens != null && roomSong.RoomSongTokens.Any(s => s.Token == token))
+                    throw new Exception("Couldn't find token in RoomSongTokens");
+
+                roomSong.SongRating += vote;
+
+                var roomSongToken = new RoomSongToken()
+                {
+                    Token = token,
+                    TokenId = token.Id,
+                };
+                roomSong.RoomSongTokens.Add(roomSongToken);
+
+                await _playlistsContext.SaveChangesAsync();
+
+                if (room.IsSpotifyEnabled)
+                {
+                    var service = new SpotifyService(room.SpotifyPlaylist.AuthCode);
+                    await service.ReorderPlaylist(room.SpotifyPlaylist, room, roomSong);
+                }
+
+
+                return roomSong.Room;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
         }
     }
 }
