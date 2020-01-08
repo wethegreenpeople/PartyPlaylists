@@ -16,7 +16,7 @@ using System.Net.Http;
 using SpotifyApi.NetCore;
 using PartyPlaylists.BlazorWeb.Shared;
 using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
 
 namespace PartyPlaylists.BlazorWeb
 {

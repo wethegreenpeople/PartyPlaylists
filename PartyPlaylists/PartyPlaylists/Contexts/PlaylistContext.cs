@@ -5,7 +5,7 @@ using PartyPlaylists.Models;
 using PartyPlaylists.Models.DataModels;
 using System.IO;
 
-namespace PartyPlaylists.MobileAppService.Contexts
+namespace PartyPlaylists.Contexts
 {
     public class PlaylistContext : DbContext
     {

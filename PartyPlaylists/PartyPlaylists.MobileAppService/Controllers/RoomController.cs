@@ -7,7 +7,7 @@ using SystemWeb = System.Web.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.Models;
 using PartyPlaylists.Services;
