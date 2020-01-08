@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.HttpOverrides;
 using PartyPlaylists.MobileAppService.Interfaces;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
 using Microsoft.EntityFrameworkCore;
 
 namespace PartyPlaylists.MobileAppService

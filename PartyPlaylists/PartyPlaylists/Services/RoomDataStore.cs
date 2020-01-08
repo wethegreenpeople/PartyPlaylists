@@ -1,7 +1,7 @@
 ﻿using Jose;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using System;
 using System.Collections.Generic;
@@ -36,19 +36,36 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddItemAsync(Room room, string userToken)
         {
-            if (room == null)
-                return null;
+            if (string.IsNullOrEmpty(userToken))
+                throw new ArgumentException();
 
             var decodedToken = JWT.Decode(userToken);
             var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
 
-            room.Owner = token.Name;
-            var serializedItem = JsonConvert.SerializeObject(room);
-            var response = await client.PostAsync($@"room?userToken={userToken}", new StringContent(serializedItem, Encoding.UTF8, "application/json"));
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var respondedRoom = JsonConvert.DeserializeObject<Room>(responseBody);
+            try
+            {
+                // If we're given a room with songs, we need to make sure
+                // to populate the room table with the correct song data
+                if (room?.RoomSongs?.Any(s => s.Song != null) ?? false)
+                {
+                    foreach (var roomSong in room.RoomSongs)
+                    {
+                        var song = await _playlistsContext.Songs.FirstOrDefaultAsync(s => $"{s.Name} {s.Artist}" == $"{roomSong.Song.Name} {roomSong.Song.Artist}");
+                        if (song != null)
+                            roomSong.SongId = song.Id;
+                    }
+                }
 
-            return respondedRoom;
+                room.Owner = token.Name;
+                _playlistsContext.Rooms.Add(room);
+                await _playlistsContext.SaveChangesAsync();
+
+                return room;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public Task<bool> DeleteItemAsync(string id)
