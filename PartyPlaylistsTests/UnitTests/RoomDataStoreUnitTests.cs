@@ -40,11 +40,14 @@ namespace PartyPlaylistsTests.UnitTests
                 .Options;
 
             _playlistContext = new PlaylistContext(playlistOptions);
-            _playlistContext.Add(new Token() { JWTToken = _token, });
-            _playlistContext.Add(new Room() { Id = 1, Name = "Room one", RoomSongs = new List<RoomSong>(roomSong)});
-            _playlistContext.Add(new Room() { Id = 2, Name = "Room Two", });
-            _playlistContext.Add(new Room() { Id = 3, Name = "Room Three", });
-            _playlistContext.SaveChanges();
+            if (_playlistContext.Database.EnsureCreated())
+            {
+                _playlistContext.Add(new Token() { JWTToken = _token, });
+                _playlistContext.Add(new Room() { Id = 1, Name = "Room one", RoomSongs = new List<RoomSong>(roomSong) });
+                _playlistContext.Add(new Room() { Id = 2, Name = "Room Two", });
+                _playlistContext.Add(new Room() { Id = 3, Name = "Room Three", });
+                _playlistContext.SaveChanges();
+            }
         }
 
         [TestMethod]
@@ -59,7 +62,7 @@ namespace PartyPlaylistsTests.UnitTests
 
 
         [TestMethod]
-        public async Task GetItemAsync_GivenRoomId_ReturnException()
+        public async Task GetItemAsync_GivenInvalidRoomId_ReturnException()
         {
             var roomDataStore = new RoomDataStore(_playlistContext);
 
