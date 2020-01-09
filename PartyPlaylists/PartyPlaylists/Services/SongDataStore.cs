@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace PartyPlaylists.Services
     {
         private readonly HttpClient client;
         private readonly IEnumerable<Song> _songs;
+        private readonly PlaylistContext _playlistContext;
 
         public SongDataStore()
         {
@@ -33,9 +36,13 @@ namespace PartyPlaylists.Services
             throw new NotImplementedException();
         }
 
-        public Task<Song> GetItemAsync(string id)
+        public async Task<Song> GetItemAsync(string id)
         {
-            throw new NotImplementedException();
+            var song = await _playlistContext.Songs.SingleOrDefaultAsync(s => s.Id == Convert.ToInt32(id));
+
+            if (song == null)
+                throw new Exception("Could not find song");
+            return song;
         }
 
         public Task<IEnumerable<Song>> GetItemsAsync(bool forceRefresh = false)
