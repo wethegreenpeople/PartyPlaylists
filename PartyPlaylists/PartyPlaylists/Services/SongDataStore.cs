@@ -12,18 +12,11 @@ namespace PartyPlaylists.Services
 {
     public class SongDataStore : IDataStore<Song>
     {
-        private readonly HttpClient client;
-        private readonly IEnumerable<Song> _songs;
         private readonly PlaylistContext _playlistContext;
 
-        public SongDataStore()
+        public SongDataStore(PlaylistContext playlistContext)
         {
-            client = new HttpClient()
-            {
-                BaseAddress = new Uri(@"http://40.117.143.83/partyplaylists/api/")
-            };
-
-            _songs = new List<Song>();
+            _playlistContext = playlistContext;
         }
 
         public Task<Song> AddItemAsync(Song song)
