@@ -16,23 +16,8 @@ namespace PartyPlaylistsTests.UnitTests
     {
         private PlaylistContext _playlistContext;
         private const string _token = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJpZCI6IjA1ZWVmMmM3LWJmNDctNDM3Zi05NjM0LWNiNjk2NjM3YWU2NCIsIm5hbWUiOiJTdG9ybSBIZWF0aGVyIn0.";
-        private static Song[] _songs = { new Song() { Artist = "Artist One", Id = 1, Name = "Song One" }, new Song() { Artist = "Artist Two", Id = 2, Name = "Song Two"} };
-        private RoomSong[] _roomSong = {
-            new RoomSong()
-            {
-                Id = 1,
-                RoomId = 1,
-                SongId = 1,
-                Song = _songs[0],
-            },  
-            new RoomSong()
-            {
-                Id = 2,
-                RoomId = 1,
-                SongId = 2,
-                Song = _songs[1]
-            }
-        };
+        private readonly Song[] _songs = { new Song() { Artist = "Artist One", Name = "Song One" }, new Song() { Artist = "Artist Two", Name = "Song Two"} };
+        
 
         [TestInitialize]
         public void TestInit()
@@ -41,7 +26,24 @@ namespace PartyPlaylistsTests.UnitTests
                 .UseInMemoryDatabase("Rooms")
                 .Options;
 
-            _playlistContext = new PlaylistContext(playlistOptions);
+            RoomSong[] _roomSong = {
+                new RoomSong()
+                {
+                    Id = 1,
+                    RoomId = 1,
+                    SongId = 1,
+                    Song = _songs[0],
+                },
+                new RoomSong()
+                {
+                    Id = 2,
+                    RoomId = 1,
+                    SongId = 2,
+                    Song = _songs[1]
+                }
+        };
+
+        _playlistContext = new PlaylistContext(playlistOptions);
             if (_playlistContext.Database.EnsureCreated())
             {
                 _playlistContext.Tokens.Add(new Token() { JWTToken = _token, });
@@ -102,7 +104,7 @@ namespace PartyPlaylistsTests.UnitTests
         }
 
         [TestMethod]
-        public async Task AddItemAsync_GivenRoom_ReturnCreatedRoom()
+        public async Task AddItemAsync_GivenRoomObject_ReturnCreatedRoom()
         {
             var roomdatastore = new RoomDataStore(_playlistContext);
 
