@@ -41,9 +41,10 @@ namespace PartyPlaylistsTests.UnitTests
                     SongId = 2,
                     Song = _songs[1]
                 }
-        };
+            };
 
-        _playlistContext = new PlaylistContext(playlistOptions);
+            _playlistContext = new PlaylistContext(playlistOptions);
+            _playlistContext.Database.EnsureDeleted();
             if (_playlistContext.Database.EnsureCreated())
             {
                 _playlistContext.Tokens.Add(new Token() { JWTToken = _token, });
@@ -113,6 +114,19 @@ namespace PartyPlaylistsTests.UnitTests
 
             Assert.IsNotNull(returnedRoom);
             Assert.AreEqual("Test Room", returnedRoom.Name);
+        }
+
+        [TestMethod]
+        public async Task AddSpotifyAuthCodeToRoomAsync_GivenRoomIdAndAuthString_ReturnRoomWithAuthCode()
+        {
+            var roomdatastore = new RoomDataStore(_playlistContext);
+            var spotifyAuthstring = "aux6wxzz0917hy";
+
+            await roomdatastore.AddSpotifyAuthCodeToRoomAsync("1", spotifyAuthstring);
+
+            var room = await roomdatastore.GetItemAsync("1");
+            Assert.AreEqual(spotifyAuthstring, room.SpotifyPlaylist.AuthCode);
+            Assert.IsTrue(room.IsSpotifyEnabled);
         }
     }
 }
