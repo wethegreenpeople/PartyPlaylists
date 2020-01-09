@@ -17,6 +17,7 @@ using SpotifyApi.NetCore;
 using PartyPlaylists.BlazorWeb.Shared;
 using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
 using PartyPlaylists.Contexts;
+using Microsoft.EntityFrameworkCore;
 
 namespace PartyPlaylists.BlazorWeb
 {
@@ -37,10 +38,10 @@ namespace PartyPlaylists.BlazorWeb
             services.AddServerSideBlazor().AddCircuitOptions(opt => { opt.DetailedErrors = true; });
             services.AddHttpContextAccessor();
             services.AddSingleton<WeatherForecastService>();
-            services.AddSingleton<RoomDataStore>((s) => new RoomDataStore(new PlaylistContextFactory().CreateDbContext(null)));
+            services.AddDbContext<PlaylistContext>(opt => opt.UseMySql(PlaylistContext.CreateConnectionString(true)));
             services.AddSingleton<SpotifyService>();
             services.AddSingleton<RefreshService>();
-            services.AddSingleton<TokenService>();
+            services.AddSingleton(s => new TokenService(new PlaylistContextFactory().CreateDbContext(null)));
             services.AddStorage();
             services.AddSingleton(new UserAccountsService(new HttpClient(), Configuration));
 

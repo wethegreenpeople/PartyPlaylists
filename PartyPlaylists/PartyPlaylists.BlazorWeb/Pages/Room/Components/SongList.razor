@@ -1,10 +1,11 @@
 ﻿@using PartyPlaylists.Models.DataModels;
 @using PartyPlaylists.Services;
 @using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
+@using PartyPlaylists.Contexts;
 
-@inject RoomDataStore RoomDataStore
-@inject RefreshService RefreshService
-@inject SessionStorage SessionStorage
+@inject PlaylistContext PlaylistContext;
+@inject RefreshService RefreshService;
+@inject SessionStorage SessionStorage;
 
 <table class="table">
     @if (Room != null && Room.RoomSongs.ToList().Count > 0)
@@ -34,8 +35,9 @@
 
     public async Task AddVote(RoomSong roomSong)
     {
+        var roomDataStore = new RoomDataStore(PlaylistContext);
         var userToken = await SessionStorage.GetItemAsync($"room{Room.Id}");
-        var room = await RoomDataStore.AddVoteToSong(userToken, Room.Id, roomSong.SongId, 1);
+        var room = await roomDataStore.AddVoteToSong(userToken, Room.Id, roomSong.SongId, 1);
         if (room != null)
             roomSong.SongRating += 1;
         StateHasChanged();

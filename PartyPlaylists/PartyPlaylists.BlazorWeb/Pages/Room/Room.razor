@@ -3,10 +3,12 @@
 @using DataModel = PartyPlaylists.Models.DataModels
 @using PartyPlaylists.BlazorWeb.Pages.Room.Components
 @using Microsoft.AspNetCore.Authorization;
+@using PartyPlaylists.Contexts;
+
 @attribute [Authorize]
 
-@inject RoomDataStore RoomDataStore
 @inject RefreshService RefreshService
+@inject PlaylistContext PlaylistContext;
 
 <div class="container-fluid">
     <div class="row">
@@ -44,7 +46,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        room = await RoomDataStore.GetItemAsync(roomId);
+        var roomDataStore = new RoomDataStore(PlaylistContext);
+        room = await roomDataStore.GetItemAsync(roomId);
         RefreshService.RefreshRequested += Refresh;
     }
 

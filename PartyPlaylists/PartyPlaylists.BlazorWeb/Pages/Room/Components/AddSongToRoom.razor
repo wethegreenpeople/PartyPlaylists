@@ -4,10 +4,11 @@
 @using PartyPlaylists.Models
 @using Cloudcrate.AspNetCore.Blazor.Browser.Storage
 @using Blazored.Typeahead
+@using PartyPlaylists.Contexts;
 
-@inject RoomDataStore RoomDataStore
-@inject SpotifyService Spotify
-@inject SessionStorage SessionStorage
+@inject SpotifyService Spotify;
+@inject SessionStorage SessionStorage;
+@inject PlaylistContext  PlaylistContext;
 
 <EditForm Model="@song" OnValidSubmit="@AddSong">
     <BlazoredTypeahead 
@@ -39,14 +40,20 @@
     private Song song = new Song();
     private string roomOwnersSpotifyId = null;
     private IPlaylist spotifyPlaylist;
+    private RoomDataStore roomDataStore;
+
+    protected override void OnInitialized()
+    {
+        roomDataStore = new RoomDataStore(PlaylistContext);
+    }
 
     private async Task AddSong()
     {
         if (song != null)
         {
             var token = await SessionStorage.GetItemAsync($"room{Room.Id}");
-            await RoomDataStore.AddSongToRoomAsync(token, Room.Id.ToString(), song);
-            Room = await RoomDataStore.GetItemAsync(Room.Id.ToString());
+            await roomDataStore.AddSongToRoomAsync(token, Room.Id.ToString(), song);
+            Room = await roomDataStore.GetItemAsync(Room.Id.ToString());
             await RoomChanged.InvokeAsync(Room);
             song = new Song();
         }
