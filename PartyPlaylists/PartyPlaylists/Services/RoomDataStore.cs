@@ -152,17 +152,31 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddSpotifyAuthCodeToRoomAsync(string roomId, string spotifyAuthCode)
         {
-            if (roomId == null || spotifyAuthCode == null)
-                return null;
+            try
+            {
+                var room = await _playlistsContext.Rooms
+                    .SingleOrDefaultAsync(s => s.Id == Convert.ToInt32(roomId));
 
-            var patchMethod = new HttpMethod("PATCH");
+                if (room == null)
+                    throw new Exception("Room not found");
 
-            var request = new HttpRequestMessage(patchMethod, $@"{client.BaseAddress}room/{roomId}/spotify?spotifyAuth={spotifyAuthCode}");
+                if (room.SpotifyPlaylist == null)
+                {
+                    var service = new SpotifyService(spotifyAuthCode);
+                    var ownerId = await service.GetUserIdAsync();
+                    var playlist = await service.CreatePlaylist(room.Name, ownerId);
 
-            var response = await client.SendAsync(request);
-            var respondedRoom = JsonConvert.DeserializeObject<Room>(await response.Content.ReadAsStringAsync());
+                    room.SpotifyPlaylist = (SpotifyPlaylist)playlist;
+                    room.IsSpotifyEnabled = true;
+                    await _playlistsContext.SaveChangesAsync();
+                }
 
-            return respondedRoom;
+                return room;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<Room> AddVoteToSong(string userToken, int roomId, int songId, short vote)
