@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Jose;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
 using System.Net;
 using Microsoft.EntityFrameworkCore;
 using PartyPlaylists.Models.DataModels;
