@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 
 namespace PartyPlaylists.MobileAppService.Controllers

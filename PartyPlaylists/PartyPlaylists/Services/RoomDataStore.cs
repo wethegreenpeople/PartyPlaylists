@@ -21,11 +21,6 @@ namespace PartyPlaylists.Services
         public RoomDataStore(PlaylistContext playlistsContext)
         {
             _playlistsContext = playlistsContext;
-            client = new HttpClient()
-            {
-                BaseAddress = new Uri(@"http://40.117.143.83/partyplaylists/api/")
-            };
-
             _rooms = new List<Room>();
         }
 
