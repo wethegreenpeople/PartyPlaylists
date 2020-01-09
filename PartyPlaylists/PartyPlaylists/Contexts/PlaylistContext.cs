@@ -57,6 +57,16 @@ namespace PartyPlaylists.Contexts
 
             base.OnModelCreating(modelBuilder);
         }
+
+        public static string CreateConnectionString(bool isDevelopment)
+        {
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json")
+                    .Build();
+
+            return configuration.GetConnectionString("PartyPlaylistConnectionString");
+        }
     }
 
     public class PlaylistContextFactory : IDesignTimeDbContextFactory<PlaylistContext>

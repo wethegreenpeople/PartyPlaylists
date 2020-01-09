@@ -101,8 +101,8 @@ namespace PartyPlaylists.Services
             {
                 var roomIdAsInt = Convert.ToInt32(roomId);
                 var room = await GetItemAsync(roomId);
-                var playlist = _playlistsContext.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == roomIdAsInt);
-                var matchingSong = _playlistsContext.Songs.FirstOrDefaultAsync(s => $"{s.Artist}{s.Name}" == $"{song.Artist}{song.Name}");
+                var playlist = await _playlistsContext.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == roomIdAsInt);
+                var matchingSong = await _playlistsContext.Songs.FirstOrDefaultAsync(s => s.SpotifyId == song.SpotifyId);
                 var decodedToken = JWT.Decode(userToken);
                 var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
 
@@ -112,14 +112,14 @@ namespace PartyPlaylists.Services
                 var roomSong = new RoomSong()
                 {
                     RoomId = roomIdAsInt,
-                    SongId = (await matchingSong)?.Id ?? 0,
+                    SongId = ( matchingSong)?.Id ?? 0,
                     Song = song,
                     SongAddedBy = token.Name,
                 };
 
-                if (await playlist != null)
+                if (playlist != null)
                 {
-                    var playlistTable = await playlist;
+                    var playlistTable = playlist;
                     var service = new SpotifyService(playlistTable.AuthCode);
 
                     if (string.IsNullOrEmpty(song.SpotifyId))

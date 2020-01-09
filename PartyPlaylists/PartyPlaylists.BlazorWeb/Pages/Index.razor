@@ -5,13 +5,14 @@
 @using SpotifyApi.NetCore;
 @using System.Web;
 @using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
+@using PartyPlaylists.Contexts;
 
-@inject NavigationManager NavigationManager
-@inject RoomDataStore RoomDataStore
-@inject UserAccountsService UserAccountsService
-@inject TokenService TokenService
-@inject SessionStorage SessionStorage
-@inject SpotifyService SpotifyService
+@inject NavigationManager NavigationManager;
+@inject PlaylistContext PlaylistContext;
+@inject UserAccountsService UserAccountsService;
+@inject TokenService TokenService;
+@inject SessionStorage SessionStorage;
+@inject SpotifyService SpotifyService;
 
 <h1>PartyPlaylists</h1>
 
@@ -39,10 +40,12 @@
     private string _parsedStateCode;
     private string _roomId;
     private DataModel.Room room = new DataModel.Room();
+    private RoomDataStore _roomDataStore;
 
     protected override void OnInitialized()
     {
         NavigationManager.LocationChanged += LocationChanged();
+        _roomDataStore = new RoomDataStore(PlaylistContext);
     }
 
     private async Task JoinRoom()
@@ -58,7 +61,7 @@
     private async Task CreateRoom()
     {
         var token = await TokenService.GetToken();
-        room = await RoomDataStore.AddItemAsync(room, token);
+        room = await _roomDataStore.AddItemAsync(room, token);
         _roomId = room?.Id.ToString();
         await SessionStorage.SetItemAsync($"room{_roomId}", token);
         await JoinRoom();
@@ -68,7 +71,7 @@
     {
         NavigationManager.NavigateTo($"/room/{_parsedStateCode}", forceLoad: true);
         SpotifyService.AuthToken = (await UserAccountsService.RequestAccessRefreshToken(_parsedAuthCode)).AccessToken;
-        await RoomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, SpotifyService.AuthToken);
+        await _roomDataStore.AddSpotifyAuthCodeToRoomAsync(_parsedStateCode, SpotifyService.AuthToken);
     }
 
     public EventHandler<LocationChangedEventArgs> LocationChanged()
