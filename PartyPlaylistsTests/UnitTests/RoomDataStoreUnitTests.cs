@@ -128,5 +128,17 @@ namespace PartyPlaylistsTests.UnitTests
             Assert.AreEqual(spotifyAuthstring, room.SpotifyPlaylist.AuthCode);
             Assert.IsTrue(room.IsSpotifyEnabled);
         }
+
+        [TestMethod]
+        public async Task DeleteItemAsync_GivenRoomID_ReturnBool()
+        {
+            var roomdatastore = new RoomDataStore(_playlistContext);
+
+            Assert.IsNotNull(roomdatastore.GetItemAsync("1"));
+
+            Assert.IsTrue(await roomdatastore.DeleteItemAsync("1"));
+
+            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await roomdatastore.GetItemAsync("1"));
+        }
     }
 }

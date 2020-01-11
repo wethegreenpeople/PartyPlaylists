@@ -63,16 +63,29 @@ namespace PartyPlaylists.Services
             }
         }
 
-        public Task<bool> DeleteItemAsync(string id)
+        public async Task<bool> DeleteItemAsync(string id)
         {
-            throw new NotImplementedException();
+            var room = await GetItemAsync(id);
+
+            if (room != null)
+            {
+                _playlistsContext.Remove(room);
+                _playlistsContext.SaveChanges();
+                return true;
+            }
+            else
+            {
+                return false;
+            }     
         }
 
         public async Task<Room> GetItemAsync(string id)
         {
+
             var room = await _playlistsContext.Rooms
                 .Include(e => e.RoomSongs)
                 .SingleOrDefaultAsync(s => s.Id == Convert.ToInt32(id));
+
 
             if (room == null)
                 throw new ArgumentException("Could not find room from given ID");
