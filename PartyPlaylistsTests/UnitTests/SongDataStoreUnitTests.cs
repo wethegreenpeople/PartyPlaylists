@@ -5,6 +5,7 @@ using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.Services;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,14 +15,14 @@ namespace PartyPlaylistsTests.UnitTests
     public class SongDataStoreUnitTests
     {
         private PlaylistContext _playlistContext;
-
+        private SongDataStore songDataStore;
         [TestInitialize]
         public void TestInit()
         {
             var playlistOptions = new DbContextOptionsBuilder<PlaylistContext>()
                 .UseInMemoryDatabase("Songs")
                 .Options;
-
+           
             _playlistContext = new PlaylistContext(playlistOptions);
             _playlistContext.Database.EnsureDeleted();
             if (_playlistContext.Database.EnsureCreated())
@@ -29,13 +30,13 @@ namespace PartyPlaylistsTests.UnitTests
                 _playlistContext.Songs.Add(new Song() { Name = "New song", });
                 _playlistContext.SaveChanges();
             }
+
+            songDataStore = new SongDataStore(_playlistContext);
         }
 
         [TestMethod]
         public async Task GetItemAsync_GivenSongId_ReturnSong()
         {
-            var songDataStore = new SongDataStore(_playlistContext);
-
             var song = await songDataStore.GetItemAsync("1");
 
             Assert.IsNotNull(song);
