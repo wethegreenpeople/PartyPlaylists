@@ -56,7 +56,6 @@ namespace PartyPlaylistsTests.UnitTests
         public async Task DeleteItemAsync_GivenRoomSongId_ReturnBool()
         {
             int checkedValue = 1;
-            var a = _playlistContext;
             Assert.IsNotNull(await _roomSongDataStore.GetItemAsync(checkedValue.ToString()));
             Assert.IsTrue(await _roomSongDataStore.DeleteItemAsync(checkedValue.ToString()));
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => await   _roomSongDataStore.GetItemAsync(checkedValue.ToString()));
