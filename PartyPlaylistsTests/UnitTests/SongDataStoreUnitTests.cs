@@ -15,7 +15,7 @@ namespace PartyPlaylistsTests.UnitTests
     public class SongDataStoreUnitTests
     {
         private PlaylistContext _playlistContext;
-        private SongDataStore songDataStore;
+        private SongDataStore _songDataStore;
         [TestInitialize]
         public void TestInit()
         {
@@ -31,13 +31,13 @@ namespace PartyPlaylistsTests.UnitTests
                 _playlistContext.SaveChanges();
             }
 
-            songDataStore = new SongDataStore(_playlistContext);
+            _songDataStore = new SongDataStore(_playlistContext);
         }
 
         [TestMethod]
         public async Task GetItemAsync_GivenSongId_ReturnSong()
         {
-            var song = await songDataStore.GetItemAsync("1");
+            var song = await _songDataStore.GetItemAsync("1");
 
             Assert.IsNotNull(song);
         }

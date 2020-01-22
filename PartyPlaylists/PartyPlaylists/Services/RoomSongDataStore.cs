@@ -14,11 +14,11 @@ namespace PartyPlaylists.Services
     public class RoomSongDataStore : IDataStore<RoomSong>
     {
         private readonly HttpClient client;
-        private readonly PlaylistContext playlistContext;
+        private readonly PlaylistContext _playlistContext;
 
         public RoomSongDataStore(PlaylistContext playlistContext)
         {
-            this.playlistContext = playlistContext;
+            _playlistContext = playlistContext;
         }
 
         public Task<RoomSong> AddItemAsync(RoomSong item)
@@ -30,14 +30,14 @@ namespace PartyPlaylists.Services
         {
             var roomSong =  GetItemAsync(id);
             
-            playlistContext.RoomSongs.Remove(await roomSong);
-            await playlistContext.SaveChangesAsync();
+            _playlistContext.RoomSongs.Remove(await roomSong);
+            await _playlistContext.SaveChangesAsync();
             return true;
         }
 
         public async Task<RoomSong> GetItemAsync(string id)
         {
-            var roomSong = await playlistContext.RoomSongs.FindAsync(Convert.ToInt32(id));
+            var roomSong = await _playlistContext.RoomSongs.FindAsync(Convert.ToInt32(id));
             if (roomSong == null)
                 throw new ArgumentException($"Could not find RoomSong given ID:{id}");
             return roomSong;

@@ -15,12 +15,16 @@ namespace PartyPlaylists.Models.DataModels
         public int Id { get; set; }
         [Required]
         public int RoomId { get; set; }
+        [Required]
         public Room Room { get; set; }
+        [Required]
         public int SongId { get; set; }
+        [Required]
         public Song Song { get; set; }
         public int SongRating { get; set; }
-
+        
         public List<RoomSongToken> RoomSongTokens { get; set; }
+        
         public string SongAddedBy { get; set; }
     }
 }
