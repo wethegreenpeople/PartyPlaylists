@@ -24,11 +24,6 @@ namespace PartyPlaylists.Services
             _rooms = new List<Room>();
         }
 
-        public async Task<Room> AddItemAsync(Room room)
-        {
-            return null;
-        }
-
         public async Task<Room> AddItemAsync(Room room, string userToken)
         {
             if (string.IsNullOrEmpty(userToken))
@@ -67,16 +62,12 @@ namespace PartyPlaylists.Services
         {
             var room = await GetItemAsync(id);
 
-            if (room != null)
-            {
-                _playlistsContext.Remove(room);
-                _playlistsContext.SaveChanges();
-                return true;
-            }
-            else
-            {
+            if (room == null)
                 return false;
-            }     
+            
+            _playlistsContext.Remove(room);
+            await _playlistsContext.SaveChangesAsync();
+            return true;
         }
 
         public async Task<Room> GetItemAsync(string id)
@@ -88,7 +79,7 @@ namespace PartyPlaylists.Services
 
 
             if (room == null)
-                throw new ArgumentException("Could not find room from given ID");
+                throw new ArgumentException($"Could not find Room from given ID:{id}");
 
             foreach (var roomsong in room.RoomSongs)
             {
@@ -125,7 +116,7 @@ namespace PartyPlaylists.Services
                 var roomSong = new RoomSong()
                 {
                     RoomId = roomIdAsInt,
-                    SongId = ( matchingSong)?.Id ?? 0,
+                    SongId = (matchingSong)?.Id ?? 0,
                     Song = song,
                     SongAddedBy = token.Name,
                 };
@@ -239,6 +230,10 @@ namespace PartyPlaylists.Services
                 throw ex;
             }
 
+        }
+        public Task<Room> AddItemAsync(Room item)
+        {
+            throw new NotImplementedException();
         }
     }
 }
