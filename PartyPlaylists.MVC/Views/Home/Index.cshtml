@@ -1,8 +1,38 @@
-﻿@{
+﻿@model IndexVM
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Test Page</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="row justify-content-center">
+    <div class="col-3">
+        <div class="card">
+            <a class="nostyle" data-toggle="collapse" href="#joinRoomCardBody">
+                <div class="card-header">
+                    Join a room
+                </div>
+            </a>
+            <div class="card-body collapse" id="joinRoomCardBody">
+                <form method="get">
+                    <label>Enter a room ID: </label>
+                    <input asp-for="@Model.RoomToJoin" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-3">
+        <div class="card">
+            <a class="nostyle" data-toggle="collapse" href="#createRoomCardBody">
+                <div class="card-header">
+                    Create a room
+                </div>
+            </a>
+            <div class="card-body collapse" id="createRoomCardBody">
+                <form method="get">
+                    <label>Enter a room name: </label>
+                    <input asp-for="@Model.NewRoomName" />
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
