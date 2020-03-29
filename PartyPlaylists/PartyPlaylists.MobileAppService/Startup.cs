@@ -34,10 +34,11 @@ namespace PartyPlaylists.MobileAppService
             services
                 .AddMvc();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
-            });
+            // TODO: Fix swagger
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            //});
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {

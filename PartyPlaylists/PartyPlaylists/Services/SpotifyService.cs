@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using PartyPlaylists.Models;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
+using SpotifyApi.NetCore.Authorization;
 
 namespace PartyPlaylists.Services
 {
@@ -96,7 +97,7 @@ namespace PartyPlaylists.Services
                 var accounts = new AccountsService(http, config);
 
                 var search = new SearchApi(http, accounts);
-                var searchResult = await search.Search(searchQuery, "track", "", (1, 0));
+                var searchResult = await search.Search(searchQuery, "track", "");
 
                 var song = new Song()
                 {
@@ -126,7 +127,7 @@ namespace PartyPlaylists.Services
                 var accounts = new AccountsService(http, config);
 
                 var search = new SearchApi(http, accounts);
-                var searchResults = await search.Search(searchQuery, "track", "", (3, 0));
+                var searchResults = await search.Search(searchQuery, "track", "");
 
                 var songList = new List<Song>();
                 foreach (var result in searchResults.Tracks.Items)

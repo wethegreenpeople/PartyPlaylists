@@ -13,7 +13,7 @@ using Microsoft.Extensions.Hosting;
 using PartyPlaylists.BlazorWeb.Data;
 using PartyPlaylists.Services;
 using System.Net.Http;
-using SpotifyApi.NetCore;
+using SpotifyApi.NetCore.Authorization;
 using PartyPlaylists.BlazorWeb.Shared;
 using Cloudcrate.AspNetCore.Blazor.Browser.Storage;
 using PartyPlaylists.Contexts;
