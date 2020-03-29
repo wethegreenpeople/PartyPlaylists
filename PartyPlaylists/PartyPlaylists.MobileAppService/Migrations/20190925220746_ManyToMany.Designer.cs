@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using PartyPlaylists.MobileAppService.Contexts;
+using PartyPlaylists.Contexts;
+
 
 namespace PartyPlaylists.MobileAppService.Migrations
 {

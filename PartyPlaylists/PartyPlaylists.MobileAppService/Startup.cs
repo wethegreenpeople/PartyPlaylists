@@ -32,8 +32,7 @@ namespace PartyPlaylists.MobileAppService
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMvc()
-                .AddJsonOptions(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+                .AddMvc();
 
             services.AddSwaggerGen(c =>
             {
@@ -55,8 +54,6 @@ namespace PartyPlaylists.MobileAppService
             app.UseForwardedHeaders();
 
             app.UsePathBase("/partyplaylists/api");
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
