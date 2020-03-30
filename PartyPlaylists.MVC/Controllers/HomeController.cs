@@ -29,7 +29,7 @@ namespace PartyPlaylists.MVC.Controllers
             if (string.IsNullOrWhiteSpace(viewModel.RoomToJoin))
                 return StatusCode(500);
 
-            return View("Index");
+            return RedirectToAction("Index", "Room");
         }
 
         public IActionResult Privacy()
