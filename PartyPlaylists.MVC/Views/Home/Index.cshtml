@@ -12,9 +12,11 @@
                 </div>
             </a>
             <div class="card-body collapse" id="joinRoomCardBody">
-                <form method="get">
+                <form method="get" asp-controller="Home" asp-action="JoinRoom">
                     <label>Enter a room ID: </label>
                     <input asp-for="@Model.RoomToJoin" />
+
+                    <button class="btn btn-sm btn-primary">Join Room</button>
                 </form>
             </div>
         </div>

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PartyPlaylists.MVC.Models;
+using PartyPlaylists.MVC.Models.ViewModels;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -21,6 +22,14 @@ namespace PartyPlaylists.MVC.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+
+        public async Task<IActionResult> JoinRoom(IndexVM viewModel)
+        {
+            if (string.IsNullOrWhiteSpace(viewModel.RoomToJoin))
+                return StatusCode(500);
+
+            return View("Index");
         }
 
         public IActionResult Privacy()
