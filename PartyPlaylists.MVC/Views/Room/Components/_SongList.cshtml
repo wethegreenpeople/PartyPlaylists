@@ -1,7 +1,8 @@
 ﻿@model RoomVM
 
+<a asp-action="Index" asp-controller="Home">asdsd</a>
 <table class="table">
-    @if (Model.CurrentRoom != null && Model.CurrentRoom.RoomSongs.ToList().Count > 0)
+    @if (Model?.CurrentRoom != null && Model?.CurrentRoom?.RoomSongs?.ToList().Count > 0)
     {
     <tr>
         <th scope="col">Artist</th>
