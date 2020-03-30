@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PartyPlaylists.Contexts;
+using PartyPlaylists.Models.DataModels;
+using PartyPlaylists.Services;
 
 namespace PartyPlaylists.MVC
 {
@@ -24,6 +28,12 @@ namespace PartyPlaylists.MVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            var connectionString = Configuration.GetConnectionString("PartyPlaylistConnectionString");
+            services.AddScoped<IDataStore<Room>>(provider =>
+            new RoomDataStore(
+                new PlaylistContext(
+                    new DbContextOptionsBuilder<PlaylistContext>().UseMySql(connectionString).Options)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
