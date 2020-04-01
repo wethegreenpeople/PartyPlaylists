@@ -1,9 +1,13 @@
 ﻿using Jose;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,26 +16,34 @@ namespace PartyPlaylists.Services
     public class TokenService
     {
         private readonly PlaylistContext _playlistContext;
+        private readonly IConfiguration _config;
 
-        public TokenService(PlaylistContext playlistContext)
+        public TokenService(PlaylistContext playlistContext, IConfiguration config)
         {
             _playlistContext = playlistContext;
+            _config = config;
         }
 
         public async Task<string> GetToken()
         {
-            var payload = new Dictionary<string, object>()
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"));
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                { "id", Guid.NewGuid() },
-                { "name", GenerateName() },
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, GenerateName())
+                }),
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
+            var secureToken = tokenHandler.CreateToken(tokenDescriptor);
+            var token = new Token() { JWTToken = tokenHandler.WriteToken(secureToken) };
 
-            string tokenString = JWT.Encode(payload, null, JwsAlgorithm.none);
-            var token = new Token() { JWTToken = tokenString };
             await _playlistContext.Tokens.AddAsync(token);
             await _playlistContext.SaveChangesAsync();
 
-            return tokenString;
+            return token.JWTToken;
         }
 
         private string GenerateName()

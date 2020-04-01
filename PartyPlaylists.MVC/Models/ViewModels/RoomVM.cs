@@ -9,5 +9,6 @@ namespace PartyPlaylists.MVC.Models.ViewModels
     public class RoomVM
     {
         public Room CurrentRoom { get; set; }
+        public string JwtToken { get; set; }
     }
 }
