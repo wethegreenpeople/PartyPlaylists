@@ -36,11 +36,10 @@ steps:
 - task: DotNetCoreCLI@2
   displayName: Publish
   inputs:
-    command: publish
-    publishWebProjects: True
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/PartyPlaylists.MVC.csproj'
     arguments: '--configuration $(BuildConfiguration) --output "$(build.artifactstagingdirectory)"'
-
-
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact'
