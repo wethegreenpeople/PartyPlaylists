@@ -41,7 +41,7 @@ namespace PartyPlaylists.BlazorWeb
             services.AddDbContext<PlaylistContext>(opt => opt.UseMySql(PlaylistContext.CreateConnectionString(true)));
             services.AddSingleton<SpotifyService>();
             services.AddSingleton<RefreshService>();
-            services.AddSingleton(s => new TokenService(new PlaylistContextFactory().CreateDbContext(null)));
+            services.AddSingleton(s => new TokenService(new PlaylistContextFactory().CreateDbContext(null), Configuration));
             services.AddStorage();
             services.AddSingleton(new UserAccountsService(new HttpClient(), Configuration));
 
