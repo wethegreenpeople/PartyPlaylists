@@ -34,5 +34,14 @@ namespace PartyPlaylists.MVC.Controllers
 
             return View("Index", roomVm);
         }
+
+        [Authorize]
+        public async Task<IActionResult> AddVoteToSong(int roomId, int songId)
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var room = await ((RoomDataStore)_roomDataStore).AddVoteToSong(token, roomId, songId, 1);
+
+            return Ok();
+        }
     }
 }

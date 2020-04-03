@@ -4,6 +4,57 @@
 }
 
 <input type="hidden" id="jwtToken" name="jwtToken" value="@Model.JwtToken">
+<input type="hidden" id="roomId" name="roomId" value="@Model.CurrentRoom.Id">
 
 <h1>Index</h1>
-<partial name="Components/_SongList" />
+<table class="table">
+    @if (Model?.CurrentRoom != null && Model?.CurrentRoom?.RoomSongs?.ToList().Count > 0)
+    {
+        <tr>
+            <th scope="col">Artist</th>
+            <th scope="col">Title</th>
+            <th scope="col">Playlist Rating</th>
+            <th scope="col">Added By</th>
+            <th scope="col">Add Vote</th>
+        </tr>
+        @foreach (var roomSong in Model.CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating))
+        {
+            <tr>
+                <td>@roomSong.Song.Artist</td>
+                <td>@roomSong.Song.Name</td>
+                <td>@roomSong.SongRating</td>
+                <td>@roomSong.SongAddedBy</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" type="button" id="addVoteButton" value="@roomSong.SongId">Add Vote</button>
+                </td>
+            </tr>
+        }
+    }
+</table>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#addVoteButton").click(function() {
+                $.ajax({
+                    url: "/room/addvotetosong",
+                    type: "POST",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                        "songId": $(this).attr("value")
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function () {
+
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+            });
+        });
+    });
+    </script>
+}
