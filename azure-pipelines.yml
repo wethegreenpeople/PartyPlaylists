@@ -38,7 +38,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '**/PartyPlaylists.MVC.csproj'
+    projects: '**/*csproj'
     arguments: '--configuration $(BuildConfiguration) --output "$(build.artifactstagingdirectory)"'
 
 - task: PublishBuildArtifacts@1
