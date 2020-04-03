@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PartyPlaylists.Contexts;
 using PartyPlaylists.Services;
@@ -13,6 +14,7 @@ namespace PartyPlaylistsTests.UnitTests
     public class TokenServiceUnitTests
     {
         private PlaylistContext _playlistContext;
+        private readonly IConfiguration _config = new ConfigurationBuilder().Build();
 
         [TestInitialize]
         public void TestInit()
@@ -27,7 +29,7 @@ namespace PartyPlaylistsTests.UnitTests
         [TestMethod]
         public async Task GetToken_ReturnTokenString()
         {
-            var tokenSerivce = new TokenService(_playlistContext);
+            var tokenSerivce = new TokenService(_playlistContext, _config);
             var token = await tokenSerivce.GetToken();
 
             Assert.IsNotNull(token);
