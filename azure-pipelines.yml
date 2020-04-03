@@ -37,8 +37,7 @@ steps:
   displayName: Publish
   inputs:
     command: 'publish'
-    publishWebProjects: false
-    projects: '**/*csproj'
+    publishWebProjects: true
     arguments: '--configuration $(BuildConfiguration) --output "$(build.artifactstagingdirectory)"'
 
 - task: PublishBuildArtifacts@1
