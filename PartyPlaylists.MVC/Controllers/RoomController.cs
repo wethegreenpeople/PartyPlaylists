@@ -52,7 +52,7 @@ namespace PartyPlaylists.MVC.Controllers
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var room = await (_roomDataStore).AddVoteToSong(token, roomId, songId, 1);
-            var updatedSongInfo = room.RoomSongs.Where(s => s.SongId == songId).Select(s => new { Id = songId, Rating = s.SongRating +  1 }); // Not returning the updated room?
+            var updatedSongInfo = room.RoomSongs.Where(s => s.SongId == songId).Select(s => new { Id = songId, Rating = s.SongRating });
             if (room != null)
                 return Json(
                     JsonConvert.SerializeObject(
