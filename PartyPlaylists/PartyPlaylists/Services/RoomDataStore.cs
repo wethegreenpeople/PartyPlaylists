@@ -222,7 +222,6 @@ namespace PartyPlaylists.Services
                     await service.ReorderPlaylist(room.SpotifyPlaylist, room, roomSong);
                 }
 
-
                 return roomSong.Room;
             }
             catch (Exception ex)

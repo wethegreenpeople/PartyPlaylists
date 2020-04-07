@@ -22,7 +22,7 @@
             <tr>
                 <td>@roomSong.Song.Artist</td>
                 <td>@roomSong.Song.Name</td>
-                <td>@roomSong.SongRating</td>
+                <td id="@($"songRating{roomSong.SongId}")">@roomSong.SongRating</td>
                 <td>@roomSong.SongAddedBy</td>
                 <td>
                     <button class="btn btn-primary btn-sm" type="button" id="addVoteButton" value="@roomSong.SongId">Add Vote</button>
@@ -47,8 +47,9 @@
                     headers: {
                         'Authorization': "Bearer " + $("#jwtToken")[0].value,
                     },
-                    success: function () {
-
+                    success: function (data) {
+                        var room = JSON.parse(data);
+                        $("#songRating" + room[0].Id)[0].innerText = room[0].Rating;
                     },
                     error: function (data) {
                         console.log(data);

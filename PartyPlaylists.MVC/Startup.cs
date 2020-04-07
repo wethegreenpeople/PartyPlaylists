@@ -20,16 +20,9 @@ namespace PartyPlaylists.MVC
 {
     public class Startup
     {
-        private readonly PlaylistContext _playlistContext;
-
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-         
-            var connectionString = Configuration.GetConnectionString("PartyPlaylistConnectionString");
-            _playlistContext =
-                new PlaylistContext(
-                    new DbContextOptionsBuilder<PlaylistContext>().UseMySql(connectionString).Options);
         }
 
         public IConfiguration Configuration { get; }
@@ -39,9 +32,10 @@ namespace PartyPlaylists.MVC
         {
             services.AddControllersWithViews();
 
-            
-            services.AddScoped<IDataStore<Room>>(provider => new RoomDataStore(_playlistContext));
-            services.AddScoped<TokenService>(provider => new TokenService(_playlistContext, Configuration));
+            var connectionString = Configuration.GetConnectionString("PartyPlaylistConnectionString");
+
+            services.AddDbContext<PlaylistContext>(options => options.UseMySql(connectionString));
+            services.AddSingleton<IConfiguration>(provider => Configuration);
 
             // Using JWT tokens as a sort of "soft" authentication
             // The user is never creating an account, but we're generating one for them if they
