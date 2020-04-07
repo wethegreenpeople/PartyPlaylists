@@ -13,6 +13,7 @@ using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.MVC.Models.ViewModels;
 using PartyPlaylists.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -29,10 +30,18 @@ namespace PartyPlaylists.MVC.Controllers
 
         public async Task<IActionResult> Index(string Id)
         {
+            Request.Cookies.TryGetValue("jwtToken", out string jwtToken);
+            if (string.IsNullOrEmpty(jwtToken))
+            {
+                var option = new CookieOptions();
+                option.Expires = DateTime.Now.AddDays(1);
+                jwtToken = await _tokenService.GetToken();
+                Response.Cookies.Append("jwtToken", jwtToken, option);
+            }
             var roomVm = new RoomVM()
             {
                 CurrentRoom = await _roomDataStore.GetItemAsync(Id),
-                JwtToken = await _tokenService.GetToken(),
+                JwtToken = jwtToken,
             };
 
             return View("Index", roomVm);
