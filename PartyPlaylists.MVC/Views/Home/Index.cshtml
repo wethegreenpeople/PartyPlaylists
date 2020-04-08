@@ -15,7 +15,7 @@
                 <form method="get" asp-controller="Home" asp-action="JoinRoom">
                     <label>Enter a room ID: </label>
                     <input asp-for="@Model.RoomToJoin" />
-
+                    <br />
                     <button class="btn btn-sm btn-primary">Join Room</button>
                 </form>
             </div>
@@ -30,9 +30,11 @@
                 </div>
             </a>
             <div class="card-body collapse" id="createRoomCardBody">
-                <form method="get">
+                <form method="post" asp-controller="Home" asp-action="CreateRoom">
                     <label>Enter a room name: </label>
                     <input asp-for="@Model.NewRoomName" />
+                    <br />
+                    <button class="btn btn-sm btn-primary">Create Room</button>
                 </form>
             </div>
         </div>

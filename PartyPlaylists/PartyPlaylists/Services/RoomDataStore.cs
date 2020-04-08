@@ -26,11 +26,10 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddItemAsync(Room room, string userToken)
         {
+            // TODO: Should probably verify the userToken, but it's not necessary at this point
+            // When we reimplement the API we'll definitely have to do it
             if (string.IsNullOrEmpty(userToken))
                 throw new ArgumentException();
-
-            var decodedToken = JWT.Decode(userToken);
-            var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
 
             try
             {
@@ -46,7 +45,6 @@ namespace PartyPlaylists.Services
                     }
                 }
 
-                room.Owner = token.Name;
                 _playlistsContext.Rooms.Add(room);
                 await _playlistsContext.SaveChangesAsync();
 
