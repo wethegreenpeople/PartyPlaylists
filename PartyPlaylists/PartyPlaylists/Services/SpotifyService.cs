@@ -43,7 +43,7 @@ namespace PartyPlaylists.Services
                 string[] spotifyUris = { song.SpotifyId };
                 request.AddJsonBody(new { uris = spotifyUris });
 
-                var response = await client.ExecuteTaskAsync(request);
+                var response = await client.ExecuteAsync(request);
                 var content = response.Content;
             }
             catch
@@ -66,7 +66,7 @@ namespace PartyPlaylists.Services
                 request.RequestFormat = DataFormat.Json;
                 request.AddJsonBody(new { name = playlistName });
 
-                var response = await client.ExecuteTaskAsync(request);
+                var response = await client.ExecuteAsync(request);
                 var content = response.Content;
 
                 dynamic results = JsonConvert.DeserializeObject(content);

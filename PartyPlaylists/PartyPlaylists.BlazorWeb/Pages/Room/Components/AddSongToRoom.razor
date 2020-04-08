@@ -37,10 +37,10 @@
     [Parameter] public Room Room { get; set; }
     [Parameter] public EventCallback<Room> RoomChanged { get; set; }
 
+    private RoomDataStore roomDataStore;
     private Song song = new Song();
     private string roomOwnersSpotifyId = null;
     private IPlaylist spotifyPlaylist;
-    private RoomDataStore roomDataStore;
 
     protected override void OnInitialized()
     {

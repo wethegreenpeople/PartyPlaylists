@@ -33,11 +33,26 @@
     }
 </table>
 
+@if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
+{
+    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify" asp-route-roomId="@Model.CurrentRoom.Id">
+        <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
+    </form>
+}
+else
+{
+    <form method="post" asp-controller="Room" asp-action="AddSongToRoom">
+        <label>Song: </label>
+        <input type="text" id="songToAdd" />
+    </form>
+}
+
+
 @section Scripts
 {
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("#addVoteButton").click(function() {
+        $(document).ready(function () {
+            $("#addVoteButton").click(function () {
                 $.ajax({
                     url: "/room/addvotetosong",
                     type: "POST",
@@ -55,8 +70,8 @@
                     error: function (data) {
                         console.log(data);
                     }
+                });
             });
         });
-    });
     </script>
 }

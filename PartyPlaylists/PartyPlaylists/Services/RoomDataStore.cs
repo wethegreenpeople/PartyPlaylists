@@ -92,9 +92,19 @@ namespace PartyPlaylists.Services
             throw new NotImplementedException();
         }
 
-        public Task<Room> UpdateItemAsync(Room room)
+        public async Task<Room> UpdateItemAsync(Room room)
         {
-            return null;
+            _playlistsContext.Rooms.Update(room);
+            try
+            {
+                await _playlistsContext.SaveChangesAsync();
+                return room;
+            }
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         public async Task<Room> AddSongToRoomAsync(string userToken, string roomId, Song song)

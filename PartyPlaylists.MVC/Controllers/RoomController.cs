@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +15,7 @@ using PartyPlaylists.MVC.Models.ViewModels;
 using PartyPlaylists.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
+using SpotifyApi.NetCore.Authorization;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -21,11 +23,13 @@ namespace PartyPlaylists.MVC.Controllers
     {
         private readonly RoomDataStore _roomDataStore;
         private readonly TokenService _tokenService;
+        private readonly IConfiguration _config;
 
         public RoomController(IConfiguration config, PlaylistContext playlistContext)
         {
             _roomDataStore = new RoomDataStore(playlistContext);
             _tokenService = new TokenService(playlistContext, config);
+            _config = config;
         }
 
         public async Task<IActionResult> Index(string Id)
@@ -48,6 +52,7 @@ namespace PartyPlaylists.MVC.Controllers
         }
 
         [Authorize]
+        [HttpPost]
         public async Task<IActionResult> AddVoteToSong(int roomId, int songId)
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -61,6 +66,37 @@ namespace PartyPlaylists.MVC.Controllers
                         new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
 
             return StatusCode(500);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> AddSongToRoom(int roomId, int songId)
+        {
+            return null;
+        }
+
+        [HttpGet]
+        [Route("/Home/Room/AuthorizeSpotify/{roomId}")]
+        public IActionResult AuthorizeSpotify(int roomId)
+        {
+            var accountService = new UserAccountsService(new HttpClient(), _config);
+
+            string url = accountService
+                .AuthorizeUrl(
+                    roomId.ToString(), 
+                    new[] { "user-read-playback-state streaming user-read-private user-read-email playlist-read-private user-library-read playlist-modify-public playlist-modify-private" });
+
+            return Redirect(url);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SpotifyAuthorized(string code, string state)
+        {
+            var room =  await _roomDataStore.GetItemAsync(state);
+            room.SpotifyAuthCode = code;
+            await _roomDataStore.UpdateItemAsync(room);
+
+            return RedirectToAction("Index", "Room", routeValues: new { Id = state });
         }
     }
 }

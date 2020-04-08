@@ -21,7 +21,9 @@ namespace PartyPlaylists.Models.DataModels
 
         public List<RoomSong> RoomSongs { get; set; }
 
-        public bool IsSpotifyEnabled { get; set; } = false;
+        public bool IsSpotifyEnabled { get; set; } = false; // TODO: Might not be necessary. Just check for presence of auth code?
+
+        public string SpotifyAuthCode { get; set; }
 
         [JsonIgnore]
         public SpotifyPlaylist SpotifyPlaylist { get; set; }
