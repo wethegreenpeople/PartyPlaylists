@@ -82,7 +82,7 @@ namespace PartyPlaylists.MVC.Controllers
             return PartialView("Components/_roomSongTableRow", room.RoomSongs.Single(s => s.SongId == song.Id));
         }
 
-        [HttpGet("{roomId}")]
+        [HttpGet("/Room/AuthorizeSpotify/{roomId}")]
         public IActionResult AuthorizeSpotify(int roomId)
         {
             var accountService = new UserAccountsService(new HttpClient(), _config);
