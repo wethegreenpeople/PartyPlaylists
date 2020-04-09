@@ -5,11 +5,12 @@
 
 <input type="hidden" id="jwtToken" name="jwtToken" value="@Model.JwtToken">
 <input type="hidden" id="roomId" name="roomId" value="@Model.CurrentRoom.Id">
+<input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
 
 <h1>@Model.CurrentRoom.Name</h1>
 <h2>By: @Model.CurrentRoom.Owner</h2>
 <table class="table">
-    @if (Model?.CurrentRoom != null && Model?.CurrentRoom?.RoomSongs?.ToList().Count > 0)
+    @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
     {
         <tr>
             <th scope="col">Artist</th>
@@ -20,15 +21,9 @@
         </tr>
         @foreach (var roomSong in Model.CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating))
         {
-            <tr>
-                <td>@roomSong.Song.Artist</td>
-                <td>@roomSong.Song.Name</td>
-                <td id="@($"songRating{roomSong.SongId}")">@roomSong.SongRating</td>
-                <td>@roomSong.SongAddedBy</td>
-                <td>
-                    <button class="btn btn-primary btn-sm" type="button" id="addVoteButton" value="@roomSong.SongId">Add Vote</button>
-                </td>
-            </tr>
+            <tbody id="tableOfSongs">
+                <partial name="Components/_roomSongTableRow" model="roomSong" />
+            </tbody>
         }
     }
 </table>
@@ -41,10 +36,11 @@
 }
 else
 {
-    <form method="post" asp-controller="Room" asp-action="AddSongToRoom">
-        <label>Song: </label>
-        <input type="text" id="songToAdd" />
-    </form>
+    <label>Song: </label>
+    <input asp-for="@Model.SongToAdd" id="songToAdd" />
+    <br />
+    <br />
+    <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
 }
 
 
@@ -71,6 +67,42 @@ else
                         console.log(data);
                     }
                 });
+            });
+        });
+    </script>
+
+    <script>
+        function postSongData() {
+            $.ajax({
+                url: "/room/AddSongToRoom",
+                type: "POST",
+                data: {
+                    "CurrentRoom.Id": $("#roomId")[0].value,
+                    "CurrentRoom.SpotifyAuthCode": $("#spotifyAuthCode")[0].value,
+                    "SongToAdd": $("#songToAdd")[0].value,
+                },
+                headers: {
+                    'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                },
+                success: function (data) {
+                    $("#tableOfSongs").append(data);
+                    $("#songToAdd").val('');
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#addSongButton").click(function () {
+                postSongData();
+            });
+
+            $("#songToAdd").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    postSongData();
+                }
             });
         });
     </script>

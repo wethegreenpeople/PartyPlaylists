@@ -107,7 +107,7 @@ namespace PartyPlaylists.Services
 
         }
 
-        public async Task<Room> AddSongToRoomAsync(string userToken, string roomId, Song song)
+        public async Task<Room> AddSongToRoomAsync(string usernameAddingSong, string roomId, Song song)
         {
             try
             {
@@ -115,8 +115,6 @@ namespace PartyPlaylists.Services
                 var room = await GetItemAsync(roomId);
                 var playlist = await _playlistsContext.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == roomIdAsInt);
                 var matchingSong = await _playlistsContext.Songs.FirstOrDefaultAsync(s => s.SpotifyId == song.SpotifyId);
-                var decodedToken = JWT.Decode(userToken);
-                var token = JsonConvert.DeserializeAnonymousType(decodedToken, new { Name = "" });
 
                 if (room == null)
                     throw new Exception("Could not find room");
@@ -126,7 +124,7 @@ namespace PartyPlaylists.Services
                     RoomId = roomIdAsInt,
                     SongId = (matchingSong)?.Id ?? 0,
                     Song = song,
-                    SongAddedBy = token.Name,
+                    SongAddedBy = usernameAddingSong,
                 };
 
                 if (playlist != null)

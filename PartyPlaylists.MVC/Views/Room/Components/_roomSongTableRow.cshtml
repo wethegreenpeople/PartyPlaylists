@@ -1,0 +1,11 @@
+﻿@model PartyPlaylists.Models.DataModels.RoomSong;
+
+<tr>
+    <td>@Model.Song.Artist</td>
+    <td>@Model.Song.Name</td>
+    <td id="@($"songRating{Model.SongId}")">@Model.SongRating</td>
+    <td>@Model.SongAddedBy</td>
+    <td>
+        <button class="btn btn-primary btn-sm" type="button" id="addVoteButton" value="@Model.SongId">Add Vote</button>
+    </td>
+</tr>

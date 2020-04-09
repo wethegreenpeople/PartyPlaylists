@@ -63,10 +63,7 @@ namespace PartyPlaylists.MVC.Controllers
                 Response.Cookies.Append("jwtToken", jwtToken, option);
             }
 
-            var ownerName = 
-                (string)JObject.Parse(
-                    JWT.Decode(
-                        jwtToken, Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"))))["nameid"];
+            var ownerName = _tokenService.GetNameFromToken(jwtToken);
             var room = new Room()
             {
                 Name = viewModel.NewRoomName,

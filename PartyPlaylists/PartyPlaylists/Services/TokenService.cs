@@ -1,6 +1,7 @@
 ﻿using Jose;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using System;
@@ -44,6 +45,14 @@ namespace PartyPlaylists.Services
             await _playlistContext.SaveChangesAsync();
 
             return token.JWTToken;
+        }
+
+        public string GetNameFromToken(string jwtToken)
+        {
+            return 
+               (string)JObject.Parse(
+                   JWT.Decode(
+                       jwtToken, Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"))))["nameid"];
         }
 
         private string GenerateName()

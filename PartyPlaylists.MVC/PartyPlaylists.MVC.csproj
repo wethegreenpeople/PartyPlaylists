@@ -29,8 +29,4 @@
     <ProjectReference Include="..\PartyPlaylists\PartyPlaylists\PartyPlaylists.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Views\Room\Components\" />
-  </ItemGroup>
-
 </Project>
