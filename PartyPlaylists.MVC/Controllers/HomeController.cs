@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PartyPlaylists.MVC.Models;
-
+using PartyPlaylists.MVC.Models.ViewModels;
+using PartyPlaylists.MVC.DataAccess;
 namespace PartyPlaylists.MVC.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        PlaylistContext _playlistContext;
+        public HomeController(PlaylistContext playlistContext, ILogger<HomeController> logger)
         {
+            _playlistContext = playlistContext;
             _logger = logger;
         }
 
@@ -22,7 +24,7 @@ namespace PartyPlaylists.MVC.Controllers
         {
             return View();
         }
-
+ 
         public IActionResult Privacy()
         {
             return View();
