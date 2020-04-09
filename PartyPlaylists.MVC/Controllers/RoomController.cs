@@ -80,6 +80,7 @@ namespace PartyPlaylists.MVC.Controllers
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var username = _tokenService.GetNameFromToken(token);
             var room = await _roomDataStore.AddSongToRoomAsync(username, roomVM.CurrentRoom.Id.ToString(), song);
+            await spotify.AddSongToPlaylist(await _spotifyPlaylistsStore.GetItemByRoomId(room.Id.ToString()), song);
 
             return PartialView("Components/_roomSongTableRow", room.RoomSongs.Single(s => s.SongId == song.Id));
         }

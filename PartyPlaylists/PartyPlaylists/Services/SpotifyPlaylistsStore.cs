@@ -39,8 +39,11 @@ namespace PartyPlaylists.Services
             throw new NotImplementedException();
         }
 
-        public async Task<SpotifyPlaylist> GetItemAsync(string id) => 
+        public async Task<SpotifyPlaylist> GetItemAsync(string id) =>
             await _playlistContext.SpotifyPlaylist.SingleOrDefaultAsync(s => s.Id == Convert.ToInt32(id));
+
+        public async Task<SpotifyPlaylist> GetItemByRoomId(string id) =>
+            await _playlistContext.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == Convert.ToInt32(id));
 
         public Task<IEnumerable<SpotifyPlaylist>> GetItemsAsync(bool forceRefresh = false)
         {
