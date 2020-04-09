@@ -155,6 +155,7 @@ namespace PartyPlaylists.Services
             }
         }
 
+        [Obsolete]
         public async Task<Room> AddSpotifyAuthCodeToRoomAsync(string roomId, string spotifyAuthCode)
         {
             try

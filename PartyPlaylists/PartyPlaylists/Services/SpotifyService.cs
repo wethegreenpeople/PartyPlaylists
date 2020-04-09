@@ -155,7 +155,7 @@ namespace PartyPlaylists.Services
             client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
             var request = new RestRequest(@"v1/me", Method.GET);
 
-            var response = await client.ExecuteTaskAsync(request);
+            var response = await client.ExecuteAsync(request);
             var content = response.Content;
 
             dynamic results = JsonConvert.DeserializeObject(content);

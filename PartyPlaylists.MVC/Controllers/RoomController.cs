@@ -82,7 +82,7 @@ namespace PartyPlaylists.MVC.Controllers
             return PartialView("Components/_roomSongTableRow", room.RoomSongs.Single(s => s.SongId == song.Id));
         }
 
-        
+        [HttpGet]
         public IActionResult AuthorizeSpotify(RoomVM roomVM)
         {
             var accountService = new UserAccountsService(new HttpClient(), _config);
@@ -98,9 +98,18 @@ namespace PartyPlaylists.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> SpotifyAuthorized(string code, string state)
         {
+            var refreshToken = (await new UserAccountsService(new HttpClient(), _config).RequestAccessRefreshToken(code)).AccessToken;
             var room =  await _roomDataStore.GetItemAsync(state);
-            room.SpotifyAuthCode = code;
-            await _roomDataStore.UpdateItemAsync(room);
+
+            room.SpotifyAuthCode = refreshToken;
+
+            var spotify = new SpotifyService(refreshToken);
+            var spotifyUserId = await spotify.GetUserIdAsync();
+
+            var updateRoomTask = _roomDataStore.UpdateItemAsync(room);
+            var createSpotifyRoomTask = spotify.CreatePlaylist(room.Name, spotifyUserId);
+
+            await Task.WhenAll(updateRoomTask, createSpotifyRoomTask);
 
             return RedirectToAction("Index", "Room", routeValues: new { Id = state });
         }
