@@ -82,14 +82,14 @@ namespace PartyPlaylists.MVC.Controllers
             return PartialView("Components/_roomSongTableRow", room.RoomSongs.Single(s => s.SongId == song.Id));
         }
 
-        [HttpGet("/Room/AuthorizeSpotify/{roomId}")]
-        public IActionResult AuthorizeSpotify(int roomId)
+        
+        public IActionResult AuthorizeSpotify(RoomVM roomVM)
         {
             var accountService = new UserAccountsService(new HttpClient(), _config);
 
             string url = accountService
                 .AuthorizeUrl(
-                    roomId.ToString(), 
+                    roomVM.CurrentRoom.Id.ToString(), 
                     new[] { "user-read-playback-state streaming user-read-private user-read-email playlist-read-private user-library-read playlist-modify-public playlist-modify-private" });
 
             return Redirect(url);

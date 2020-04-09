@@ -30,7 +30,8 @@
 
 @if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
 {
-    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify" asp-route-roomId="@Model.CurrentRoom.Id">
+    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify">
+        <input type="hidden" asp-for="@Model.CurrentRoom.Id">
         <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
     </form>
 }
