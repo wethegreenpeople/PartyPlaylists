@@ -77,6 +77,7 @@ namespace PartyPlaylists.Services
                     PlaylistOwnerID = ownerId,
                     PlaylistID = results.id,
                 };
+
                 return playlist;
             }
             catch

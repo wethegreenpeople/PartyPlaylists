@@ -23,12 +23,14 @@ namespace PartyPlaylists.MVC.Controllers
     {
         private readonly RoomDataStore _roomDataStore;
         private readonly TokenService _tokenService;
+        private readonly SpotifyPlaylistsStore _spotifyPlaylistsStore;
         private readonly IConfiguration _config;
 
         public RoomController(IConfiguration config, PlaylistContext playlistContext)
         {
             _roomDataStore = new RoomDataStore(playlistContext);
             _tokenService = new TokenService(playlistContext, config);
+            _spotifyPlaylistsStore = new SpotifyPlaylistsStore(playlistContext);
             _config = config;
         }
 
@@ -110,6 +112,10 @@ namespace PartyPlaylists.MVC.Controllers
             var createSpotifyRoomTask = spotify.CreatePlaylist(room.Name, spotifyUserId);
 
             await Task.WhenAll(updateRoomTask, createSpotifyRoomTask);
+
+            var playlist = (SpotifyPlaylist)createSpotifyRoomTask.Result;
+            playlist.Room = room;
+            await _spotifyPlaylistsStore.AddItemAsync(playlist);
 
             return RedirectToAction("Index", "Room", routeValues: new { Id = state });
         }

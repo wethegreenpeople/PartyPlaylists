@@ -113,7 +113,6 @@ namespace PartyPlaylists.Services
             {
                 var roomIdAsInt = Convert.ToInt32(roomId);
                 var room = await GetItemAsync(roomId);
-                var playlist = await _playlistsContext.SpotifyPlaylist.SingleOrDefaultAsync(s => s.RoomId == roomIdAsInt);
                 var matchingSong = await _playlistsContext.Songs.FirstOrDefaultAsync(s => s.SpotifyId == song.SpotifyId);
 
                 if (room == null)
@@ -127,20 +126,6 @@ namespace PartyPlaylists.Services
                     SongAddedBy = usernameAddingSong,
                 };
 
-                if (playlist != null)
-                {
-                    var playlistTable = playlist;
-                    var service = new SpotifyService(playlistTable.AuthCode);
-
-                    if (string.IsNullOrEmpty(song.SpotifyId))
-                    {
-                        var spotifySong = await service.GetSong(song.Name);
-                        await service.AddSongToPlaylist(playlistTable, spotifySong);
-                        song.SpotifyId = spotifySong.SpotifyId;
-                    }
-                    else
-                        await service.AddSongToPlaylist(playlistTable, song);
-                }
                 if (!room.RoomSongs.Any(s => s.SongId == roomSong.SongId))
                 {
                     room.RoomSongs.Add(roomSong);
