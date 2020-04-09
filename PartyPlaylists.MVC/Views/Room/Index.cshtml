@@ -19,12 +19,12 @@
             <th scope="col">Added By</th>
             <th scope="col">Add Vote</th>
         </tr>
-        @foreach (var roomSong in Model.CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating))
-        {
-            <tbody id="tableOfSongs">
+        <tbody id="tableOfSongs">
+            @foreach (var roomSong in Model.CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating))
+            {
                 <partial name="Components/_roomSongTableRow" model="roomSong" />
-            </tbody>
-        }
+            }
+        </tbody>
     }
 </table>
 
@@ -48,13 +48,13 @@ else
 {
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#addVoteButton").click(function () {
+            function postSongVote(songId) {
                 $.ajax({
                     url: "/room/addvotetosong",
                     type: "POST",
                     data: {
                         "roomId": $("#roomId")[0].value,
-                        "songId": $(this).attr("value")
+                        "songId": songId
                     },
                     headers: {
                         'Authorization': "Bearer " + $("#jwtToken")[0].value,
@@ -67,7 +67,9 @@ else
                         console.log(data);
                     }
                 });
-            });
+            }
+
+            $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); })
         });
     </script>
 
