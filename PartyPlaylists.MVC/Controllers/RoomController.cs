@@ -65,13 +65,8 @@ namespace PartyPlaylists.MVC.Controllers
             await _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
             await spotify.ReorderPlaylist(room.SpotifyPlaylist, room);
 
-            var updatedSongInfo = room.RoomSongs.Where(s => s.SongId == songId).Select(s => new { Id = songId, Rating = s.SongRating });
             if (room != null)
-                return Json(
-                    JsonConvert.SerializeObject(
-                        updatedSongInfo, 
-                        Formatting.None,
-                        new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
+                return PartialView("Components/_roomSongTableRow", room.RoomSongs);
 
             return StatusCode(500);
         }
@@ -92,7 +87,7 @@ namespace PartyPlaylists.MVC.Controllers
 
             await _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
 
-            return PartialView("Components/_roomSongTableRow", room.RoomSongs.Single(s => s.SongId == song.Id));
+            return PartialView("Components/_roomSongTableRow", room.RoomSongs);
         }
 
         [HttpGet]

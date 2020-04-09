@@ -20,10 +20,7 @@
             <th scope="col">Add Vote</th>
         </tr>
         <tbody id="tableOfSongs">
-            @foreach (var roomSong in Model.CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating))
-            {
-                <partial name="Components/_roomSongTableRow" model="roomSong" />
-            }
+            <partial name="Components/_roomSongTableRow" model="Model.CurrentRoom.RoomSongs" />
         </tbody>
     }
 </table>
@@ -61,8 +58,7 @@ else
                         'Authorization': "Bearer " + $("#jwtToken")[0].value,
                     },
                     success: function (data) {
-                        var room = JSON.parse(data);
-                        $("#songRating" + room[0].Id)[0].innerText = room[0].Rating;
+                        $("#tableOfSongs").html(data);
                     },
                     error: function (data) {
                         console.log(data);
@@ -88,7 +84,7 @@ else
                     'Authorization': "Bearer " + $("#jwtToken")[0].value,
                 },
                 success: function (data) {
-                    $("#tableOfSongs").append(data);
+                    $("#tableOfSongs").html(data);
                     $("#songToAdd").val('');
                 },
                 error: function (data) {
