@@ -230,7 +230,7 @@ namespace PartyPlaylists.Services
             // later and remove it from the room
             void UpdatePreviouslyPlayedSongs()
             {
-                var roomSong = room.RoomSongs.SingleOrDefault(s => s.Song.SpotifyId == currentlyPlayingSong.Item.Uri);
+                var roomSong = room.RoomSongs.SingleOrDefault(s => s.Song.SpotifyId == currentlyPlayingSong?.Item?.Uri);
                 if (roomSong != null && !roomSong.PreviouslyPlayed)
                 {
                     roomSong.PreviouslyPlayed = true;

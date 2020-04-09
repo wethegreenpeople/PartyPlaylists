@@ -7,7 +7,7 @@
 <input type="hidden" id="roomId" name="roomId" value="@Model.CurrentRoom.Id">
 <input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
 
-<h1>@Model.CurrentRoom.Name</h1>
+<h1 id="roomNameHeader">@Model.CurrentRoom.Name</h1>
 <h2>By: @Model.CurrentRoom.Owner</h2>
 <table class="table">
     @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
@@ -39,6 +39,11 @@ else
     <br />
     <br />
     <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
+
+    <br />
+    <br />
+    <br />
+    <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
 }
 
 
@@ -104,5 +109,70 @@ else
                 }
             });
         });
+    </script>
+
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const token = $("#spotifyAuthCode").val();
+            const player = new Spotify.Player({
+                name: 'PartyPlaylist - ' + $("#roomNameHeader").html(),
+                getOAuthToken: cb => { cb(token); }
+            });
+
+            // Error handling
+            player.addListener('initialization_error', ({ message }) => { console.error(message); });
+            player.addListener('authentication_error', ({ message }) => { console.error(message); });
+            player.addListener('account_error', ({ message }) => { console.error(message); });
+            player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+            // Playback status updates
+            player.addListener('player_state_changed', state => { console.log(state); });
+
+            // Ready
+            player.addListener('ready', ({ device_id }) => {
+                console.log('Ready with Device ID', device_id);
+            });
+
+            // Not Ready
+            player.addListener('not_ready', ({ device_id }) => {
+                console.log('Device ID has gone offline', device_id);
+            });
+
+            // Connect to the player!
+            player.connect();
+
+            $("#startPlaylistButton").click(function () {
+                StartPlaylist(player, $("[name='playerUri']").first().html());
+            });
+        };
+    </script>
+    <script>
+        function StartPlaylist(player, songUriToPlay) {
+            const play = ({
+                spotify_uri,
+                playerInstance: {
+                    _options: {
+                        getOAuthToken,
+                        id
+                    }
+                }
+            }) => {
+                getOAuthToken(access_token => {
+                    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${id}`, {
+                        method: 'PUT',
+                        body: JSON.stringify({ uris: [spotify_uri] }),
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${access_token}`
+                        },
+                    });
+                });
+            };
+            play({
+                playerInstance: player,
+                spotify_uri: songUriToPlay,
+            });
+        }
     </script>
 }
