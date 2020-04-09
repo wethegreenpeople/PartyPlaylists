@@ -58,7 +58,13 @@ namespace PartyPlaylists.MVC.Controllers
         public async Task<IActionResult> AddVoteToSong(int roomId, int songId)
         {
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
             var room = await (_roomDataStore).AddVoteToSong(token, roomId, songId, 1);
+
+            var spotify = new SpotifyService(room.SpotifyAuthCode);
+            await _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
+            await spotify.ReorderPlaylist(room.SpotifyPlaylist, room);
+
             var updatedSongInfo = room.RoomSongs.Where(s => s.SongId == songId).Select(s => new { Id = songId, Rating = s.SongRating });
             if (room != null)
                 return Json(
@@ -80,7 +86,11 @@ namespace PartyPlaylists.MVC.Controllers
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             var username = _tokenService.GetNameFromToken(token);
             var room = await _roomDataStore.AddSongToRoomAsync(username, roomVM.CurrentRoom.Id.ToString(), song);
-            await spotify.AddSongToPlaylist(await _spotifyPlaylistsStore.GetItemByRoomId(room.Id.ToString()), song);
+
+            var playlist = await _spotifyPlaylistsStore.GetItemByRoomId(room.Id.ToString());
+            await spotify.AddSongToPlaylist(playlist, song);
+
+            await _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
 
             return PartialView("Components/_roomSongTableRow", room.RoomSongs.Single(s => s.SongId == song.Id));
         }

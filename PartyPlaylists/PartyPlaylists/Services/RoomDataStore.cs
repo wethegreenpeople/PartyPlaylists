@@ -172,7 +172,6 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddVoteToSong(string userToken, int roomId, int songId, short vote)
         {
-
             if (string.IsNullOrEmpty(userToken))
                 throw new ArgumentException();
             if (vote != -1 && vote != 1)
@@ -208,12 +207,6 @@ namespace PartyPlaylists.Services
 
                 await _playlistsContext.SaveChangesAsync();
 
-                if (room.IsSpotifyEnabled)
-                {
-                    var service = new SpotifyService(room.SpotifyPlaylist.AuthCode);
-                    await service.ReorderPlaylist(room.SpotifyPlaylist, room, roomSong);
-                }
-
                 return roomSong.Room;
             }
             catch (Exception ex)
@@ -225,6 +218,35 @@ namespace PartyPlaylists.Services
         public Task<Room> AddItemAsync(Room item)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task RemovePreviouslyPlayedSongsAsync(int currentRoomId)
+        {
+            var room = await _playlistsContext.Rooms.SingleOrDefaultAsync(s => s.Id == currentRoomId);
+            var spotify = new SpotifyService(room.SpotifyAuthCode);
+            var currentlyPlayingSong = await spotify.GetCurrentlyPlayingSongAsync();
+
+            // If a song is currently play we mark it as 'Previously Played' so we can go back
+            // later and remove it from the room
+            void UpdatePreviouslyPlayedSongs()
+            {
+                var roomSong = room.RoomSongs.SingleOrDefault(s => s.Song.SpotifyId == currentlyPlayingSong.Item.Uri);
+                if (roomSong != null && !roomSong.PreviouslyPlayed)
+                {
+                    roomSong.PreviouslyPlayed = true;
+                    _playlistsContext.RoomSongs.Update(roomSong);
+                }
+            }
+
+            void RemoveSongs()
+            {
+                room.RoomSongs.RemoveAll(s => s.PreviouslyPlayed && s.Song.SpotifyId != currentlyPlayingSong.Item.Uri);
+            }
+
+            UpdatePreviouslyPlayedSongs();
+            RemoveSongs();
+
+            await _playlistsContext.SaveChangesAsync();
         }
     }
 }

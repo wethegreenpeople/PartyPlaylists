@@ -164,9 +164,40 @@ namespace PartyPlaylists.Services
 
             return userId;
         }
-        public async Task ReorderPlaylist(IPlaylist playlist, Room room, RoomSong song)
+        public async Task ReorderPlaylist(IPlaylist playlist, Room room)
         {
-            CurrentPlaybackContext currentPlayback = null;
+            try
+            {
+                var client = new RestClient(@"https://api.spotify.com/v1");
+                client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
+                var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.PUT);
+                request.RequestFormat = DataFormat.Json;
+
+                var spotifyUris = room.RoomSongs
+                    .OrderByDescending(s => s.SongRating)
+                    .Select(s => s.Song.SpotifyId)
+                    .ToList();
+
+                // Move the currently playing song to the top of the playlist
+                // to ensure that the next song played is the highest rated
+                // regardless of re-orders
+                var currentSong = await GetCurrentlyPlayingSongAsync();
+                spotifyUris.Remove(currentSong.Item.Uri);
+                spotifyUris.Insert(0, currentSong.Item.Uri);
+
+                request.AddJsonBody(new { uris = spotifyUris });
+
+                var response = await client.ExecuteAsync(request);
+                var content = response.Content;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<CurrentPlaybackContext> GetCurrentlyPlayingSongAsync()
+        {
             try
             {
                 var http = new HttpClient();
@@ -176,51 +207,11 @@ namespace PartyPlaylists.Services
                     .Build();
 
                 var player = new PlayerApi(http, AuthToken);
-                currentPlayback = await player.GetCurrentPlaybackInfo(AuthToken);
+                return await player.GetCurrentPlaybackInfo(AuthToken);
             }
             catch (Exception ex)
             {
-            }
-
-            try
-            {
-                var client = new RestClient(@"https://api.spotify.com/v1");
-                client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
-                var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.PUT);
-                request.RequestFormat = DataFormat.Json;
-                if (song != null)
-                    room.RoomSongs.SingleOrDefault(s => s.SongId == song.SongId).SongRating -= 1;
-                var spotifyUris = room.RoomSongs
-                    .OrderByDescending(s => s.SongRating)
-                    .Select(s => s.Song.SpotifyId)
-                    .ToList();
-                if (currentPlayback != null && spotifyUris.Any(s => s == currentPlayback.Item.Uri))
-                {
-                    // Reorder songs, only after the current one we are playing.
-                    // This ensures that if you're in the middle of a playlist, 
-                    // the next song you listen to is the highest rated song
-                    for (int i = 0; i < spotifyUris.Count; ++i)
-                    {
-                        if (spotifyUris[0] == currentPlayback.Item.Uri)
-                        {
-                            break;
-                        }
-                        spotifyUris.Remove(spotifyUris[0]);
-                    }
-                }
-                else
-                    spotifyUris = room.RoomSongs
-                        .OrderByDescending(s => s.SongRating)
-                        .Select(s => s.Song.SpotifyId)
-                        .ToList();
-
-                request.AddJsonBody(new { uris = spotifyUris });
-
-                var response = await client.ExecuteTaskAsync(request);
-                var content = response.Content;
-            }
-            catch (Exception ex)
-            {
+                throw ex;
             }
         }
     }

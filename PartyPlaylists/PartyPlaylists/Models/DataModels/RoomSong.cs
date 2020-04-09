@@ -22,6 +22,7 @@ namespace PartyPlaylists.Models.DataModels
         [Required]
         public Song Song { get; set; }
         public int SongRating { get; set; }
+        public bool PreviouslyPlayed { get; set; }
         
         public List<RoomSongToken> RoomSongTokens { get; set; }
         
