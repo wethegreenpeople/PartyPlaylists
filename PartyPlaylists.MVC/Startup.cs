@@ -14,6 +14,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
+using PartyPlaylists.MVC.Hubs;
 using PartyPlaylists.Services;
 
 namespace PartyPlaylists.MVC
@@ -31,6 +32,7 @@ namespace PartyPlaylists.MVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSignalR();
 
             var connectionString = Configuration.GetConnectionString("PartyPlaylistConnectionString");
 
@@ -86,6 +88,7 @@ namespace PartyPlaylists.MVC
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<RoomHub>("/roomhub");
             });
         }
     }

@@ -216,7 +216,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 if (room.IsSpotifyEnabled)
                 {
                     var service = new SpotifyService(room.SpotifyPlaylist.AuthCode);
-                    await service.ReorderPlaylist(room.SpotifyPlaylist, room, roomSong);
+                    await service.ReorderPlaylist(room.SpotifyPlaylist, room);
                 }
                 
 

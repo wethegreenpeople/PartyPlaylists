@@ -182,9 +182,12 @@ namespace PartyPlaylists.Services
                 // to ensure that the next song played is the highest rated
                 // regardless of re-orders
                 var currentSong = await GetCurrentlyPlayingSongAsync();
-                spotifyUris.Remove(currentSong.Item.Uri);
-                spotifyUris.Insert(0, currentSong.Item.Uri);
-
+                if (currentSong != null)
+                {
+                    spotifyUris.Remove(currentSong.Item.Uri);
+                    spotifyUris.Insert(0, currentSong.Item.Uri);
+                }
+                
                 request.AddJsonBody(new { uris = spotifyUris });
 
                 var response = await client.ExecuteAsync(request);

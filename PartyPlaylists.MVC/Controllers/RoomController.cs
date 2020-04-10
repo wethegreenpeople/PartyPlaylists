@@ -16,6 +16,7 @@ using PartyPlaylists.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using SpotifyApi.NetCore.Authorization;
+using PartyPlaylists.MVC.Hubs;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -66,7 +67,10 @@ namespace PartyPlaylists.MVC.Controllers
             await spotify.ReorderPlaylist(room.SpotifyPlaylist, room);
 
             if (room != null)
+            {
+                await new RoomHub().UpdateSongsAsync(roomId.ToString());
                 return PartialView("Components/_roomSongTableRow", room.RoomSongs);
+            }
 
             return StatusCode(500);
         }
@@ -124,6 +128,14 @@ namespace PartyPlaylists.MVC.Controllers
             await _spotifyPlaylistsStore.AddItemAsync(playlist);
 
             return RedirectToAction("Index", "Room", routeValues: new { Id = state });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRoomSongs(int roomId)
+        {
+            var room = await _roomDataStore.GetItemAsync(roomId.ToString());
+
+            return PartialView("Components/_roomSongTableRow", room.RoomSongs);
         }
     }
 }
