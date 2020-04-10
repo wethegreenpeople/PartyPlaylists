@@ -9,7 +9,7 @@
 
 <h1 id="roomNameHeader">@Model.CurrentRoom.Name</h1>
 <h2>By: @Model.CurrentRoom.Owner</h2>
-<table class="table">
+<table class="table" data-toggle="table">
     @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
     {
         <tr>
