@@ -17,6 +17,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Http;
 using SpotifyApi.NetCore.Authorization;
 using PartyPlaylists.MVC.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -26,13 +27,15 @@ namespace PartyPlaylists.MVC.Controllers
         private readonly TokenService _tokenService;
         private readonly SpotifyPlaylistsStore _spotifyPlaylistsStore;
         private readonly IConfiguration _config;
+        private readonly IHubContext<RoomHub> _roomHub;
 
-        public RoomController(IConfiguration config, PlaylistContext playlistContext)
+        public RoomController(IConfiguration config, PlaylistContext playlistContext, IHubContext<RoomHub> roomHub)
         {
             _roomDataStore = new RoomDataStore(playlistContext);
             _tokenService = new TokenService(playlistContext, config);
             _spotifyPlaylistsStore = new SpotifyPlaylistsStore(playlistContext);
             _config = config;
+            _roomHub = roomHub;
         }
 
         public async Task<IActionResult> Index(string Id)
@@ -68,7 +71,7 @@ namespace PartyPlaylists.MVC.Controllers
 
             if (room != null)
             {
-                await new RoomHub().UpdateSongsAsync(roomId.ToString());
+                await _roomHub.Clients.All.SendAsync("Update", roomId.ToString());
                 return PartialView("Components/_roomSongTableRow", room.RoomSongs);
             }
 
@@ -90,6 +93,12 @@ namespace PartyPlaylists.MVC.Controllers
             await spotify.AddSongToPlaylist(playlist, song);
 
             await _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
+
+            if (room != null)
+            {
+                await _roomHub.Clients.All.SendAsync("Update", room.Id.ToString());
+                return PartialView("Components/_roomSongTableRow", room.RoomSongs);
+            }
 
             return PartialView("Components/_roomSongTableRow", room.RoomSongs);
         }
