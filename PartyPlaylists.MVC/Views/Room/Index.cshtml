@@ -138,7 +138,26 @@ else
             player.addListener('playback_error', ({ message }) => { console.error(message); });
 
             // Playback status updates
-            player.addListener('player_state_changed', state => { console.log(state); });
+            player.addListener('player_state_changed', state => {
+                if (state.paused) {
+                    $.ajax({
+                        url: "/room/GetNextSongToPlay",
+                        type: "GET",
+                        data: {
+                            "roomId": $("#roomId")[0].value,
+                            "songUri": state.track_window.current_track.uri,
+                        },
+                        headers: {
+                        },
+                        success: function (data) {
+                            StartPlaylist(player, data);
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                    });
+                }
+            });
 
             // Ready
             player.addListener('ready', ({ device_id }) => {

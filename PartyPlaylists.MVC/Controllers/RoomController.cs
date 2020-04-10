@@ -158,5 +158,19 @@ namespace PartyPlaylists.MVC.Controllers
 
             return PartialView("Components/_roomSongTableRow", room.RoomSongs);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetNextSongToPlay(int roomId, string songUri)
+        {
+            var room = await _roomDataStore.GetItemAsync(roomId.ToString());
+            var nextSong = room.RoomSongs
+                .Where(s => s.Song.SpotifyId != songUri)
+                .OrderByDescending(s => s.SongRating)
+                .ElementAt(0)
+                .Song
+                .SpotifyId;
+
+            return Json(nextSong);
+        }
     }
 }
