@@ -64,7 +64,7 @@ namespace PartyPlaylists.Services
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
                 var request = new RestRequest($@"users/{ownerId}/playlists", Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                request.AddJsonBody(new { name = playlistName ,  external_urls = HttpUtility.HtmlEncode(roomUrl) });
+                request.AddJsonBody(new { name = playlistName, description = roomUrl });
 
                 var response = await client.ExecuteAsync(request);
                 var content = response.Content;
