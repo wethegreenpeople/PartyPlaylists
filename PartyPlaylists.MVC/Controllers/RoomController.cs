@@ -66,8 +66,10 @@ namespace PartyPlaylists.MVC.Controllers
             var room = await (_roomDataStore).AddVoteToSong(token, roomId, songId, 1);
 
             var spotify = new SpotifyService(room.SpotifyAuthCode);
-            await _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
-            await spotify.ReorderPlaylist(room.SpotifyPlaylist, room);
+            var removeTask = _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
+            var reorderTask = spotify.ReorderPlaylist(room.SpotifyPlaylist, room);
+
+            await Task.WhenAny(removeTask, reorderTask);
 
             if (room != null)
             {
