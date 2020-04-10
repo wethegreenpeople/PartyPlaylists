@@ -11,7 +11,7 @@ namespace PartyPlaylists.Services
     {
         Task<Song> GetSong(string searchQuery);
         Task<List<Song>> GetSongs(string searchQuery);
-        Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId);
+        Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId, string roomUrl);
         Task AddSongToPlaylist(IPlaylist playlist, Song song);
         Task Authenticate();
         Task ReorderPlaylist(IPlaylist playlist, Room room);
