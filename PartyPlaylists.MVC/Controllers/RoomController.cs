@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using PartyPlaylists.Contexts;
@@ -26,7 +27,6 @@ namespace PartyPlaylists.MVC.Controllers
         private readonly TokenService _tokenService;
         private readonly SpotifyPlaylistsStore _spotifyPlaylistsStore;
         private readonly IConfiguration _config;
-
         public RoomController(IConfiguration config, PlaylistContext playlistContext)
         {
             _roomDataStore = new RoomDataStore(playlistContext);
@@ -58,6 +58,7 @@ namespace PartyPlaylists.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> AddVoteToSong(int roomId, int songId)
         {
+            
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
             var room = await (_roomDataStore).AddVoteToSong(token, roomId, songId, 1);
@@ -114,12 +115,14 @@ namespace PartyPlaylists.MVC.Controllers
             var room =  await _roomDataStore.GetItemAsync(state);
 
             room.SpotifyAuthCode = refreshToken;
+            var request = HttpContext.Request;
+            string roomUrl = $"{request.Scheme}://{request.Host}/Room/Index/{room.Id}";
 
             var spotify = new SpotifyService(refreshToken);
             var spotifyUserId = await spotify.GetUserIdAsync();
 
             var updateRoomTask = _roomDataStore.UpdateItemAsync(room);
-            var createSpotifyRoomTask = spotify.CreatePlaylist(room.Name, spotifyUserId);
+            var createSpotifyRoomTask = spotify.CreatePlaylist(room.Name, spotifyUserId, roomUrl);
 
             await Task.WhenAll(updateRoomTask, createSpotifyRoomTask);
 

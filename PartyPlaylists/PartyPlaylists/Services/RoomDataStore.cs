@@ -155,7 +155,7 @@ namespace PartyPlaylists.Services
                 {
                     var service = new SpotifyService(spotifyAuthCode);
                     var ownerId = await service.GetUserIdAsync();
-                    var playlist = await service.CreatePlaylist(room.Name, ownerId);
+                    var playlist = await service.CreatePlaylist(room.Name, ownerId, "");
 
                     room.SpotifyPlaylist = (SpotifyPlaylist)playlist;
                     room.IsSpotifyEnabled = true;

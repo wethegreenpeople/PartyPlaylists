@@ -56,7 +56,7 @@ namespace PartyPlaylists.Services
             return null;
         }
 
-        public async Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId)
+        public async Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId, string roomUrl)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace PartyPlaylists.Services
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
                 var request = new RestRequest($@"users/{ownerId}/playlists", Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                request.AddJsonBody(new { name = playlistName });
+                request.AddJsonBody(new { name = playlistName ,  external_urls = HttpUtility.HtmlEncode(roomUrl) });
 
                 var response = await client.ExecuteAsync(request);
                 var content = response.Content;

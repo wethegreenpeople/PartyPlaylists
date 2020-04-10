@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,7 +39,6 @@ namespace PartyPlaylists.MVC
 
             services.AddDbContext<PlaylistContext>(options => options.UseMySql(connectionString));
             services.AddSingleton<IConfiguration>(provider => Configuration);
-
             // Using JWT tokens as a sort of "soft" authentication
             // The user is never creating an account, but we're generating one for them if they
             // don't have one when connecting to a room
