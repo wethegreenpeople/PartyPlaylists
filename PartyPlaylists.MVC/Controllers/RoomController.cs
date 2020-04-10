@@ -71,7 +71,7 @@ namespace PartyPlaylists.MVC.Controllers
                 var removeTask = _roomDataStore.RemovePreviouslyPlayedSongsAsync(room.Id);
                 var reorderTask = spotify.ReorderPlaylist(room.SpotifyPlaylist, room);
 
-                await Task.WhenAny(removeTask, reorderTask);
+                await Task.WhenAll(removeTask, reorderTask);
             }
             catch { }
 
