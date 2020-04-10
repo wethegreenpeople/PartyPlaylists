@@ -248,5 +248,12 @@ namespace PartyPlaylists.Services
 
             await _playlistsContext.SaveChangesAsync();
         }
+
+        public async Task UpdateTransferOfAudioControlAsync(int roomId, bool allowTransfer)
+        {
+            var room = await _playlistsContext.Rooms.SingleOrDefaultAsync(s => s.Id == roomId);
+            room.AllowTransferOfControl = allowTransfer;
+            await _playlistsContext.SaveChangesAsync();
+        }
     }
 }

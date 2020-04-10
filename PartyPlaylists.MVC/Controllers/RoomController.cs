@@ -176,5 +176,20 @@ namespace PartyPlaylists.MVC.Controllers
 
             return Json(nextSong);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTransferOfControl(RoomVM roomVM)
+        {
+            try
+            {
+                await _roomDataStore.UpdateTransferOfAudioControlAsync(roomVM.CurrentRoom.Id, roomVM.CurrentRoom.AllowTransferOfControl);
+                await _roomHub.Clients.All.SendAsync("AllowTransfer", roomVM.CurrentRoom.AllowTransferOfControl);
+                return RedirectToAction("Index", "Room", routeValues: new { Id = roomVM.CurrentRoom.Id });
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }
