@@ -11,5 +11,6 @@ namespace PartyPlaylists.MVC.Models.ViewModels
         public Room CurrentRoom { get; set; }
         public string JwtToken { get; set; }
         public string SongToAdd { get; set; }
+        public string CurrentUserName { get; set; }
     }
 }

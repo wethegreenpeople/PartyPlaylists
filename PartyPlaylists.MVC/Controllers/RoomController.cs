@@ -53,6 +53,7 @@ namespace PartyPlaylists.MVC.Controllers
             {
                 CurrentRoom = await _roomDataStore.GetItemAsync(Id),
                 JwtToken = jwtToken,
+                CurrentUserName = _tokenService.GetNameFromToken(jwtToken),
             };
 
             return View("Index", roomVm);
@@ -62,7 +63,6 @@ namespace PartyPlaylists.MVC.Controllers
         [HttpPost]
         public async Task<IActionResult> AddVoteToSong(int roomId, int songId)
         {
-            
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
             var room = await (_roomDataStore).AddVoteToSong(token, roomId, songId, 1);
@@ -138,7 +138,7 @@ namespace PartyPlaylists.MVC.Controllers
 
             room.SpotifyAuthCode = refreshToken;
             var request = HttpContext.Request;
-            string roomUrl = $"{request.Scheme}://{request.Host}/Room/Index/{room.Id}";
+            var roomUrl = $"{request.Scheme}://{request.Host}/Room/Index/{room.Id}";
 
             var spotify = new SpotifyService(refreshToken);
             var spotifyUserId = await spotify.GetUserIdAsync();

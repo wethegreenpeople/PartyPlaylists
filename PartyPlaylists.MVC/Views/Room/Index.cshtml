@@ -43,7 +43,10 @@ else
     <br />
     <br />
     <br />
-    <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+    @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
+    {
+        <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+    }
 }
 
 
