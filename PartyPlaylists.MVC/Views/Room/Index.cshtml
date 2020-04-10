@@ -49,32 +49,41 @@ else
 
 @section Scripts
 {
+    <script>
+        function postSongVote(songId) {
+            $.ajax({
+                url: "/room/addvotetosong",
+                type: "POST",
+                data: {
+                    "roomId": $("#roomId")[0].value,
+                    "songId": songId
+                },
+                headers: {
+                    'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                },
+                success: function (data) {
+                    $("#tableOfSongs").html(data);
+                    $("[name='addVoteButton']").off('click');
+                    $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); });
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+    </script>
     <script type="text/javascript">
         $(document).ready(function () {
-            function postSongVote(songId) {
-                $.ajax({
-                    url: "/room/addvotetosong",
-                    type: "POST",
-                    data: {
-                        "roomId": $("#roomId")[0].value,
-                        "songId": songId
-                    },
-                    headers: {
-                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
-                    },
-                    success: function (data) {
-                        $("#tableOfSongs").html(data);
-                    },
-                    error: function (data) {
-                        console.log(data);
-                    }
-                });
-            }
-
-            $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); })
+            $("[name='addVoteButton']").off().click(function () { postSongVote($(this).val()); });
         });
     </script>
-
+    <script>
+        $(document).ready(function () {
+            $("table").on('DOMSubtreeModified', "#tableOfSongs", function () {
+                $("[name='addVoteButton']").off().click(function () { postSongVote($(this).val()); });
+            });
+        });
+    </script>
     <script>
         function postSongData() {
             $.ajax({
@@ -91,6 +100,8 @@ else
                 success: function (data) {
                     $("#tableOfSongs").html(data);
                     $("#songToAdd").val('');
+                    $("[name='addVoteButton']").off('click');
+                    $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); });
                 },
                 error: function (data) {
                     console.log(data);
