@@ -240,7 +240,7 @@ namespace PartyPlaylists.Services
 
             void RemoveSongs()
             {
-                room.RoomSongs.RemoveAll(s => s.PreviouslyPlayed && s.Song.SpotifyId != currentlyPlayingSong.Item.Uri);
+                room.RoomSongs.RemoveAll(s => s.PreviouslyPlayed && s.Song.SpotifyId != currentlyPlayingSong?.Item?.Uri);
             }
 
             UpdatePreviouslyPlayedSongs();
