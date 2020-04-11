@@ -33,7 +33,7 @@ nav {
 }
 
 header {
-    background-color: #eb5160;
+    background-color: #e6625e;
 }
 
 /* Sticky footer styles
@@ -89,11 +89,16 @@ body {
 }
 
 .btn-primary {
-    background-color: #eb5160;
-    border-color: #eb5160;
+    background-color: #08948b;
+    border-color: #08948b;
+    color: #fff;
 }
 
 .btn-square-lg {
     width: 11em !important;
     height: 8em !important;
+}
+
+h1, h2 {
+    color: #dfe0e2;
 }
