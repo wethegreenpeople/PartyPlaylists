@@ -7,60 +7,76 @@
 <input type="hidden" id="roomId" name="roomId" value="@Model.CurrentRoom.Id">
 <input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
 
-<h1 id="roomNameHeader">@Model.CurrentRoom.Name</h1>
-<h2>By: @Model.CurrentRoom.Owner</h2>
-<table class="table" data-toggle="table">
-    @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
-    {
-        <tr>
-            <th scope="col">Artist</th>
-            <th scope="col">Title</th>
-            <th scope="col">Playlist Rating</th>
-            <th scope="col">Added By</th>
-            <th scope="col">Add Vote</th>
-        </tr>
-        <tbody id="tableOfSongs">
-            <partial name="Components/_roomSongTableRow" model="Model.CurrentRoom.RoomSongs" />
-        </tbody>
-    }
-</table>
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header green">
+                <h1 class="card-title text-dark display-3 text-uppercase" id="roomNameHeader">@Model.CurrentRoom.Name</h1>
+                <h2 class="card-subtitle text-muted">By: @Model.CurrentRoom.Owner</h2>
+            </div>
 
-@if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
-{
-    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify">
-        <input type="hidden" asp-for="@Model.CurrentRoom.Id">
-        <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
-    </form>
-}
-else
-{
-    <label>Song: </label>
-    <input asp-for="@Model.SongToAdd" id="songToAdd" />
-    <br />
-    <br />
-    <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <table class="table text-white" data-toggle="table" data-classes="table table-bordered">
+                            @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
+                            {
+                                <tr>
+                                    <th scope="col">Song</th>
+                                    <th scope="col">Added By</th>
+                                </tr>
+                                <tbody id="tableOfSongs">
+                                    <partial name="Components/_roomSongTableRow" model="Model.CurrentRoom.RoomSongs" />
+                                </tbody>
+                            }
+                        </table>
+                    </div>
+                    <div class="col-6">
+                        @if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
+                        {
+                            <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify">
+                                <input type="hidden" asp-for="@Model.CurrentRoom.Id">
+                                <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <label>Song: </label>
+                            <input asp-for="@Model.SongToAdd" id="songToAdd" />
+                            <br />
+                            <br />
+                            <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
 
-    <br />
-    <br />
-    <br />
-    <div id="playlistControlDiv">
-        @if (Model.CurrentRoom.Owner == Model.CurrentUserName || Model.CurrentRoom.AllowTransferOfControl)
-        {
-            <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
-        }
+                            <br />
+                            <br />
+                            <br />
+                            <div id="playlistControlDiv">
+                                @if (Model.CurrentRoom.Owner == Model.CurrentUserName || Model.CurrentRoom.AllowTransferOfControl)
+                                {
+                                    <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+                                }
+                            </div>
+                            @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
+                            {
+                                <form method="post" asp-controller="Room" asp-action="UpdateTransferOfControl">
+                                    <label>Allow transfer of control</label>
+                                    <input asp-for="@Model.CurrentRoom.AllowTransferOfControl" />
+                                    <input hidden asp-for="@Model.CurrentRoom.Id" />
+                                    <br />
+                                    <br />
+                                    <button class="btn btn-primary" type="submit" id="saveRoomChanges">Save</button>
+                                </form>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
-    {
-        <form method="post" asp-controller="Room" asp-action="UpdateTransferOfControl">
-            <label>Allow transfer of control</label>
-            <input asp-for="@Model.CurrentRoom.AllowTransferOfControl" />
-            <input hidden asp-for="@Model.CurrentRoom.Id" />
-            <br />
-            <br />
-            <button class="btn btn-primary" type="submit" id="saveRoomChanges">Save</button>
-        </form>
-    }
-}
+</div>
+
+
+
 
 
 @section Scripts

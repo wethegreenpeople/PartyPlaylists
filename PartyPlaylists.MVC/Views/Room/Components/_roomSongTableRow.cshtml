@@ -3,13 +3,20 @@
 @foreach (var item in Model.OrderByDescending(s => s.SongRating))
 {
     <tr>
-        <td>@item.Song.Artist</td>
-        <td>@item.Song.Name</td>
-        <td id="@($"songRating{item.SongId}")">@item.SongRating</td>
-        <td>@item.SongAddedBy</td>
         <td>
-            <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">Add Vote</button>
+            <div class="row">
+                <div class="col-10">
+                    <p class="mb-0">@item.Song.Name</p>
+                    <p class="mb-0 text-muted">@item.Song.Artist</p>
+                </div>
+                <div class="col-2">
+                    <p id="@($"songRating{item.SongId}")" class="mb-0">
+                        <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">+@item.SongRating</button>
+                    </p>
+                </div>
+            </div>
         </td>
+        <td>@item.SongAddedBy</td>
         <td hidden name="playerUri">@item.Song.SpotifyId</td>
     </tr>
 }

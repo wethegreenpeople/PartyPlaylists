@@ -102,3 +102,7 @@ body {
 h1, h2 {
     color: #dfe0e2;
 }
+
+.card-header.green {
+    background-color: #6cdd9d;
+}
