@@ -108,11 +108,15 @@ h1, h2 {
 }
 
 .album-art {
-    width: 75px;
-    height: 75px;
+    max-width: 100px;
+    width: 100%;
 }
 
 .middle-table-cell {
     display: table-cell;
     vertical-align: middle;
+}
+
+.inner-card-dark {
+    background-color: #191c1e;
 }

@@ -17,8 +17,8 @@
 
             <div class="card-body">
                 <div class="row">
-                    <div class="col-6">
-                        <table class="table text-white" data-toggle="table" data-classes="table table-bordered">
+                    <div class="col-sm-7">
+                        <table class="table text-white" data-toggle="table" data-classes="table table-bordered" data-height="460">
                             @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
                             {
                                 <tr>
@@ -31,43 +31,48 @@
                             }
                         </table>
                     </div>
-                    <div class="col-6">
-                        @if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
-                        {
-                            <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify">
-                                <input type="hidden" asp-for="@Model.CurrentRoom.Id">
-                                <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
-                            </form>
-                        }
-                        else
-                        {
-                            <label>Song: </label>
-                            <input asp-for="@Model.SongToAdd" id="songToAdd" />
-                            <br />
-                            <br />
-                            <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
-
-                            <br />
-                            <br />
-                            <br />
-                            <div id="playlistControlDiv">
-                                @if (Model.CurrentRoom.Owner == Model.CurrentUserName || Model.CurrentRoom.AllowTransferOfControl)
+                    <div class="col-sm-5">
+                        <div class="card inner-card-dark text-white">
+                            <div class="card-body">
+                                @if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
                                 {
-                                    <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+                                    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify">
+                                        <input type="hidden" asp-for="@Model.CurrentRoom.Id">
+                                        <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <label>Song: </label>
+                                        <input asp-for="@Model.SongToAdd" id="songToAdd" class="form-control" />
+                                        <button class="btn btn-primary mt-2" type="submit" id="addSongButton">Add Song</button>
+                                    </div>
                                 }
                             </div>
-                            @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
-                            {
-                                <form method="post" asp-controller="Room" asp-action="UpdateTransferOfControl">
-                                    <label>Allow transfer of control</label>
-                                    <input asp-for="@Model.CurrentRoom.AllowTransferOfControl" />
-                                    <input hidden asp-for="@Model.CurrentRoom.Id" />
-                                    <br />
-                                    <br />
-                                    <button class="btn btn-primary" type="submit" id="saveRoomChanges">Save</button>
-                                </form>
-                            }
-                        }
+                            <div class="card-footer">
+                                <div class="row">
+                                    @if (!string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
+                                    {
+                                        <div class="col">
+                                            @if ((Model.CurrentRoom.Owner == Model.CurrentUserName || Model.CurrentRoom.AllowTransferOfControl))
+                                            {
+                                                <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+                                            }
+                                        </div>
+                                        <div class="col-auto">
+                                            @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
+                                            {
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" asp-for="@Model.CurrentRoom.AllowTransferOfControl" id="transferControlSwitch">
+                                                    <label class="custom-control-label" for="transferControlSwitch">Allow Playlist Control</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -242,7 +247,24 @@
 
     <script>
         $(document).ready(function () {
-            $("#allowTransferButton")
+            $("#transferControlSwitch").click(function () {
+                $.ajax({
+                    url: "/room/UpdateTransferOfControl",
+                    type: "POST",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                        "allowTransferOfControl": $(this).prop("checked"),
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
         });
     </script>
 }

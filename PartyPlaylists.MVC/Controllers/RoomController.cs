@@ -177,14 +177,15 @@ namespace PartyPlaylists.MVC.Controllers
             return Json(nextSong);
         }
 
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> UpdateTransferOfControl(RoomVM roomVM)
+        public async Task<IActionResult> UpdateTransferOfControl(int roomId, bool allowTransferOfControl)
         {
             try
             {
-                await _roomDataStore.UpdateTransferOfAudioControlAsync(roomVM.CurrentRoom.Id, roomVM.CurrentRoom.AllowTransferOfControl);
-                await _roomHub.Clients.All.SendAsync("AllowTransfer", roomVM.CurrentRoom.AllowTransferOfControl);
-                return RedirectToAction("Index", "Room", routeValues: new { Id = roomVM.CurrentRoom.Id });
+                await _roomDataStore.UpdateTransferOfAudioControlAsync(roomId, allowTransferOfControl);
+                await _roomHub.Clients.All.SendAsync("AllowTransfer", allowTransferOfControl);
+                return RedirectToAction("Index", "Room", routeValues: new { Id = roomId });
             }
             catch
             {
