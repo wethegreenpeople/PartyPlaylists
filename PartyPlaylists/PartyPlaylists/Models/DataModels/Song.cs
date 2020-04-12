@@ -22,6 +22,8 @@ namespace PartyPlaylists.Models.DataModels
         [Required]
         public string Artist { get; set; }
 
+        public string AlbumArt { get; set; }
+
         [Required]
         public StreamingServiceTypes ServiceAvailableOn { get; set; }
 

@@ -106,6 +106,7 @@ namespace PartyPlaylists.Services
                     Name = searchResult?.Tracks?.Items[0].Name,
                     ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
                     SpotifyId = searchResult?.Tracks.Items[0].Uri,
+                    AlbumArt = searchResult?.Tracks.Items[0].Album.Images[0].Url,
                 };
 
                 return song;

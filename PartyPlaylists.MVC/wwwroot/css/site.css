@@ -106,3 +106,13 @@ h1, h2 {
 .card-header.green {
     background-color: #6cdd9d;
 }
+
+.album-art {
+    width: 75px;
+    height: 75px;
+}
+
+.middle-table-cell {
+    display: table-cell;
+    vertical-align: middle;
+}
