@@ -13,6 +13,7 @@
                 <div class="col-lg-7 middle-table-cell">
                     <p class="mb-0">@item.Song.Name</p>
                     <p class="mb-0 text-muted align-bottom">@item.Song.Artist</p>
+                    <p class="mb-0 text-muted align-bottom"><small>Added by: @item.SongAddedBy</small></p>
                 </div>
                 <div class="col-lg-1 middle-table-cell">
                     <p id="@($"songRating{item.SongId}")" class="mb-0 mr-1">
@@ -21,7 +22,6 @@
                 </div>
             </div>
         </td>
-        <td>@item.SongAddedBy</td>
         <td hidden name="playerUri">@item.Song.SpotifyId</td>
     </tr>
 }

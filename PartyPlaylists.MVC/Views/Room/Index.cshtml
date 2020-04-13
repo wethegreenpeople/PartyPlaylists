@@ -21,10 +21,6 @@
                         <table class="table text-white" data-toggle="table" data-classes="table table-bordered" data-height="460">
                             @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
                             {
-                                <tr>
-                                    <th scope="col">Song</th>
-                                    <th scope="col">Added By</th>
-                                </tr>
                                 <tbody id="tableOfSongs">
                                     <partial name="Components/_roomSongTableRow" model="Model.CurrentRoom.RoomSongs" />
                                 </tbody>
