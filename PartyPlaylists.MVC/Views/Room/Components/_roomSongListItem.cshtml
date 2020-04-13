@@ -1,0 +1,28 @@
+﻿@model List<PartyPlaylists.Models.DataModels.RoomSong>;
+
+@foreach (var item in Model.OrderByDescending(s => s.SongRating))
+{
+    <li class="list-group-item list-group-item-dark">
+        <div class="row">
+            <div class="card inner-card-dark mb-1">
+                <div class="row no-gutters" style="background-color:#1d2528;">
+                    <div class="col-md-3 col-3">
+                        <img class="card-img-top img-fluid" src="@item.Song.AlbumArt" alt="Card image cap">
+                    </div>
+                    <div class="col-md-9 col-9">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Song.Name</h5>
+                            <h6 class="card-subtitle mb-0 text-muted">@item.Song.Artist</h6>
+                            <small class="card-subtitle mb-2 text-muted">Added by: @item.SongAddedBy</small>
+
+                            <p id="@($"songRating{item.SongId}")" class="mb-0 mr-0 mt-1">
+                                <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">+@item.SongRating</button>
+                            </p>
+                            <span hidden name="playerUri" class="d-none">@item.Song.SpotifyId</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
+}

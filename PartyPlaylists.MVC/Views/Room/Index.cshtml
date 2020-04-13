@@ -17,15 +17,13 @@
 
             <div class="card-body">
                 <div class="row">
-                    <div class="col-sm-7">
-                        <table class="table text-white" data-toggle="table" data-classes="table table-bordered" data-height="460">
-                            @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
-                            {
-                                <tbody id="tableOfSongs">
-                                    <partial name="Components/_roomSongTableRow" model="Model.CurrentRoom.RoomSongs" />
-                                </tbody>
-                            }
-                        </table>
+                    <div class="col-sm-7 scrollable-col">
+                        @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
+                        {
+                            <ul class="list-group list-group-flush" id="listOfSongs">
+                                 <partial name="Components/_roomSongListItem" model="Model.CurrentRoom.RoomSongs" />
+                            </ul>
+                        }
                     </div>
                     <div class="col-sm-5">
                         <div class="card inner-card-dark text-white">
@@ -76,10 +74,6 @@
     </div>
 </div>
 
-
-
-
-
 @section Scripts
 {
     <script>
@@ -95,7 +89,7 @@
                     'Authorization': "Bearer " + $("#jwtToken")[0].value,
                 },
                 success: function (data) {
-                    $("#tableOfSongs").html(data);
+                    $("#listOfSongs").html(data);
                     $("[name='addVoteButton']").off('click');
                     $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); });
                 },
@@ -112,7 +106,7 @@
     </script>
     <script>
         $(document).ready(function () {
-            $("table").on('DOMSubtreeModified', "#tableOfSongs", function () {
+            $("#listOfSongs").bind('songAdded', function () {
                 $("[name='addVoteButton']").off().click(function () { postSongVote($(this).val()); });
             });
         });
@@ -131,10 +125,9 @@
                     'Authorization': "Bearer " + $("#jwtToken")[0].value,
                 },
                 success: function (data) {
-                    $("#tableOfSongs").html(data);
+                    $("#listOfSongs").html(data);
+                    $("#listOfSongs").trigger("songAdded");
                     $("#songToAdd").val('');
-                    $("[name='addVoteButton']").off('click');
-                    $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); });
                 },
                 error: function (data) {
                     console.log(data);
@@ -183,6 +176,7 @@
                         headers: {
                         },
                         success: function (data) {
+                            connection.invoke("UpdateSongsAsync", $("#roomId")[0].value + "").catch(err => console.error(err.toString()));
                             StartPlaylist(player, data);
                         },
                         error: function (data) {
@@ -207,6 +201,22 @@
 
             $("#startPlaylistButton").click(function () {
                 StartPlaylist(player, $("[name='playerUri']").first().html());
+                $.ajax({
+                    url: "/room/MarkCurrentSongAsPlayed",
+                    type: "POST",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                        connection.invoke("UpdateSongsAsync", $("#roomId")[0].value + "").catch(err => console.error(err.toString()));
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
             });
         };
     </script>

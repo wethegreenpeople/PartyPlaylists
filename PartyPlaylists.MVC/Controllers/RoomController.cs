@@ -80,7 +80,7 @@ namespace PartyPlaylists.MVC.Controllers
             if (room != null)
             {
                 await _roomHub.Clients.All.SendAsync("Update", roomId.ToString());
-                return PartialView("Components/_roomSongTableRow", room.RoomSongs);
+                return PartialView("Components/_roomSongListItem", room.RoomSongs);
             }
 
             return StatusCode(500);
@@ -111,10 +111,10 @@ namespace PartyPlaylists.MVC.Controllers
             if (room != null)
             {
                 await _roomHub.Clients.All.SendAsync("Update", room.Id.ToString());
-                return PartialView("Components/_roomSongTableRow", room.RoomSongs);
+                return PartialView("Components/_roomSongListItem", room.RoomSongs);
             }
 
-            return PartialView("Components/_roomSongTableRow", room.RoomSongs);
+            return PartialView("Components/_roomSongListItem", room.RoomSongs);
         }
 
         [HttpGet]
@@ -160,12 +160,14 @@ namespace PartyPlaylists.MVC.Controllers
         {
             var room = await _roomDataStore.GetItemAsync(roomId.ToString());
 
-            return PartialView("Components/_roomSongTableRow", room.RoomSongs);
+            return PartialView("Components/_roomSongListitem", room.RoomSongs);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetNextSongToPlay(int roomId, string songUri)
         {
+            await _roomDataStore.UpdatePreviouslyPlayedSongs(roomId);
+            await _roomDataStore.RemovePreviouslyPlayedSongsAsync(roomId);
             var room = await _roomDataStore.GetItemAsync(roomId.ToString());
             var nextSong = room.RoomSongs
                 .Where(s => s.Song.SpotifyId != songUri)
@@ -186,6 +188,21 @@ namespace PartyPlaylists.MVC.Controllers
                 await _roomDataStore.UpdateTransferOfAudioControlAsync(roomId, allowTransferOfControl);
                 await _roomHub.Clients.All.SendAsync("AllowTransfer", allowTransferOfControl);
                 return RedirectToAction("Index", "Room", routeValues: new { Id = roomId });
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> MarkCurrentSongAsPlayed(int roomId)
+        {
+            try
+            {
+                await _roomDataStore.UpdatePreviouslyPlayedSongs(roomId);
+                return Ok();
             }
             catch
             {

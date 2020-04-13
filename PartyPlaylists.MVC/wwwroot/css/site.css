@@ -120,3 +120,13 @@ h1, h2 {
 .inner-card-dark {
     background-color: #191c1e;
 }
+
+.list-group-item-dark {
+    color: #fff;
+    background-color: #1d2528;
+}
+
+.scrollable-col {
+    height: calc(80vh - 110px);
+    overflow-y: auto;
+}

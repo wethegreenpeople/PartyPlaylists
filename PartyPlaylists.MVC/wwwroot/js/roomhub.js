@@ -39,7 +39,8 @@ function GetUpdatedRoomSongs(roomId) {
 
         },
         success: function (data) {
-            $("#tableOfSongs").html(data);
+            $("#listOfSongs").html(data);
+            $("#listOfSongs").trigger("songAdded");
         },
         error: function (data) {
             console.log(data);

@@ -4,21 +4,25 @@
 {
     <tr>
         <td class="p-0 align-middle">
-            <div class="row" style="display:table;">
-                <div class="d-none d-md-block">
-                    <div class="col-lg-3 col-md-3 middle-table-cell">
-                        <img src="@item.Song.AlbumArt" class="img-fluid" />
+            <div class="row">
+                <div class="card inner-card-dark mb-3" style="max-width: 540px;">
+                    <div class="row no-gutters">
+                        <div class="col-md-4">
+                            <img class="card-img-top" src="@item.Song.AlbumArt" alt="Card image cap">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Song.Name</h5>
+                                <h6 class="card-subtitle mb-0 text-muted">@item.Song.Artist</h6>
+                                <small class="card-subtitle mb-2 text-muted">Added by: @item.SongAddedBy</small>
+                            </div>
+                            <div class="card-footer">
+                                <p id="@($"songRating{item.SongId}")" class="mb-0 mr-1">
+                                    <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">+@item.SongRating</button>
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-7 middle-table-cell">
-                    <p class="mb-0">@item.Song.Name</p>
-                    <p class="mb-0 text-muted align-bottom">@item.Song.Artist</p>
-                    <p class="mb-0 text-muted align-bottom"><small>Added by: @item.SongAddedBy</small></p>
-                </div>
-                <div class="col-lg-1 middle-table-cell">
-                    <p id="@($"songRating{item.SongId}")" class="mb-0 mr-1">
-                        <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">+@item.SongRating</button>
-                    </p>
                 </div>
             </div>
         </td>
