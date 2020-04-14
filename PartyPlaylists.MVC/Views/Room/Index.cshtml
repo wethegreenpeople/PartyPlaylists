@@ -51,7 +51,8 @@
                                         <div class="col">
                                             @if ((Model.CurrentRoom.Owner == Model.CurrentUserName || Model.CurrentRoom.AllowTransferOfControl))
                                             {
-                                                <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+                                                <button class="btn btn-primary" type="button" id="startPlaylistButton"><i class="fas fa-play"></i></button>
+                                                <button class="btn btn-primary" type="button" id="nextSongButton"><i class="fas fa-step-forward"></i></button>
                                             }
                                         </div>
                                         <div class="col-auto">
@@ -216,6 +217,11 @@
                     error: function (data) {
                         console.log(data);
                     }
+                });
+            });
+
+            $("#nextSongButton").click(function () {
+                player.nextTrack().then(() => {
                 });
             });
         };
