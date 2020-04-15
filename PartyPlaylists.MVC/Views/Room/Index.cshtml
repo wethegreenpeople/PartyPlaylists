@@ -61,15 +61,16 @@ else
                                                 <button class="btn btn-primary" type="button" id="startPlaylistButton"><i class="fas fa-play"></i></button>
                                                 <button class="btn btn-primary" type="button" id="nextSongButton"><i class="fas fa-step-forward"></i></button>
                                             }
-                                        </div>
-                                        <div class="col">
-                                            @if (string.IsNullOrEmpty(Model.SyncSpotifyAuthCode))
-                                            {
-                                                <button class="btn btn-primary" type="submit" id="syncAuthorizeMusicButton">Sync Authorize</button>
-                                            }
                                             else
                                             {
-                                                <button class="btn btn-primary" type="submit" id="syncMusicButton">Sync</button>
+                                                @if (string.IsNullOrEmpty(Model.SyncSpotifyAuthCode))
+                                                {
+                                                    <button class="btn btn-primary" type="submit" id="syncAuthorizeMusicButton">Sync Authorize</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-primary" type="submit" id="syncMusicButton">Sync</button>
+                                                }
                                             }
                                         </div>
                                         <div class="col-auto">
