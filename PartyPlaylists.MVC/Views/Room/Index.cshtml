@@ -35,7 +35,10 @@
 else
 {
     <label>Song: </label>
-    <input asp-for="@Model.SongToAdd" id="songToAdd" />
+    <input oninput="getSearchList(this.value)" asp-for="@Model.SongToAdd" id="songToAdd" name="songToAdd" />
+    <select id="searchResults" name="searchResults" >
+        <option value="test"></option>
+    </select>
     <br />
     <br />
     <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
@@ -70,7 +73,7 @@ else
                     }
                 });
             }
-
+            
             $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); })
         });
     </script>
@@ -176,5 +179,39 @@ else
         }
     </script>
 
+    <script>
+        function getSearchList(query) {
+            var auth = $('#spotifyAuthCode').val();
+            $.ajax({
+                url: "/room/livesearch",
+                type: "GET",
+                async: true,
+                data: {
+                    "auth": auth,
+                    "query": query
+                },
+                success: function (response) {
+                    
+                    response.forEach(s => {
+                        var select = document.getElementById('searchResults');
+                        var option = document.createElement('option');
+                        option.value = s.name;
+                        select.appendChild(option);
+                    });
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+                    
+            })
+        }
+
+        $(document).ready(function () {
+            $('#songToAdd').oninput = handleInput;
+            function handleInput(e) {
+                getSearchList($('#songToAdd').val());
+            }   
+        })
+    </script>
     <script src="~/js/roomhub.js"></script>
 }

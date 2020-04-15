@@ -140,5 +140,20 @@ namespace PartyPlaylists.MVC.Controllers
 
             return PartialView("Components/_roomSongTableRow", room.RoomSongs);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LiveSearch(string auth, string query)
+        {
+            var spotifyService = new SpotifyService(auth);
+            try
+            {   
+                return Ok(await spotifyService.GetSongs(query));
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+        }
     }
 }
