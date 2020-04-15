@@ -14,6 +14,7 @@ namespace PartyPlaylists.Models.DataModels
         public int Id { get; set; }
 
         [Required(AllowEmptyStrings = false)]
+        [Column("JWTToken", TypeName = "varchar(2000)")]
         public string JWTToken { get; set; }
 
         [JsonIgnore]

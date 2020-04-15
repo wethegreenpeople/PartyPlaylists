@@ -55,6 +55,9 @@
                                                 <button class="btn btn-primary" type="button" id="nextSongButton"><i class="fas fa-step-forward"></i></button>
                                             }
                                         </div>
+                                        <div class="col">
+                                            <button class="btn btn-primary" type="submit" id="syncMusicButton">Sync</button>
+                                        </div>
                                         <div class="col-auto">
                                             @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
                                             {
@@ -77,6 +80,45 @@
 
 @section Scripts
 {
+    <script>
+        $(document).ready(function () {
+            $("#syncMusicButton").click(function () {
+                $.ajax({
+                    url: "/room/AuthorizeSpotify",
+                    type: "GET",
+                    data: {
+                        "CurrentRoom.Id": $("#roomId")[0].value,
+                        "SyncAuthorization": true
+                    },
+                    headers: {
+                    },
+                    success: function (data) {
+                        window.location.replace(data);
+                        $.ajax({
+                            url: "/room/GetCurrentSongPosistion",
+                            type: "GET",
+                            data: {
+                                "roomId": $("#roomId")[0].value,
+                            },
+                            headers: {
+                                'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                            },
+                            success: function (data) {
+                                console.log(data);
+                            },
+                            error: function (data) {
+                                console.log(data);
+                            }
+                        });
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+        });
+    </script>
+
     <script>
         function postSongVote(songId) {
             $.ajax({

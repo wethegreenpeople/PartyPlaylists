@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using SpotifyApi.NetCore.Authorization;
 using PartyPlaylists.MVC.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using System.Resources;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -122,10 +123,13 @@ namespace PartyPlaylists.MVC.Controllers
         {
             var accountService = new UserAccountsService(new HttpClient(), _config);
 
+            var roomId = roomVM.SyncAuthorization ? $"{roomVM.CurrentRoom.Id}-sync" : roomVM.CurrentRoom.Id.ToString();
             string url = accountService
                 .AuthorizeUrl(
-                    roomVM.CurrentRoom.Id.ToString(), 
+                    roomId, 
                     new[] { "user-read-playback-state streaming user-read-private user-read-email playlist-read-private user-library-read playlist-modify-public playlist-modify-private" });
+            if (roomVM.SyncAuthorization)
+                return Ok(url);
 
             return Redirect(url);
         }
@@ -133,6 +137,22 @@ namespace PartyPlaylists.MVC.Controllers
         [HttpGet]
         public async Task<IActionResult> SpotifyAuthorized(string code, string state)
         {
+            if (state.Contains("-sync"))
+            {
+                var option = new CookieOptions();
+                option.Expires = DateTime.Now.AddDays(1);
+                Request.Cookies.TryGetValue("jwtToken", out string jwtToken);
+                jwtToken = await _tokenService
+                    .AddClaimToToken(
+                        jwtToken,
+                        "spotifyAuth",
+                        (await new UserAccountsService(new HttpClient(), _config).RequestAccessRefreshToken(code)).AccessToken);
+                Response.Cookies.Append("jwtToken", jwtToken, option);
+
+                var roomId = state.TrimEnd("-sync".ToCharArray());
+                return RedirectToAction("Index", "Room", routeValues: new { Id = roomId });
+            }
+
             var refreshToken = (await new UserAccountsService(new HttpClient(), _config).RequestAccessRefreshToken(code)).AccessToken;
             var room =  await _roomDataStore.GetItemAsync(state);
 
@@ -205,6 +225,23 @@ namespace PartyPlaylists.MVC.Controllers
                 return Ok();
             }
             catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetCurrentSongPosistion(int roomId)
+        {
+            try
+            {
+                var room = await _roomDataStore.GetItemAsync(roomId.ToString());
+                var spotify = new SpotifyService(room.SpotifyAuthCode);
+                var currentSong = await spotify.GetCurrentlyPlayingSongAsync();
+                return Ok(currentSong.ProgressMs);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
