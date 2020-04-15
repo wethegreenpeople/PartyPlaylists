@@ -146,8 +146,9 @@ namespace PartyPlaylists.MVC.Controllers
         {
             var spotifyService = new SpotifyService(auth);
             try
-            {   
-                return Ok(await spotifyService.GetSongs(query));
+            {
+                var results = (await spotifyService.GetSongs(query)).Take(5);
+                return Ok(results);
             }
             catch
             {

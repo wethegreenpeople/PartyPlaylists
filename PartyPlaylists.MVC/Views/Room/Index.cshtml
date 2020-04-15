@@ -35,10 +35,10 @@
 else
 {
     <label>Song: </label>
-    <input oninput="getSearchList(this.value)" asp-for="@Model.SongToAdd" id="songToAdd" name="songToAdd" />
-    <select id="searchResults" name="searchResults" >
+    <input list="searchResults" asp-for="@Model.SongToAdd" id="songToAdd" name="songToAdd" />
+    <datalist id="searchResults" name="searchResults" >
         <option value="test"></option>
-    </select>
+    </datalist>
     <br />
     <br />
     <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
@@ -191,7 +191,10 @@ else
                     "query": query
                 },
                 success: function (response) {
-                    
+                    if (response == null) {
+                        return;
+                    }
+                    deleteChildren('searchResults')
                     response.forEach(s => {
                         var select = document.getElementById('searchResults');
                         var option = document.createElement('option');
@@ -207,11 +210,38 @@ else
         }
 
         $(document).ready(function () {
-            $('#songToAdd').oninput = handleInput;
+            $('#songToAdd').on('input', handleInput);
             function handleInput(e) {
-                getSearchList($('#songToAdd').val());
-            }   
+                debounce(getSearchList($('#songToAdd').val()), 500);
+            }
         })
+
+        function debounce(func, wait, immediate) {
+            var timeout;
+            return function () {
+                var context = this, args = arguments;
+                var later = function () {
+                    timeout = null;
+                    if (!immediate) func.apply(context, args);
+                };
+                var callNow = immediate && !timeout;
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+                if (callNow) func.apply(context, args);
+            };
+        };
+
+        function deleteChildren(e) {
+
+            var parent = document.getElementById(e);
+            var firstChild = parent.firstElementChild;
+            while (firstChild != null) {
+                firstChild.remove();
+                firstChild = parent.firstElementChild;
+            }
+
+        }
+        
     </script>
     <script src="~/js/roomhub.js"></script>
 }
