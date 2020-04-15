@@ -20,6 +20,7 @@ using SpotifyApi.NetCore.Authorization;
 using PartyPlaylists.MVC.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using System.Resources;
+using Jose;
 
 namespace PartyPlaylists.MVC.Controllers
 {
@@ -55,6 +56,7 @@ namespace PartyPlaylists.MVC.Controllers
                 CurrentRoom = await _roomDataStore.GetItemAsync(Id),
                 JwtToken = jwtToken,
                 CurrentUserName = _tokenService.GetNameFromToken(jwtToken),
+                SyncSpotifyAuthCode = _tokenService.GetValueFromToken(jwtToken, "spotifyAuth")
             };
 
             return View("Index", roomVm);

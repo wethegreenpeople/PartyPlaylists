@@ -56,6 +56,16 @@ namespace PartyPlaylists.Services
                        jwtToken, Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"))))["nameid"];
         }
 
+        public string GetValueFromToken(string jwtToken, string value)
+        {
+            var item = (string)JObject.Parse(
+                   JWT.Decode(
+                       jwtToken, Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"))))[value];
+
+            return item;
+               
+        }
+
         public async Task<string> AddClaimToToken(string jwtToken, string claim, string value)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

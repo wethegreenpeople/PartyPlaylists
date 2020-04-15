@@ -5,7 +5,14 @@
 
 <input type="hidden" id="jwtToken" name="jwtToken" value="@Model.JwtToken">
 <input type="hidden" id="roomId" name="roomId" value="@Model.CurrentRoom.Id">
-<input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
+@if (string.IsNullOrEmpty(Model.SyncSpotifyAuthCode))
+{
+    <input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
+}
+else
+{
+    <input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.SyncSpotifyAuthCode" />
+}
 
 <div class="row">
     <div class="col">
@@ -21,7 +28,7 @@
                         @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
                         {
                             <ul class="list-group list-group-flush" id="listOfSongs">
-                                 <partial name="Components/_roomSongListItem" model="Model.CurrentRoom.RoomSongs" />
+                                <partial name="Components/_roomSongListItem" model="Model.CurrentRoom.RoomSongs" />
                             </ul>
                         }
                     </div>
@@ -56,7 +63,14 @@
                                             }
                                         </div>
                                         <div class="col">
-                                            <button class="btn btn-primary" type="submit" id="syncMusicButton">Sync</button>
+                                            @if (string.IsNullOrEmpty(Model.SyncSpotifyAuthCode))
+                                            {
+                                                <button class="btn btn-primary" type="submit" id="syncAuthorizeMusicButton">Sync Authorize</button>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn btn-primary" type="submit" id="syncMusicButton">Sync</button>
+                                            }
                                         </div>
                                         <div class="col-auto">
                                             @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
@@ -82,7 +96,7 @@
 {
     <script>
         $(document).ready(function () {
-            $("#syncMusicButton").click(function () {
+            $("#syncAuthorizeMusicButton").click(function () {
                 $.ajax({
                     url: "/room/AuthorizeSpotify",
                     type: "GET",
@@ -94,22 +108,6 @@
                     },
                     success: function (data) {
                         window.location.replace(data);
-                        $.ajax({
-                            url: "/room/GetCurrentSongPosistion",
-                            type: "GET",
-                            data: {
-                                "roomId": $("#roomId")[0].value,
-                            },
-                            headers: {
-                                'Authorization': "Bearer " + $("#jwtToken")[0].value,
-                            },
-                            success: function (data) {
-                                console.log(data);
-                            },
-                            error: function (data) {
-                                console.log(data);
-                            }
-                        });
                     },
                     error: function (data) {
                         console.log(data);
@@ -199,6 +197,7 @@
                 name: 'PartyPlaylist - ' + $("#roomNameHeader").html(),
                 getOAuthToken: cb => { cb(token); }
             });
+            var timeToSeek = 0;
 
             // Error handling
             player.addListener('initialization_error', ({ message }) => { console.error(message); });
@@ -208,7 +207,15 @@
 
             // Playback status updates
             player.addListener('player_state_changed', state => {
+                if (timeToSeek != 0) {
+                    console.log(timeToSeek);
+                    player.seek(timeToSeek).then(() => {
+                        console.log("sook");
+                        timeToSeek = 0;
+                    });
+                }
                 if (state.paused) {
+                    console.log("state paused");
                     $.ajax({
                         url: "/room/GetNextSongToPlay",
                         type: "GET",
@@ -255,6 +262,26 @@
                     },
                     success: function (data) {
                         connection.invoke("UpdateSongsAsync", $("#roomId")[0].value + "").catch(err => console.error(err.toString()));
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+            $("#syncMusicButton").click(function () {
+                $.ajax({
+                    url: "/room/GetCurrentSongPosistion",
+                    type: "GET",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                        timeToSeek = data;
+                        StartPlaylist(player, $("[name='playerUri']").first().html());
                     },
                     error: function (data) {
                         console.log(data);

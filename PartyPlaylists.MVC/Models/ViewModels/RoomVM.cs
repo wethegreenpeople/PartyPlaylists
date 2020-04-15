@@ -13,5 +13,6 @@ namespace PartyPlaylists.MVC.Models.ViewModels
         public string SongToAdd { get; set; }
         public string CurrentUserName { get; set; }
         public bool SyncAuthorization { get; set; }
+        public string SyncSpotifyAuthCode { get; set; }
     }
 }
