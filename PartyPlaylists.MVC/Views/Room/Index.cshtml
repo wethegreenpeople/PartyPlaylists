@@ -180,7 +180,8 @@ else
     </script>
 
     <script>
-        function getSearchList(query) {
+        
+            var search = function () {
             var auth = $('#spotifyAuthCode').val();
             $.ajax({
                 url: "/room/livesearch",
@@ -188,17 +189,18 @@ else
                 async: true,
                 data: {
                     "auth": auth,
-                    "query": query
+                    "query": $('#songToAdd').val()
                 },
                 success: function (response) {
                     if (response == null) {
                         return;
                     }
+                    console.log(response);
                     deleteChildren('searchResults')
                     response.forEach(s => {
                         var select = document.getElementById('searchResults');
                         var option = document.createElement('option');
-                        option. = s.name + " artist: " + s.artist;
+                        option.value = s.name + " artist: " + s.artist;
                         select.appendChild(option);
                     });
                 },
@@ -208,12 +210,11 @@ else
                     
             })
         }
+        
+
 
         $(document).ready(function () {
-            $('#songToAdd').on('input', handleInput);
-            function handleInput(e) {
-                debounce(getSearchList($('#songToAdd').val()), 500);
-            }
+            $('#songToAdd').on('input', debounce(search, 500));
         })
 
         function debounce(func, wait, immediate) {
@@ -224,9 +225,11 @@ else
                     timeout = null;
                     if (!immediate) func.apply(context, args);
                 };
+                console.log(later);
                 var callNow = immediate && !timeout;
                 clearTimeout(timeout);
                 timeout = setTimeout(later, wait);
+                console.log(timeout);
                 if (callNow) func.apply(context, args);
             };
         };
