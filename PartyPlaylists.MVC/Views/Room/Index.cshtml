@@ -198,7 +198,7 @@ else
                     response.forEach(s => {
                         var select = document.getElementById('searchResults');
                         var option = document.createElement('option');
-                        option.value = s.name;
+                        option. = s.name + " artist: " + s.artist;
                         select.appendChild(option);
                     });
                 },
