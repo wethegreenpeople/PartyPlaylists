@@ -18,7 +18,7 @@
                             <p id="@($"songRating{item.SongId}")" class="mb-0 mr-0 mt-1">
                                 <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">+@item.SongRating</button>
                             </p>
-                            <span hidden name="playerUri" class="d-none">@item.Song.SpotifyId</span>
+                            <span hidden name="playerUri" class="d-none">@item.Song.ServiceId</span>
                         </div>
                     </div>
                 </div>

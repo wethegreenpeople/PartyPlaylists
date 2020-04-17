@@ -40,7 +40,7 @@ namespace PartyPlaylists.Services
                 client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
                 var request = new RestRequest($@"playlists/{playlist.PlaylistID}/tracks", Method.POST);
                 request.RequestFormat = DataFormat.Json;
-                string[] spotifyUris = { song.SpotifyId };
+                string[] spotifyUris = { song.ServiceId };
                 request.AddJsonBody(new { uris = spotifyUris });
 
                 var response = await client.ExecuteAsync(request);
@@ -105,7 +105,7 @@ namespace PartyPlaylists.Services
                     Artist = searchResult?.Tracks?.Items[0].Artists[0].Name,
                     Name = searchResult?.Tracks?.Items[0].Name,
                     ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
-                    SpotifyId = searchResult?.Tracks.Items[0].Uri,
+                    ServiceId = searchResult?.Tracks.Items[0].Uri,
                     AlbumArt = searchResult?.Tracks.Items[0].Album.Images[0].Url,
                 };
 
@@ -139,7 +139,7 @@ namespace PartyPlaylists.Services
                         Artist = result.Artists[0].Name,
                         Name = result.Name,
                         ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
-                        SpotifyId = result.Uri,
+                        ServiceId = result.Uri,
                     });
                 }
 
@@ -176,7 +176,7 @@ namespace PartyPlaylists.Services
 
                 var spotifyUris = room.RoomSongs
                     .OrderByDescending(s => s.SongRating)
-                    .Select(s => s.Song.SpotifyId)
+                    .Select(s => s.Song.ServiceId)
                     .ToList();
 
                 // Move the currently playing song to the top of the playlist

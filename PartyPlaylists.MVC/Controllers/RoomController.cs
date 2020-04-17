@@ -192,11 +192,11 @@ namespace PartyPlaylists.MVC.Controllers
             await _roomDataStore.RemovePreviouslyPlayedSongsAsync(roomId);
             var room = await _roomDataStore.GetItemAsync(roomId.ToString());
             var nextSong = room.RoomSongs
-                .Where(s => s.Song.SpotifyId != songUri)
+                .Where(s => s.Song.ServiceId != songUri)
                 .OrderByDescending(s => s.SongRating)
                 .ElementAt(0)
                 .Song
-                .SpotifyId;
+                .ServiceId;
 
             return Json(nextSong);
         }

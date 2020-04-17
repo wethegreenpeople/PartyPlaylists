@@ -8,5 +8,6 @@ namespace PartyPlaylists.Enums
     public enum StreamingServiceTypes
     {
         Spotify,
+        SoundCloud,
     }
 }

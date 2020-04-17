@@ -116,11 +116,11 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 {
                     var playlistTable = await playlist;
                     var service = new SpotifyService(playlistTable.AuthCode);
-                    if (string.IsNullOrEmpty(song.SpotifyId))
+                    if (string.IsNullOrEmpty(song.ServiceId))
                     {
                         var spotifySong = await service.GetSong(song.Name);
                         await service.AddSongToPlaylist(playlistTable, spotifySong);
-                        song.SpotifyId = spotifySong.SpotifyId;
+                        song.ServiceId = spotifySong.ServiceId;
                     }
                     else
                         await service.AddSongToPlaylist(playlistTable, song);
