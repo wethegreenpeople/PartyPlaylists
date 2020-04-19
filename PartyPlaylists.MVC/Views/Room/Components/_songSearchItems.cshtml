@@ -1,0 +1,6 @@
+﻿@model RoomVM
+
+@foreach (var song in Model.SearchedSongs)
+{
+    <li data-display="true" data-highlight="false" id="@song.ServiceId">@song.Name artist: @song.Artist</li>
+}
