@@ -37,14 +37,12 @@ else
     <label>Song: </label>
     <form method="post" asp-controller="Room" asp-action="AddSongToRoom" autocomplete="off" name="songSearchForm">
         <input hidden asp-for="@Model.SongToAdd" id="hiddenInput" />
-        <ul class="select-list-group" id="slg">
-            <li>
-                <input type="text" class="select-list-group__search" placeholder="Song" id="songToAdd" name="songToAdd" />
-                <span class="select-list-group__toggle"> </span>
-                <ul class="select-list-group" data-toggle="false" id="songsList">
-                </ul>
-            </li>
-        </ul>
+        <div id="searchContainer" class="search-container">
+            <input type="text" class="select-list-group__search" placeholder="Song" id="songToAdd" name="songToAdd" />
+            <ul class="select-list-group" data-toggle="false" id="songListGroup">
+            </ul>
+        </div>
+
     </form>
 
     <br />
@@ -84,32 +82,6 @@ else
 
             $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); })
         });
-    </script>
-
-    <script>
-        function postSongData() {
-            $.ajax({
-                url: "/room/AddSongToRoom",
-                type: "POST",
-                data: {
-                    "CurrentRoom.Id": $("#roomId")[0].value,
-                    "CurrentRoom.SpotifyAuthCode": $("#spotifyAuthCode")[0].value,
-                    "SongToAdd": $("#songToAdd")[0].value,
-                },
-                headers: {
-                    'Authorization': "Bearer " + $("#jwtToken")[0].value,
-                },
-                success: function (data) {
-                    $("#tableOfSongs").html(data);
-                    $("#songToAdd").val('');
-                },
-                error: function (data) {
-                    console.log(data);
-                }
-            });
-        }
-
-        
     </script>
 
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
@@ -177,7 +149,9 @@ else
         }
     </script>
 
-    <script>
+
+    @*<script>
+        var formInput = document.getElementById('hiddenInput');
         var search = document.getElementById('songToAdd');
         var searchFunc = function () {
             var auth = $('#spotifyAuthCode').val();
@@ -191,80 +165,62 @@ else
                 },
                 success: function (response) {
 
-                    console.log(response);
                     if (response == null) {
                         return;
                     }
-                    var formInput = document.getElementById('hiddenInput');
-                    var searchedSongList = document.getElementById("songsList");
+                   
+                    var searchedSongList = document.getElementById("slg");
 
                     searchedSongList.innerHTML = response;
-                    var liElements = searchedSongList.childNodes;
-                    Array.prototype.forEach.call(liElements, s => s.addEventListener('click', function () {
-                        formInput.value = s.id;
-                        $.ajax({
-                            url: "/room/AddSongToRoom",
-                            type: "POST",
-                            data: {
-                                "CurrentRoom.Id": $("#roomId")[0].value,
-                                "CurrentRoom.SpotifyAuthCode": $("#spotifyAuthCode")[0].value,
-                                "SongToAdd": formInput.value,
-                            },
-                            headers: {
-                                'Authorization': "Bearer " + $("#jwtToken")[0].value,
-                            },
-                            success: function (data) {
-                                $("#tableOfSongs").html(data);
-                            },
-                            error: function (data) {
-                                console.log(data);
-                            }
-                            });
+                    var searchListItems = searchedSongList.childNodes;
+                    Array.prototype.forEach.call(searchListItems, s => s.addEventListener('click', function () {
+                        postSongToAdd(s);
                     }));
 
-                    
                 },
+
                 error: function (response) {
-                    console.log(response);
+                    console.log("Failed to get search results. " + response);
                 }
             })
-        }
-
-        function submitInput (event) {
-
         }
 
         $(document).ready(function () {
             $('#songToAdd').on('input', debounce(searchFunc, 250));
+
             $('#songToAdd').keydown(function (e) {
-                var firstLi = document.getElementById("songsList").firstElementChild;
-                var formInput = document.getElementById('hiddenInput');
-                if (e.keyCode == 13 && firstLi != null) {
-                    formInput.value = firstLi.id;
-                    $.ajax({
-                        url: "/room/AddSongToRoom",
-                        type: "POST",
-                        data: {
-                            "CurrentRoom.Id": $("#roomId")[0].value,
-                            "CurrentRoom.SpotifyAuthCode": $("#spotifyAuthCode")[0].value,
-                            "SongToAdd": formInput.value,
-                        },
-                        headers: {
-                            'Authorization': "Bearer " + $("#jwtToken")[0].value,
-                        },
-                        success: function (data) {
-                            $("#tableOfSongs").html(data);
-                        },
-                        error: function (data) {
-                            console.log(data);
-                        }
-                    });
+
+                if (e.keyCode == 13) {
+                    var firstSearchItem = document.getElementById("songsList").firstElementChild;
+                    postSongToAdd(firstSearchItem);
                 }
             })
         })
 
-        
 
+        function postSongToAdd(searchItem) {
+            if (searchItem != null) {
+                formInput.value = searchItem.id;
+                $.ajax({
+                    url: "/room/AddSongToRoom",
+                    type: "POST",
+                    data: {
+                        "CurrentRoom.Id": $("#roomId")[0].value,
+                        "CurrentRoom.SpotifyAuthCode": $("#spotifyAuthCode")[0].value,
+                        "SongToAdd": formInput.value,
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                        $("#tableOfSongs").html(data);
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            }
+        }
         function debounce(func, wait, immediate) {
             var timeout;
             return function () {
@@ -280,18 +236,7 @@ else
             };
         };
 
-        function deleteChildren(e) {
-
-            var parent = document.getElementById(e);
-            var children = parent.childNodes;
-            console.log()
-            for (let i = 0; i < children.length; i++) {
-                console.log(children[i]);
-            }
-
-        }
-
-    </script>
+    </script>*@
     <script src="~/js/roomhub.js"></script>
     <script src="~/js/selectList.js"></script>
 }

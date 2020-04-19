@@ -1,6 +1,9 @@
 ﻿* {
     box-sizing: border-box;
 }
+div.search-container {
+    max-width: 13.5rem;
+}
 
 body {
     padding: 10%
@@ -12,6 +15,7 @@ input, li {
 }
 
 li {
+    cursor: pointer;
     position: relative;
     width: inherit;
 }
