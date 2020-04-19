@@ -5,33 +5,24 @@ div.search-container {
     max-width: 13.5rem;
 }
 
-body {
-    padding: 10%
-}
-
-input, li {
-    padding: .6rem 1rem;
-    margin: 0
-}
-
-li {
+li.search-item {
     cursor: pointer;
     position: relative;
     width: inherit;
 }
 
-ul {
+ul.search-list{
     list-style: none;
     padding: 0;
     width: 13.5rem;
 }
 
-li li:hover {
+li.search-item:hover {
     color: white;
     background-color: grey
 }
 
-li li.current {
+li.current {
     color: white;
     background-color: pink
 }
