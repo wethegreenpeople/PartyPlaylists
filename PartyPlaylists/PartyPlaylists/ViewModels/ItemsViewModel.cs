@@ -17,7 +17,7 @@ namespace PartyPlaylists.ViewModels
 
         public ItemsViewModel()
         {
-            Title = "Browse";
+            Title = "Join";
             Items = new ObservableCollection<Item>();
             LoadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand());
 

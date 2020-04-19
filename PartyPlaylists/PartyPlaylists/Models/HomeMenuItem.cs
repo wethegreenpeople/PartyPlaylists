@@ -6,7 +6,7 @@ namespace PartyPlaylists.Models
 {
     public enum MenuItemType
     {
-        Browse,
+        Join,
         About
     }
     public class HomeMenuItem

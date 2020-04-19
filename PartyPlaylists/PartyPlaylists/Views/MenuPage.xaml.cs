@@ -20,7 +20,7 @@ namespace PartyPlaylists.Views
 
             menuItems = new List<HomeMenuItem>
             {
-                new HomeMenuItem {Id = MenuItemType.Browse, Title="Browse" },
+                new HomeMenuItem {Id = MenuItemType.Join, Title="Join" },
                 new HomeMenuItem {Id = MenuItemType.About, Title="About" }
             };
 
