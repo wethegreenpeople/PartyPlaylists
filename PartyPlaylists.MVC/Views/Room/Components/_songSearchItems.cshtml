@@ -2,5 +2,5 @@
 
 @foreach (var song in Model.SearchedSongs)
 {
-    <li class="search-item" data-display="true" data-highlight="false" id="@song.ServiceId">@song.Name artist: @song.Artist</li>
+    <li class="search-item" data-display="true" selected-search-item="false" id="@song.ServiceId">@song.Name artist: @song.Artist</li>
 }
