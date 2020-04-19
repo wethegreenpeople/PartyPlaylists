@@ -19,6 +19,11 @@
             <Style TargetType="Label">
                 <Setter Property="TextColor" Value="White" />
             </Style>
+
+            <Style TargetType="Button">
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="BackgroundColor" Value="#08948b" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
     
