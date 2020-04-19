@@ -12,5 +12,8 @@ namespace PartyPlaylists.MVC.Models.ViewModels
         public string JwtToken { get; set; }
         public string SongToAdd { get; set; }
         public List<Song> SearchedSongs { get; set; }
+        public string CurrentUserName { get; set; }
+        public bool SyncAuthorization { get; set; }
+        public string SyncSpotifyAuthCode { get; set; }
     }
 }

@@ -25,6 +25,8 @@ namespace PartyPlaylists.Models.DataModels
 
         public string SpotifyAuthCode { get; set; }
 
+        public bool AllowTransferOfControl { get; set; }
+
         // TODO: Investigate why this is here
         // Genuinally don't remember what this is supposed to achieve, I think it was for the webAPI
         // we can probably remove it

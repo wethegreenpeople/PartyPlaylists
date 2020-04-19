@@ -39,6 +39,13 @@ namespace PartyPlaylists.Services
             return song;
         }
 
+        // Search for a song by the ID that the service provides 
+        public async Task<Song> GetItemByServiceId(string id)
+        {
+            var song = await _playlistContext.Songs.SingleOrDefaultAsync(s => s.ServiceId == id);
+            return song;
+        }
+
         public Task<IEnumerable<Song>> GetItemsAsync(bool forceRefresh = false)
         {
             throw new NotImplementedException();

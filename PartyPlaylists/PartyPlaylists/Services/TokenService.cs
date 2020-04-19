@@ -1,4 +1,5 @@
 ﻿using Jose;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Linq;
@@ -33,7 +34,7 @@ namespace PartyPlaylists.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier, GenerateName())
+                    new Claim(ClaimTypes.NameIdentifier, GenerateName()),
                 }),
                 Expires = DateTime.UtcNow.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -53,6 +54,47 @@ namespace PartyPlaylists.Services
                (string)JObject.Parse(
                    JWT.Decode(
                        jwtToken, Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"))))["nameid"];
+        }
+
+        public string GetValueFromToken(string jwtToken, string value)
+        {
+            var item = (string)JObject.Parse(
+                   JWT.Decode(
+                       jwtToken, Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"))))[value];
+
+            return item;
+               
+        }
+
+        public async Task<string> AddClaimToToken(string jwtToken, string claim, string value)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_config.GetValue<string>("Jwt:Key"));
+
+            var currentToken = tokenHandler.ReadJwtToken(jwtToken);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(claim, value),
+                }),
+                Expires = DateTime.UtcNow.AddDays(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            foreach (var item in currentToken.Claims)
+            {
+                if (item.Type != claim)
+                {
+                    tokenDescriptor.Subject.AddClaim(item);
+                }
+            }
+            var secureToken = tokenHandler.CreateToken(tokenDescriptor);
+            var token = new Token() { JWTToken = tokenHandler.WriteToken(secureToken) };
+
+            await _playlistContext.Tokens.AddAsync(token);
+            await _playlistContext.SaveChangesAsync();
+
+            return token.JWTToken;
         }
 
         private string GenerateName()

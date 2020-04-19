@@ -109,11 +109,12 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> AddSongToRoomAsync(string usernameAddingSong, string roomId, Song song)
         {
+            var songDataStore = new SongDataStore(_playlistsContext);
             try
             {
                 var roomIdAsInt = Convert.ToInt32(roomId);
                 var room = await GetItemAsync(roomId);
-                var matchingSong = await _playlistsContext.Songs.FirstOrDefaultAsync(s => s.SpotifyId == song.SpotifyId);
+                var matchingSong = await songDataStore.GetItemByServiceId(song.ServiceId);
 
                 if (room == null)
                     throw new Exception("Could not find room");
@@ -122,7 +123,7 @@ namespace PartyPlaylists.Services
                 {
                     RoomId = roomIdAsInt,
                     SongId = (matchingSong)?.Id ?? 0,
-                    Song = song,
+                    Song = matchingSong ?? song,
                     SongAddedBy = usernameAddingSong,
                 };
 
@@ -226,27 +227,47 @@ namespace PartyPlaylists.Services
             var spotify = new SpotifyService(room.SpotifyAuthCode);
             var currentlyPlayingSong = await spotify.GetCurrentlyPlayingSongAsync();
 
-            // If a song is currently play we mark it as 'Previously Played' so we can go back
-            // later and remove it from the room
-            void UpdatePreviouslyPlayedSongs()
+            void RemoveSongs()
             {
-                var roomSong = room.RoomSongs.SingleOrDefault(s => s.Song.SpotifyId == currentlyPlayingSong?.Item?.Uri);
-                if (roomSong != null && !roomSong.PreviouslyPlayed)
+                if (currentlyPlayingSong != null)
                 {
-                    roomSong.PreviouslyPlayed = true;
-                    _playlistsContext.RoomSongs.Update(roomSong);
+                    if ((bool)!currentlyPlayingSong?.IsPlaying && (bool)room.RoomSongs.Single(s => s.Song.ServiceId == currentlyPlayingSong?.Item?.Uri)?.PreviouslyPlayed)
+                    {
+                        room.RoomSongs.RemoveAll(s => s.PreviouslyPlayed);
+                    }
+                    room.RoomSongs.RemoveAll(s => s.PreviouslyPlayed && s.Song.ServiceId != currentlyPlayingSong?.Item?.Uri);
                 }
             }
 
-            void RemoveSongs()
-            {
-                room.RoomSongs.RemoveAll(s => s.PreviouslyPlayed && s.Song.SpotifyId != currentlyPlayingSong.Item.Uri);
-            }
-
-            UpdatePreviouslyPlayedSongs();
+            await UpdatePreviouslyPlayedSongs(currentRoomId);
             RemoveSongs();
 
             await _playlistsContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateTransferOfAudioControlAsync(int roomId, bool allowTransfer)
+        {
+            var room = await _playlistsContext.Rooms.SingleOrDefaultAsync(s => s.Id == roomId);
+            room.AllowTransferOfControl = allowTransfer;
+            await _playlistsContext.SaveChangesAsync();
+        }
+
+        public async Task UpdatePreviouslyPlayedSongs(int currentRoomId)
+        {
+            var room = await _playlistsContext
+                .Rooms
+                .Include(s => s.RoomSongs)
+                    .ThenInclude(s => s.Song)
+                .SingleOrDefaultAsync(s => s.Id == currentRoomId);
+            var spotify = new SpotifyService(room.SpotifyAuthCode);
+            var currentlyPlayingSong = await spotify.GetCurrentlyPlayingSongAsync();
+
+            var roomSong = room.RoomSongs.SingleOrDefault(s => s.Song.ServiceId == currentlyPlayingSong?.Item?.Uri);
+            if (roomSong != null && !roomSong.PreviouslyPlayed)
+            {
+                roomSong.PreviouslyPlayed = true;
+                _playlistsContext.RoomSongs.Update(roomSong);
+            }
         }
     }
 }

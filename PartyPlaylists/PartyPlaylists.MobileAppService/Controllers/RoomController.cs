@@ -116,11 +116,11 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 {
                     var playlistTable = await playlist;
                     var service = new SpotifyService(playlistTable.AuthCode);
-                    if (string.IsNullOrEmpty(song.SpotifyId))
+                    if (string.IsNullOrEmpty(song.ServiceId))
                     {
                         var spotifySong = await service.GetSong(song.Name);
                         await service.AddSongToPlaylist(playlistTable, spotifySong);
-                        song.SpotifyId = spotifySong.SpotifyId;
+                        song.ServiceId = spotifySong.ServiceId;
                     }
                     else
                         await service.AddSongToPlaylist(playlistTable, song);
@@ -157,7 +157,7 @@ namespace PartyPlaylists.MobileAppService.Controllers
                 {
                     var service = new SpotifyService(spotifyAuth);
                     var ownerId = await service.GetUserIdAsync();
-                    var playlist = await service.CreatePlaylist(room.Name, ownerId);
+                    var playlist = await service.CreatePlaylist(room.Name, ownerId, "");
 
                     room.SpotifyPlaylist = (SpotifyPlaylist)playlist;
                     room.IsSpotifyEnabled = true;

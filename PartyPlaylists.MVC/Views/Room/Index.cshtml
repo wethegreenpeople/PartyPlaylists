@@ -5,82 +5,152 @@
 
 <input type="hidden" id="jwtToken" name="jwtToken" value="@Model.JwtToken">
 <input type="hidden" id="roomId" name="roomId" value="@Model.CurrentRoom.Id">
-<input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
-
-<h1 id="roomNameHeader">@Model.CurrentRoom.Name</h1>
-<h2>By: @Model.CurrentRoom.Owner</h2>
-<table class="table">
-    @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
-    {
-        <tr>
-            <th scope="col">Artist</th>
-            <th scope="col">Title</th>
-            <th scope="col">Playlist Rating</th>
-            <th scope="col">Added By</th>
-            <th scope="col">Add Vote</th>
-        </tr>
-        <tbody id="tableOfSongs">
-            <partial name="Components/_roomSongTableRow" model="Model.CurrentRoom.RoomSongs" />
-        </tbody>
-    }
-</table>
-
-@if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
+@if (string.IsNullOrEmpty(Model.SyncSpotifyAuthCode))
 {
-    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify" >
-        <input type="hidden" asp-for="@Model.CurrentRoom.Id">
-        <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
-    </form>
+    <input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.CurrentRoom.SpotifyAuthCode" />
 }
 else
 {
-    <label>Song: </label>
-    <form method="post" asp-controller="Room" asp-action="AddSongToRoom" autocomplete="off" name="songSearchForm">
-        <input hidden asp-for="@Model.SongToAdd" id="hiddenInput" />
-        <div id="searchContainer" class="search-container">
-            <input type="text" class="select-list-group__search" placeholder="Song" id="songToAdd" name="songToAdd" />
-            <ul class="select-list-group" data-toggle="false" id="songListGroup">
-            </ul>
-        </div>
-
-    </form>
-
-    <br />
-    <br />
-    <button class="btn btn-primary" type="submit" id="addSongButton">Add Song</button>
-
-    <br />
-    <br />
-    <br />
-    <button class="btn btn-primary" type="button" id="startPlaylistButton">Start Playlist</button>
+    <input type="hidden" id="spotifyAuthCode" name="spotifyAuthCode" value="@Model.SyncSpotifyAuthCode" />
 }
 
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header green">
+                <h1 class="card-title text-dark display-3 text-uppercase" id="roomNameHeader">@Model.CurrentRoom.Name</h1>
+                <h2 class="card-subtitle text-muted">By: @Model.CurrentRoom.Owner</h2>
+            </div>
+
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-7 scrollable-col">
+                        @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
+                        {
+                            <ul class="list-group list-group-flush" id="listOfSongs">
+                                <partial name="Components/_roomSongListItem" model="Model.CurrentRoom.RoomSongs" />
+                            </ul>
+                        }
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="card inner-card-dark text-white">
+                            <div class="card-body">
+                                @if (string.IsNullOrEmpty(Model.CurrentRoom.SpotifyAuthCode))
+                                {
+                                    <form method="get" asp-controller="Room" asp-action="AuthorizeSpotify">
+                                        <input type="hidden" asp-for="@Model.CurrentRoom.Id">
+                                        <button class="btn btn-primary" type="submit" id="authorizeSpotifyButton">Authorize Spotify</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <div class="form-group">
+                                        <label>Song: </label>
+                                        <input asp-for="@Model.SongToAdd" id="songToAdd" class="form-control" />
+                                        <button class="btn btn-primary mt-2" type="submit" id="addSongButton">Add Song</button>
+                                    </div>
+                                }
+                            </div>
+                            <div class="card-footer">
+                                <div class="row">
+                                    @if (!string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
+                                    {
+                                        <div class="col">
+                                            @if ((Model.CurrentRoom.Owner == Model.CurrentUserName || Model.CurrentRoom.AllowTransferOfControl))
+                                            {
+                                                <button class="btn btn-primary" type="button" id="startPlaylistButton"><i class="fas fa-play"></i></button>
+                                                <button class="btn btn-primary" type="button" id="nextSongButton"><i class="fas fa-step-forward"></i></button>
+                                            }
+                                            else
+                                            {
+                                                @if (string.IsNullOrEmpty(Model.SyncSpotifyAuthCode))
+                                                {
+                                                    <button class="btn btn-primary" type="submit" id="syncAuthorizeMusicButton">Sync Authorize</button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-primary" type="submit" id="syncMusicButton">Sync</button>
+                                                }
+                                            }
+                                        </div>
+                                        <div class="col-auto">
+                                            @if (Model.CurrentRoom.Owner == Model.CurrentUserName)
+                                            {
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" asp-for="@Model.CurrentRoom.AllowTransferOfControl" id="transferControlSwitch">
+                                                    <label class="custom-control-label" for="transferControlSwitch">Allow Playlist Control</label>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts
 {
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
-            function postSongVote(songId) {
+            $("#syncAuthorizeMusicButton").click(function () {
                 $.ajax({
-                    url: "/room/addvotetosong",
-                    type: "POST",
+                    url: "/room/AuthorizeSpotify",
+                    type: "GET",
                     data: {
-                        "roomId": $("#roomId")[0].value,
-                        "songId": songId
+                        "CurrentRoom.Id": $("#roomId")[0].value,
+                        "SyncAuthorization": true
                     },
                     headers: {
-                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
                     },
                     success: function (data) {
-                        $("#tableOfSongs").html(data);
+                        window.location.replace(data);
                     },
                     error: function (data) {
                         console.log(data);
                     }
                 });
-            }
+            });
+        });
+    </script>
 
-            $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); })
+    <script>
+        function postSongVote(songId) {
+            $.ajax({
+                url: "/room/addvotetosong",
+                type: "POST",
+                data: {
+                    "roomId": $("#roomId")[0].value,
+                    "songId": songId
+                },
+                headers: {
+                    'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                },
+                success: function (data) {
+                    $("#listOfSongs").html(data);
+                    $("[name='addVoteButton']").off('click');
+                    $("[name='addVoteButton']").click(function () { postSongVote($(this).val()); });
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("[name='addVoteButton']").off().click(function () { postSongVote($(this).val()); });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $("#listOfSongs").bind('songAdded', function () {
+                $("[name='addVoteButton']").off().click(function () { postSongVote($(this).val()); });
+            });
         });
     </script>
 
@@ -92,6 +162,7 @@ else
                 name: 'PartyPlaylist - ' + $("#roomNameHeader").html(),
                 getOAuthToken: cb => { cb(token); }
             });
+            var timeToSeek = 0;
 
             // Error handling
             player.addListener('initialization_error', ({ message }) => { console.error(message); });
@@ -100,7 +171,35 @@ else
             player.addListener('playback_error', ({ message }) => { console.error(message); });
 
             // Playback status updates
-            player.addListener('player_state_changed', state => { console.log(state); });
+            player.addListener('player_state_changed', state => {
+                if (timeToSeek != 0) {
+                    console.log(timeToSeek);
+                    player.seek(timeToSeek).then(() => {
+                        console.log("sook");
+                        timeToSeek = 0;
+                    });
+                }
+                if (state.paused) {
+                    console.log("state paused");
+                    $.ajax({
+                        url: "/room/GetNextSongToPlay",
+                        type: "GET",
+                        data: {
+                            "roomId": $("#roomId")[0].value,
+                            "songUri": state.track_window.current_track.uri,
+                        },
+                        headers: {
+                        },
+                        success: function (data) {
+                            connection.invoke("UpdateSongsAsync", $("#roomId")[0].value + "").catch(err => console.error(err.toString()));
+                            StartPlaylist(player, data);
+                        },
+                        error: function (data) {
+                            console.log(data);
+                        }
+                    });
+                }
+            });
 
             // Ready
             player.addListener('ready', ({ device_id }) => {
@@ -117,6 +216,47 @@ else
 
             $("#startPlaylistButton").click(function () {
                 StartPlaylist(player, $("[name='playerUri']").first().html());
+                $.ajax({
+                    url: "/room/MarkCurrentSongAsPlayed",
+                    type: "POST",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                        connection.invoke("UpdateSongsAsync", $("#roomId")[0].value + "").catch(err => console.error(err.toString()));
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+            $("#syncMusicButton").click(function () {
+                $.ajax({
+                    url: "/room/GetCurrentSongPosistion",
+                    type: "GET",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                        timeToSeek = data;
+                        StartPlaylist(player, $("[name='playerUri']").first().html());
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+            $("#nextSongButton").click(function () {
+                player.nextTrack().then(() => {
+                });
             });
         };
     </script>
@@ -149,5 +289,28 @@ else
         }
     </script>
     <script src="~/js/roomhub.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#transferControlSwitch").click(function () {
+                $.ajax({
+                    url: "/room/UpdateTransferOfControl",
+                    type: "POST",
+                    data: {
+                        "roomId": $("#roomId")[0].value,
+                        "allowTransferOfControl": $(this).prop("checked"),
+                    },
+                    headers: {
+                        'Authorization': "Bearer " + $("#jwtToken")[0].value,
+                    },
+                    success: function (data) {
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+        });
+    </script>
     <script src="~/js/selectList.js"></script>
 }

@@ -23,9 +23,17 @@ a {
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #eb5160;
+}
+
+nav {
+    border-bottom: #eb5160 !important;
+}
+
+header {
+    background-color: #e6625e;
 }
 
 /* Sticky footer styles
@@ -63,13 +71,62 @@ html {
 }
 
 body {
-  /* Margin bottom by footer height */
-  margin-bottom: 60px;
+    /* Margin bottom by footer height */
+    margin-bottom: 60px;
+    background-color: #071013;
 }
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 45px; /* Vertically center the text there */
+    background-color: #1d2528;
+}
+
+.card-body {
+    background-color: #1d2528;
+}
+
+.btn-primary {
+    background-color: #08948b;
+    border-color: #08948b;
+    color: #fff;
+}
+
+.btn-square-lg {
+    width: 11em !important;
+    height: 8em !important;
+}
+
+h1, h2 {
+    color: #dfe0e2;
+}
+
+.card-header.green {
+    background-color: #6cdd9d;
+}
+
+.album-art {
+    max-width: 100px;
+    width: 100%;
+}
+
+.middle-table-cell {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.inner-card-dark {
+    background-color: #191c1e;
+}
+
+.list-group-item-dark {
+    color: #fff;
+    background-color: #1d2528;
+}
+
+.scrollable-col {
+    height: calc(80vh - 110px);
+    overflow-y: auto;
 }

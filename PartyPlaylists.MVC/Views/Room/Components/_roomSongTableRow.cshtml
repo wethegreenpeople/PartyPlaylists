@@ -3,13 +3,29 @@
 @foreach (var item in Model.OrderByDescending(s => s.SongRating))
 {
     <tr>
-        <td>@item.Song.Artist</td>
-        <td>@item.Song.Name</td>
-        <td id="@($"songRating{item.SongId}")">@item.SongRating</td>
-        <td>@item.SongAddedBy</td>
-        <td>
-            <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">Add Vote</button>
+        <td class="p-0 align-middle">
+            <div class="row">
+                <div class="card inner-card-dark mb-3" style="max-width: 540px;">
+                    <div class="row no-gutters">
+                        <div class="col-md-4">
+                            <img class="card-img-top" src="@item.Song.AlbumArt" alt="Card image cap">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">@item.Song.Name</h5>
+                                <h6 class="card-subtitle mb-0 text-muted">@item.Song.Artist</h6>
+                                <small class="card-subtitle mb-2 text-muted">Added by: @item.SongAddedBy</small>
+                            </div>
+                            <div class="card-footer">
+                                <p id="@($"songRating{item.SongId}")" class="mb-0 mr-1">
+                                    <button class="btn btn-primary btn-sm" type="button" name="addVoteButton" value="@item.SongId">+@item.SongRating</button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </td>
-        <td hidden name="playerUri">@item.Song.SpotifyId</td>
+        <td hidden name="playerUri">@item.Song.ServiceId</td>
     </tr>
 }

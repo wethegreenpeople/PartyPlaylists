@@ -22,11 +22,13 @@ namespace PartyPlaylists.Models.DataModels
         [Required]
         public string Artist { get; set; }
 
+        public string AlbumArt { get; set; }
+
         [Required]
         public StreamingServiceTypes ServiceAvailableOn { get; set; }
 
         [Required]
-        public string SpotifyId { get; set; }
+        public string ServiceId { get; set; }
 
         [JsonIgnore]
         public List<RoomSong> RoomSongs { get; set; } = new List<RoomSong>();
