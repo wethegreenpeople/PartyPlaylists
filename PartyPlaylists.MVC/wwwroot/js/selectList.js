@@ -1,5 +1,4 @@
-﻿//TODO add up and down arrow key selection.
-var itemPosition = 1;
+﻿var itemPosition = 1;
 
 var songInputId = "songToAdd";
 var songListId = "songList";
@@ -21,28 +20,18 @@ $(document).ready(function () {
     songList = document.getElementById(songListId);
     songInput = document.getElementById(songInputId);
     songSearchContainer = document.getElementById(songSearchContainerId);
-    var inputEventsCombined = function (e) {
-        searchFunc();
-        ShowSongList(songListGroup);
-    }
+
     songSearchContainer.addEventListener('mouseleave', function (event) {
         songListGroup.setAttribute("data-toggle", "false");
        
     });
 
-    $('#songToAdd').on('input', inputEventsCombined);
-    songInput.addEventListener('keydown', function (e) { return KeyDownEventHandler(e) });
-    songInput.addEventListener("keydown" , function (e) {
-
-        if (e.keyCode == 13) {
-            var firstSearchItem = songListGroup.getElementsByTagName('li');
-            if (selectedListItem == null) {
-                SetSelectedListItem(firstSearchItem[0])
-            }
-            else {
-                postSongToAdd();
-            }
-           
+    $('#songToAdd').on('input', function (e) { return ShowSongList(songListGroup);});
+    $('#songToAdd').on('input', debounce(searchFunc, 327, false));
+    songSearchContainer.addEventListener('keydown', function (e) { return KeyDownEventHandler(e) });
+    songInput.addEventListener('keydown', function (e) {
+        if (e.keyCode === 38 || e.keyCode === 40) {
+            e.preventDefault();
         }
     })
 
@@ -139,10 +128,17 @@ function KeyDownEventHandler(e) {
         SetSelectedListItem(items[itemPosition]);
     }
 
+    //enter
+    if (e.keyCode == 13) {
+        var firstSearchItem = songListGroup.getElementsByTagName('li');
+        if (selectedListItem == null) {
+            SetSelectedListItem(firstSearchItem[0])
+        }
+        else {
+            postSongToAdd();
+        }
 
-
-    
-
+    }
 }
 
 var searchFunc = function () {
@@ -178,12 +174,12 @@ function debounce(func, wait, immediate) {
         var context = this, args = arguments;
         var later = function () {
             timeout = null;
-            if (!immediate) func.apply(null, args);
+            if (!immediate) func.call();
         };
         var callNow = immediate && !timeout;
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
-        if (callNow) func.apply(null, args);
+        if (callNow) func.call();
     };
 };
 
