@@ -248,5 +248,21 @@ namespace PartyPlaylists.MVC.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> LiveSearch(string auth, string query)
+        {
+            var spotifyService = new SpotifyService(auth);
+            try
+            {
+                var results = (await spotifyService.GetSongs(query)).Take(5).ToList();
+                return PartialView("Components/_songSearchItems", new RoomVM() { SearchedSongs = results});
+            }
+            catch
+            {
+                return BadRequest();
+            }
+
+        }
     }
 }

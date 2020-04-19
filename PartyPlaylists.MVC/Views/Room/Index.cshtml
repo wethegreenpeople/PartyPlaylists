@@ -44,11 +44,15 @@ else
                                 }
                                 else
                                 {
-                                    <div class="form-group">
-                                        <label>Song: </label>
-                                        <input asp-for="@Model.SongToAdd" id="songToAdd" class="form-control" />
-                                        <button class="btn btn-primary mt-2" type="submit" id="addSongButton">Add Song</button>
+                                <div class="form-group">
+                                    <label>Song: </label>
+                                    <div id="searchContainer" class="search-container">
+                                        <input type="hidden" id="hiddenInput" asp-for="@Model.SongToAdd" />
+                                        <input type="text" class="select-list-group__search form form-control" placeholder="Song" id="songToAdd" name="songToAdd" />
+                                        <ul class="select-list-group search-list" data-toggle="false" id="songListGroup">
+                                        </ul>
                                     </div>
+                                </div>
                                 }
                             </div>
                             <div class="card-footer">
@@ -150,42 +154,6 @@ else
         $(document).ready(function () {
             $("#listOfSongs").bind('songAdded', function () {
                 $("[name='addVoteButton']").off().click(function () { postSongVote($(this).val()); });
-            });
-        });
-    </script>
-    <script>
-        function postSongData() {
-            $.ajax({
-                url: "/room/AddSongToRoom",
-                type: "POST",
-                data: {
-                    "CurrentRoom.Id": $("#roomId")[0].value,
-                    "CurrentRoom.SpotifyAuthCode": $("#spotifyAuthCode")[0].value,
-                    "SongToAdd": $("#songToAdd")[0].value,
-                },
-                headers: {
-                    'Authorization': "Bearer " + $("#jwtToken")[0].value,
-                },
-                success: function (data) {
-                    $("#listOfSongs").html(data);
-                    $("#listOfSongs").trigger("songAdded");
-                    $("#songToAdd").val('');
-                },
-                error: function (data) {
-                    console.log(data);
-                }
-            });
-        }
-
-        $(document).ready(function () {
-            $("#addSongButton").click(function () {
-                postSongData();
-            });
-
-            $("#songToAdd").keydown(function (e) {
-                if (e.keyCode == 13) {
-                    postSongData();
-                }
             });
         });
     </script>
@@ -324,7 +292,6 @@ else
             });
         }
     </script>
-
     <script src="~/js/roomhub.js"></script>
 
     <script>
@@ -349,4 +316,5 @@ else
             });
         });
     </script>
+    <script src="~/js/selectList.js"></script>
 }
