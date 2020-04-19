@@ -44,11 +44,15 @@ else
                                 }
                                 else
                                 {
-                                    <div class="form-group">
-                                        <label>Song: </label>
-                                        <input asp-for="@Model.SongToAdd" id="songToAdd" class="form-control" />
-                                        <button class="btn btn-primary mt-2" type="submit" id="addSongButton">Add Song</button>
+                                <div class="form-group">
+                                    <label>Song: </label>
+                                    <div id="searchContainer" class="search-container">
+                                        <input type="hidden" id="hiddenInput" asp-for="@Model.SongToAdd" />
+                                        <input type="text" class="select-list-group__search form form-control" placeholder="Song" id="songToAdd" name="songToAdd" />
+                                        <ul class="select-list-group" data-toggle="false" id="songListGroup">
+                                        </ul>
                                     </div>
+                                </div>
                                 }
                             </div>
                             <div class="card-footer">
