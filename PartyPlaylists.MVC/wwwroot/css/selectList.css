@@ -1,6 +1,7 @@
 ﻿* {
     box-sizing: border-box;
 }
+
 div.search-container {
     max-width: 13.5rem;
 }
@@ -66,11 +67,13 @@ li[data-display="true"] {
     display: inherit
 }
 
-li[data-highlight="false"] {
+li[selected-search-item="false"] {
     border-left: 5px solid transparent;
+    background: #171616;
 }
 
-li[data-highlight="true"] {
+li[selected-search-item="true"] {
     border-left: 5px solid darkslateblue;
+    background: #4f4e4e;
 }
 

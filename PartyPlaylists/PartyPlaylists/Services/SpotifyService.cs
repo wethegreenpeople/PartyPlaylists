@@ -15,6 +15,7 @@ using PartyPlaylists.Models;
 using Microsoft.Extensions.Configuration;
 using System.Linq;
 using SpotifyApi.NetCore.Authorization;
+using Newtonsoft.Json.Linq;
 
 namespace PartyPlaylists.Services
 {
@@ -88,25 +89,32 @@ namespace PartyPlaylists.Services
 
         public async Task<Song> GetSong(string searchQuery)
         {
+            string searchquerySongId = searchQuery.Replace("spotify:track:", "");
+            string apiRequestUrl = $"https://api.spotify.com/v1/tracks/{searchquerySongId}";
+
+            
             try
             {
-                var http = new HttpClient();
+                var client = new RestClient(@"https://api.spotify.com/v1");
+                client.Authenticator = new OAuth2AuthorizationRequestHeaderAuthenticator($"Bearer {AuthToken}");
+                var request = new RestRequest($@"tracks/{searchquerySongId}", Method.GET);
+                request.RequestFormat = DataFormat.Json;
+
+                var response = await client.ExecuteAsync(request);
+                var content = JObject.Parse(response.Content);
+
                 IConfiguration config = new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                     .AddEnvironmentVariables()
                     .Build();
-                var accounts = new AccountsService(http, config);
-
-                var search = new SearchApi(http, accounts);
-                var searchResult = await search.Search(searchQuery, "track", "");
 
                 var song = new Song()
                 {
-                    Artist = searchResult?.Tracks?.Items[0].Artists[0].Name,
-                    Name = searchResult?.Tracks?.Items[0].Name,
+                    Artist = content["artists"][0]["name"].ToString(),
+                    Name = content["name"].ToString(),
                     ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
-                    ServiceId = searchResult?.Tracks.Items[0].Uri,
-                    AlbumArt = searchResult?.Tracks.Items[0].Album.Images[0].Url,
+                    ServiceId = content["uri"].ToString(),
+                    AlbumArt = content["album"]["images"][0]["url"].ToString(),
                 };
 
                 return song;
