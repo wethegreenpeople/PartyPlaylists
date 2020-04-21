@@ -84,12 +84,12 @@ function ShowSongList(ele) {
 function SetSelectedListItem(item) {
     if (selectedListItem == null) {
         selectedListItem = item;
-        selectedListItem.dataset.highlight = 'true';
+        selectedListItem.setAttribute("selected-search-item", "true");
     }
     else {
-        selectedListItem.dataset.highlight = 'false';
+        selectedListItem.setAttribute("selected-search-item", "false");
         selectedListItem = item;
-        selectedListItem.dataset.highlight = 'true';
+        selectedListItem.setAttribute("selected-search-item", "true");
     }
 
 }
