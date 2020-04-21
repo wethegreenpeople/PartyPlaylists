@@ -17,6 +17,8 @@ using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.MVC.Hubs;
 using PartyPlaylists.Services;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Newtonsoft.Json;
 
 namespace PartyPlaylists.MVC
 {
@@ -60,6 +62,9 @@ namespace PartyPlaylists.MVC
                     ValidateAudience = false,
                 };
             });
+
+            services.AddSwaggerDocument();
+            services.AddMvc().AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -82,6 +87,9 @@ namespace PartyPlaylists.MVC
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseOpenApi();
+            app.UseSwaggerUi3();
 
             app.UseEndpoints(endpoints =>
             {

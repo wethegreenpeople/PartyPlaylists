@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyPlaylistsTests", "Part
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PartyPlaylists.MVC", "PartyPlaylists.MVC\PartyPlaylists.MVC.csproj", "{512EC64F-D473-4574-9627-3735BC3D7BEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PartyPlaylists.Api", "PartyPlaylists.Api\PartyPlaylists.Api.csproj", "{0577B2AF-4432-4C0E-B987-39A9D6741B77}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,18 +101,6 @@ Global
 		{512EC64F-D473-4574-9627-3735BC3D7BEB}.Release|iPhone.Build.0 = Release|Any CPU
 		{512EC64F-D473-4574-9627-3735BC3D7BEB}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
 		{512EC64F-D473-4574-9627-3735BC3D7BEB}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Debug|iPhone.ActiveCfg = Debug|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Debug|iPhone.Build.0 = Debug|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Release|iPhone.ActiveCfg = Release|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Release|iPhone.Build.0 = Release|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
-		{0577B2AF-4432-4C0E-B987-39A9D6741B77}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
