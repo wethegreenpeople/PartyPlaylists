@@ -23,7 +23,7 @@
                 <Frame BorderColor="White" CornerRadius="5" BackgroundColor="#1d2528">
                     <Entry Placeholder="Room ID" Keyboard="Numeric" TextColor="White" PlaceholderColor="White"></Entry>
                 </Frame>
-                <Button Text="Join Room"></Button>
+                <Button Text="Join Room" Command="{Binding JoinRoomCommand}"></Button>
             </StackLayout>
         </Grid>
     </ContentPage.Content>

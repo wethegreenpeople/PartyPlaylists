@@ -70,11 +70,9 @@ namespace PartyPlaylists.Services
 
         public async Task<Room> GetItemAsync(string id)
         {
-
             var room = await _playlistsContext.Rooms
                 .Include(e => e.RoomSongs)
                 .SingleOrDefaultAsync(s => s.Id == Convert.ToInt32(id));
-
 
             if (room == null)
                 throw new ArgumentException($"Could not find Room from given ID:{id}");
