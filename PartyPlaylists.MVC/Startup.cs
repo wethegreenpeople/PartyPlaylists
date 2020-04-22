@@ -19,6 +19,12 @@ using PartyPlaylists.MVC.Hubs;
 using PartyPlaylists.Services;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Newtonsoft.Json;
+using Swashbuckle.AspNetCore.Swagger;
+using System.Reflection;
+using System.IO;
+using NSwag.AspNetCore;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 
 namespace PartyPlaylists.MVC
 {
@@ -63,7 +69,33 @@ namespace PartyPlaylists.MVC
                 };
             });
 
-            services.AddSwaggerDocument();
+            services.AddSwaggerDocument(config =>
+            {
+                config.OperationProcessors.Add(new OperationSecurityScopeProcessor("JWT Token"));
+                config.AddSecurity("JWT Token", Enumerable.Empty<string>(),
+                    new OpenApiSecurityScheme()
+                    {
+                        Type = OpenApiSecuritySchemeType.ApiKey,
+                        Name = "Authorization",
+                        In = OpenApiSecurityApiKeyLocation.Header,
+                        BearerFormat = "Bearer {token}",
+                        Description = "Copy this into the value field: Bearer {token}"
+                    }
+                );
+                config.PostProcess = document =>
+                {
+                    document.Info.Version = "v1";
+                    document.Info.Title = "PartyPlaylists API";
+                    document.Info.Description = "An open API for PartyPlaylists";
+                    document.Info.Contact = new NSwag.OpenApiContact
+                    {
+                        Name = "John Singh",
+                        Email = "wethegreenpeople@gmail.com",
+                        Url = "https://github.com/wethegreenpeople/partyplaylists"
+                    };
+                };
+            });
+
             services.AddMvc().AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
