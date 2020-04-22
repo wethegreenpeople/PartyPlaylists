@@ -8,29 +8,29 @@
              xmlns:vm="clr-namespace:PartyPlaylists.ViewModels"
              Title="{Binding Title}">
 
-    <ContentPage.BindingContext>
-        <vm:RoomViewModel />
-    </ContentPage.BindingContext>
-
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="8*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackLayout BackgroundColor="#6cdd9d" VerticalOptions="FillAndExpand" HorizontalOptions="Fill">
-                <StackLayout Orientation="Horizontal" HorizontalOptions="Center" VerticalOptions="Center">
-                    <ContentView Padding="0,40,0,40" VerticalOptions="FillAndExpand">
-                        <Label FontSize="22">
-                            <Label.FormattedText>
-                                <FormattedString>
-                                    <FormattedString.Spans>
-                                        <Span Text="{Binding CurrentRoom.Name}" FontAttributes="Bold" FontSize="22" />
-                                    </FormattedString.Spans>
-                                </FormattedString>
-                            </Label.FormattedText>
-                        </Label>
+            <StackLayout Grid.Row="0" BackgroundColor="#6cdd9d" VerticalOptions="FillAndExpand" HorizontalOptions="Fill">
+                <StackLayout Orientation="Horizontal">
+                    <ContentView Padding="10,10,0,20">
+                        <StackLayout>
+                            <Label FontSize="40">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <FormattedString.Spans>
+                                            <Span Text="{Binding RoomName}" FontAttributes="Bold" FontSize="60" TextColor="#343a40" />
+                                        </FormattedString.Spans>
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label FontSize="22" Text="{Binding CurrentRoom.Owner, StringFormat='By: {0}'}" TextColor="#6c7585"></Label>
+                        </StackLayout>
                     </ContentView>
                 </StackLayout>
             </StackLayout>

@@ -11,6 +11,10 @@ using Xamarin.Forms;
 using Splat;
 using Microsoft.EntityFrameworkCore;
 using SpotifyApi.NetCore;
+using RestSharp;
+using RestSharp.Authenticators;
+using RestSharp.Serialization.Json;
+using Newtonsoft.Json;
 
 namespace PartyPlaylists.ViewModels
 {
@@ -18,37 +22,47 @@ namespace PartyPlaylists.ViewModels
     {
         private readonly RoomDataStore _roomDataStore;
 
+        string _roomToJoin;
+        public string RoomToJoin
+        {
+            get { return _roomToJoin; }
+            set { SetProperty(ref _roomToJoin, value); }
+        }
+
         public Command JoinRoomCommand { get; set; }
 
         public JoinRoomViewModel()
         {
             Title = "Join a Room";
 
-            JoinRoomCommand = new Command(() => JoinRoom());
+            JoinRoomCommand = new Command(async () => await JoinRoom());
         }
 
-        private void JoinRoom()
+        private async Task JoinRoom()
         {
             if (IsBusy)
                 return;
 
+            if (string.IsNullOrEmpty(RoomToJoin))
+                return;
+
             IsBusy = true;
 
-            var context = Locator.Current.GetService<PlaylistContext>();
             try
             {
-                var options = new DbContextOptionsBuilder<PlaylistContext>().UseMySql("Server = 40.117.143.83; Database = PartyPlaylists; Uid = remoteuser; Pwd = password;").Options;
-                using (var doot = new PlaylistContext(options))
-                {
-                    var roomds = new RoomDataStore(doot);
-                    var room = roomds.GetItemAsync("295").Result;
+                var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
+                var request = new RestRequest($@"api/room/{RoomToJoin}", Method.GET);
+                request.RequestFormat = DataFormat.Json;
+                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJBdG9tIEJ1dHRlcmN1cCIsIm5iZiI6MTU4NzUwMjkwMSwiZXhwIjoxNTg3NTg5MzAxLCJpYXQiOjE1ODc1MDI5MDF9.LZutIYofTWnoKROGOz_kBlPU3kpfMT5m1Fz-1BfHUHQ");
 
-                    RootPage.Detail.Navigation.PushAsync(new RoomPage(room));
-                }
+                var response = await client.ExecuteAsync(request);
+                var content = response.Content;
+                var room = JsonConvert.DeserializeObject<Room>(content);
+
+                await RootPage.Detail.Navigation.PushAsync(new RoomPage(room));
             }
             catch (Exception ex)
             {
-
             }
             
             IsBusy = false;

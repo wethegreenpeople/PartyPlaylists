@@ -8,7 +8,19 @@ namespace PartyPlaylists.ViewModels
 {
     public class RoomViewModel : BaseViewModel
     {
-        public readonly Room CurrentRoom;
+        string _roomName;
+        public string RoomName
+        {
+            get { return _currentRoom?.Name?.ToUpper(); }
+            set { SetProperty(ref _roomName, value); }
+        }
+
+        Room _currentRoom;
+        public Room CurrentRoom
+        {
+            get { return _currentRoom; }
+            set { SetProperty(ref _currentRoom, value); }
+        }
 
         public RoomViewModel()
         {
