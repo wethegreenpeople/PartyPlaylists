@@ -40,17 +40,15 @@ namespace PartyPlaylistsTests.UnitTests
         public async Task ValidateToken_GivenValidToken_ReturnTrue()
         {
             var key = Guid.NewGuid().ToString();
-            var tokenService = new TokenService(null, _config);
             var token = await TokenService.CreateTokenAsync(key);
-            Assert.IsTrue(tokenService.ValidateToken(token, key));
+            Assert.IsTrue(TokenService.ValidateToken(token, key));
         }
 
         [TestMethod]
         public void ValidateToken_GivenInvalidToken_ReturnFalse()
         {
             var key = Guid.NewGuid().ToString();
-            var tokenService = new TokenService(null, _config);
-            Assert.IsFalse(tokenService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJRdWlsdCBQeXJpdGUiLCJuYmYiOjE1ODc1Mzc2ODcsImV4cCI6MTU4NzYyNDA4NywiaWF0IjoxNTg3NTM3Njg3fQ.j-aT8ZTCDXdRJswu3267Ar5OtHVRjR7w1EBivDNEQYA", key));
+            Assert.IsFalse(TokenService.ValidateToken("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJRdWlsdCBQeXJpdGUiLCJuYmYiOjE1ODc1Mzc2ODcsImV4cCI6MTU4NzYyNDA4NywiaWF0IjoxNTg3NTM3Njg3fQ.j-aT8ZTCDXdRJswu3267Ar5OtHVRjR7w1EBivDNEQYA", key));
         }
     }
 }
