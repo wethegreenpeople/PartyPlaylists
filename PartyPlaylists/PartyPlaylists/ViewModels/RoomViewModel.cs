@@ -1,9 +1,13 @@
-﻿using PartyPlaylists.Models.DataModels;
+﻿using Newtonsoft.Json;
+using PartyPlaylists.Models.DataModels;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace PartyPlaylists.ViewModels
 {
@@ -30,14 +34,32 @@ namespace PartyPlaylists.ViewModels
             set { SetProperty(ref _currentRoom, value); }
         }
 
+        public Command AddVoteCommand { get; set; }
+
         public RoomViewModel()
         {
-            Title = "Room";
+            Title = "Room"; 
+            AddVoteCommand = new Command<int>(async (int songId) => await AddVote(songId));
         }
 
         public RoomViewModel(Room room) : this()
         {
             CurrentRoom = room;
+           
+        }
+
+        private async Task AddVote(int songId)
+        {
+            if (CurrentRoom == null)
+                return;
+
+            var jwtToken = await SecureStorage.GetAsync("jwtToken");
+            var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
+            var request = new RestRequest($@"api/room/{CurrentRoom.Id}", Method.POST);
+            request.RequestFormat = DataFormat.Json;
+            request.AddHeader("Authorization", $"Bearer {jwtToken}");
+
+            var response = await client.ExecuteAsync(request);
         }
     }
 }

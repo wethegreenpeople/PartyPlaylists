@@ -30,5 +30,14 @@ namespace PartyPlaylists.MVC.Api.Controllers
             var roomDataStore = new RoomDataStore(_playlistContext);
             return await roomDataStore.GetItemAsync(roomId.ToString());
         }
+
+        [Authorize]
+        [HttpPost("{roomId}/{songId}")]
+        public async Task<Room> AddVoteToSong(int roomId, int songId)
+        {
+            var roomDataStore = new RoomDataStore(_playlistContext);
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            return await roomDataStore.AddVoteToSong(token, roomId, songId, 1);
+        }
     }
 }

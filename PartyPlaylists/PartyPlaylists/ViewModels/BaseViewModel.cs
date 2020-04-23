@@ -9,13 +9,16 @@ using PartyPlaylists.Models;
 using PartyPlaylists.Services;
 using System.Threading.Tasks;
 using PartyPlaylists.Views;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace PartyPlaylists.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged, INavigation
     {
         public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>();
-        public MasterDetailPage RootPage { get => App.Current.MainPage as MasterDetailPage; }
+        public MasterDetailPage RootPage => App.Current.MainPage as MasterDetailPage;
 
         bool isBusy = false;
         public bool IsBusy

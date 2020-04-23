@@ -18,12 +18,14 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-
+            
+            
             <StackLayout Padding="10">
                 <Frame BorderColor="White" CornerRadius="5" BackgroundColor="#1d2528">
                     <Entry Placeholder="Room ID" Keyboard="Numeric" TextColor="White" PlaceholderColor="White" Text="{Binding RoomToJoin}"></Entry>
                 </Frame>
                 <Button Text="Join Room" Command="{Binding JoinRoomCommand}"></Button>
+                <ActivityIndicator IsRunning="{Binding IsBusy}" />
             </StackLayout>
         </Grid>
     </ContentPage.Content>

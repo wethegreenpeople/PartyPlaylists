@@ -4,6 +4,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using PartyPlaylists.Services;
 using PartyPlaylists.Views;
+using Xamarin.Essentials;
 
 namespace PartyPlaylists
 {
@@ -24,7 +25,7 @@ namespace PartyPlaylists
 
         protected override void OnStart()
         {
-            // Handle when your app starts
+
         }
 
         protected override void OnSleep()

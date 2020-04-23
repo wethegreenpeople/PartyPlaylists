@@ -59,7 +59,8 @@ namespace PartyPlaylists.MVC.Controllers
             {
                 var option = new CookieOptions();
                 option.Expires = DateTime.Now.AddDays(1);
-                jwtToken = await _tokenService.GetToken();
+                jwtToken = await TokenService.CreateTokenAsync(_config);
+                await _tokenService.SaveTokenAsync(jwtToken);
                 Response.Cookies.Append("jwtToken", jwtToken, option);
             }
 

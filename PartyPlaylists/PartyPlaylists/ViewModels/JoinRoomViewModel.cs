@@ -15,13 +15,13 @@ using RestSharp;
 using RestSharp.Authenticators;
 using RestSharp.Serialization.Json;
 using Newtonsoft.Json;
+using Xamarin.Essentials;
+using PartyPlaylists.Droid;
 
 namespace PartyPlaylists.ViewModels
 {
     public class JoinRoomViewModel : BaseViewModel
     {
-        private readonly RoomDataStore _roomDataStore;
-
         string _roomToJoin;
         public string RoomToJoin
         {
@@ -50,10 +50,18 @@ namespace PartyPlaylists.ViewModels
 
             try
             {
+                var storedToken = await SecureStorage.GetAsync("jwtToken");
+                if (storedToken == null || !TokenService.ValidateToken(storedToken, Keys.JwtKey))
+                {
+                    var token = await TokenService.CreateTokenAsync(Keys.JwtKey);
+                    await SecureStorage.SetAsync("jwtToken", token);
+                    storedToken = token;
+                }
+
                 var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
                 var request = new RestRequest($@"api/room/{RoomToJoin}", Method.GET);
                 request.RequestFormat = DataFormat.Json;
-                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJTYWJlciBEaXJ0IiwibmJmIjoxNTg3NTgyNDU1LCJleHAiOjE1ODc2Njg4NTUsImlhdCI6MTU4NzU4MjQ1NX0.5aZR2YrcJx45YSTHmoUYOqYiR-xPNKJWarrDSnVOIjo");
+                request.AddHeader("Authorization", $"Bearer {storedToken}");
 
                 var response = await client.ExecuteAsync(request);
                 var content = response.Content;
