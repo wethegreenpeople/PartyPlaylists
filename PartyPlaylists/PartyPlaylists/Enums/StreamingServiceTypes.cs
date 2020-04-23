@@ -9,5 +9,6 @@ namespace PartyPlaylists.Enums
     {
         Spotify,
         SoundCloud,
+        AppleMusic,
     }
 }
