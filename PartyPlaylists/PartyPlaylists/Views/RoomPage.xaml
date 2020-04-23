@@ -6,13 +6,13 @@
              mc:Ignorable="d"
              x:Class="PartyPlaylists.Views.RoomPage"
              xmlns:vm="clr-namespace:PartyPlaylists.ViewModels"
+             xmlns:RoomSong="clr-namespace:PartyPlaylists.Models.DataModels"
              Title="{Binding Title}">
 
     <ContentPage.Content>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="8*" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -34,6 +34,35 @@
                     </ContentView>
                 </StackLayout>
             </StackLayout>
+            <Grid Grid.Row="1">
+                <ScrollView>
+                    <ListView IsRefreshing="{Binding IsBusy}" ItemsSource="{Binding RoomSongs}" SeparatorVisibility="None" SeparatorColor="White" HasUnevenRows="True" RowHeight="-1" SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ViewCell>
+                                    <Frame BorderColor="White" CornerRadius="5" BackgroundColor="#1d2528" Padding="5,-15,0,-15" VerticalOptions="Start" Margin="0,0,0,10">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="2*" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0" Grid.Row="0" Source="{Binding Song.AlbumArt}"/>
+                                            <StackLayout Grid.Column="1" VerticalOptions="Center" Margin="5,0,0,0" Padding="0" Spacing=".5">
+                                                <Label FontSize="30" Text="{Binding Song.Name}"></Label>
+                                                <Label FontSize="20" Text="{Binding Song.Artist}" TextColor="#6c7585"></Label>
+                                                <Label FontSize="20" Text="{Binding SongAddedBy, StringFormat='Added by: {0}'}" TextColor="#6c7585"></Label>
+                                                <Button Text="{Binding SongRating, StringFormat='+{0}'}" FontSize="20" WidthRequest="50" HeightRequest="40" HorizontalOptions="Start"></Button>
+                                            </StackLayout>
+                                        </Grid>
+                                    </Frame>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </ScrollView>
+            </Grid>
+            
         </Grid>
     </ContentPage.Content>
 </ContentPage>

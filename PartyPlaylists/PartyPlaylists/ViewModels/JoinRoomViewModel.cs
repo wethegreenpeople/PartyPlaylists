@@ -53,7 +53,7 @@ namespace PartyPlaylists.ViewModels
                 var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
                 var request = new RestRequest($@"api/room/{RoomToJoin}", Method.GET);
                 request.RequestFormat = DataFormat.Json;
-                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJBdG9tIEJ1dHRlcmN1cCIsIm5iZiI6MTU4NzUwMjkwMSwiZXhwIjoxNTg3NTg5MzAxLCJpYXQiOjE1ODc1MDI5MDF9.LZutIYofTWnoKROGOz_kBlPU3kpfMT5m1Fz-1BfHUHQ");
+                request.AddHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJTYWJlciBEaXJ0IiwibmJmIjoxNTg3NTgyNDU1LCJleHAiOjE1ODc2Njg4NTUsImlhdCI6MTU4NzU4MjQ1NX0.5aZR2YrcJx45YSTHmoUYOqYiR-xPNKJWarrDSnVOIjo");
 
                 var response = await client.ExecuteAsync(request);
                 var content = response.Content;

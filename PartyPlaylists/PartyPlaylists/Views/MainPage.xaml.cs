@@ -25,9 +25,6 @@ namespace PartyPlaylists.Views
             MasterBehavior = MasterBehavior.Popover;
 
             MenuPages.Add((int)MenuItemType.Join, (NavigationPage)Detail);
-
-            var optionsBuilder = new DbContextOptionsBuilder<PlaylistContext>().UseMySql("Server=40.117.143.83;Database=PartyPlaylists;Uid=remoteuser;Pwd=password;");
-            Locator.CurrentMutable.Register(() => new PlaylistContext(optionsBuilder.Options), typeof(PlaylistContext));
         }
 
         public async Task NavigateFromMenu(int id)
