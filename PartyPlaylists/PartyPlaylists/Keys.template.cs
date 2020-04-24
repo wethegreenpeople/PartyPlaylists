@@ -7,7 +7,7 @@ using System.Text;
 // of the repo. It has duplicated information from our standard appsettings.json file
 // which already gets duplicated far too many times.
 // We need a better way of implementing both this file, and the appsettings.json in general.
-namespace PartyPlaylists.Droid
+namespace PartyPlaylists.Droid.Template
 {
     public static class Keys
     {

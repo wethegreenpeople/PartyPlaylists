@@ -55,7 +55,7 @@ namespace PartyPlaylists.ViewModels
 
             var jwtToken = await SecureStorage.GetAsync("jwtToken");
             var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
-            var request = new RestRequest($@"api/room/{CurrentRoom.Id}", Method.POST);
+            var request = new RestRequest($@"api/room/{CurrentRoom.Id}/{songId}", Method.POST);
             request.RequestFormat = DataFormat.Json;
             request.AddHeader("Authorization", $"Bearer {jwtToken}");
 

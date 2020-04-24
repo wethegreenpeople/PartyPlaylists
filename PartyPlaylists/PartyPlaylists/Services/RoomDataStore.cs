@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PartyPlaylists.Contexts;
+using PartyPlaylists.Droid;
 using PartyPlaylists.Models.DataModels;
+using SpotifyApi.NetCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -175,10 +177,11 @@ namespace PartyPlaylists.Services
                 throw new ArgumentException();
             if (vote != -1 && vote != 1)
                 throw new ArgumentException("Invalid vote", nameof(vote));
+            if (!TokenService.ValidateToken(userToken, Keys.JwtKey))
+                throw new ArgumentException("Invalid JWT token provided", nameof(userToken));
 
             try
             {
-                var token = await _playlistsContext.Tokens.SingleOrDefaultAsync(s => s.JWTToken == userToken);
                 var room = await _playlistsContext.Rooms
                     .Include(e => e.RoomSongs)
                     .ThenInclude(e => e.Song)
@@ -191,16 +194,13 @@ namespace PartyPlaylists.Services
                     throw new Exception("Could not find room");
 
                 var roomSong = room.RoomSongs.SingleOrDefault(s => s.SongId == songId);
-
-                if (roomSong.RoomSongTokens != null && roomSong.RoomSongTokens.Any(s => s.Token == token))
-                    throw new Exception("Couldn't find token in RoomSongTokens");
-
                 roomSong.SongRating += vote;
 
+                var existingToken = _playlistsContext.Tokens.FirstOrDefault(s => s.JWTToken == userToken);
                 var roomSongToken = new RoomSongToken()
                 {
-                    Token = token,
-                    TokenId = token.Id,
+                    Token = existingToken ?? new Token() { JWTToken = userToken },
+                    TokenId = existingToken?.Id ?? 0,
                 };
                 roomSong.RoomSongTokens.Add(roomSongToken);
 
