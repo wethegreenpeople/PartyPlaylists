@@ -9,6 +9,7 @@ using RestSharp.Authenticators;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -54,9 +55,43 @@ namespace PartyPlaylists.Services
         }
 
 
-        public Task<Song> GetSong(string searchQuery)
+        /// <summary>
+        /// Search for a single song given a song id or takes the first result of the GetSongs method given a term.
+        /// </summary>
+        /// <param name="searchQuery">A song id or search term.</param>
+        /// <returns></returns>
+        public async Task<Song> GetSong(string searchQuery)
         {
-            throw new NotImplementedException();
+            if (int.TryParse(searchQuery, out int songId))
+            {
+                var request = new RestRequest($@"catalog/us/songs/{songId}", Method.GET)
+                {
+                    RequestFormat = DataFormat.Json
+                };
+
+                var response = await _client.ExecuteAsync(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    var content = JObject.Parse(response.Content);
+
+                    var song = content["data"][0];
+                    return new Song()
+                    {
+                        Id = Convert.ToInt32(song["id"]),
+                        Artist = song["attributes"]["artistName"].ToString(),
+                        Name = song["attributes"]["name"].ToString(),
+                        ServiceAvailableOn = StreamingServiceTypes.AppleMusic,
+                        ServiceId = song["attributes"]["url"].ToString(),
+                    };
+                }
+                else throw new Exception($"Response status not OK. {response.StatusDescription}.");
+            }
+            else
+            {
+                var songs = await GetSongs(searchQuery);
+                return songs.FirstOrDefault();
+            }
         }
 
         public async Task<List<Song>> GetSongs(string searchQuery)
@@ -79,6 +114,7 @@ namespace PartyPlaylists.Services
                 {
                     songs.Add(new Song()
                     {
+                        Id = Convert.ToInt32(song["id"]),
                         Artist = song["attributes"]["artistName"].ToString(),
                         Name = song["attributes"]["name"].ToString(),
                         ServiceAvailableOn = StreamingServiceTypes.AppleMusic,
@@ -90,9 +126,25 @@ namespace PartyPlaylists.Services
             else throw new Exception($"Response status not OK. {response.StatusDescription}.");
         }
 
-        public Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId, string roomUrl)
+        public async Task<IPlaylist> CreatePlaylist(string playlistName, string ownerId, string roomUrl)
         {
-            throw new NotImplementedException();
+            // TODO check for "Music-User-Token" in client header (basically ensure Authenticate was called.
+
+            var request = new RestRequest(@"me/library/playlists", Method.GET)
+            {
+                RequestFormat = DataFormat.Json
+            };
+            request.AddJsonBody(new { attributes = new { name = playlistName, description = roomUrl } });
+
+            var response = await _client.ExecuteAsync(request);
+
+            if (response.StatusCode == HttpStatusCode.Created)
+            {
+                var content = JObject.Parse(response.Content);
+                // TODO create and populate a new AppleMusicPlaylist object
+                throw new NotImplementedException();
+            }
+            else throw new Exception($"Response status not Created. {response.StatusDescription}.");
         }
 
         public Task AddSongToPlaylist(IPlaylist playlist, Song song)
@@ -107,7 +159,12 @@ namespace PartyPlaylists.Services
 
         public Task Authenticate()
         {
-            throw new NotImplementedException();
+            // TODO how do we source this Music User Token?
+            // Seems like MusicKit JS has an authorize method,
+            // but I do not see how to get the token from it,
+            // let alone into this method given it is parameterless.
+            _client.AddDefaultHeader("Music-User-Token", "");
+            return null;
         }
 
         /// <summary>

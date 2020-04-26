@@ -17,14 +17,17 @@ namespace PartyPlaylistsTests.IntegrationTests
         private static readonly string _testKey = @"MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgU208KCg/doqiSzsVF5sknVtYSgt8/3oiYGbvryIRrzSgCgYIKoZIzj0DAQehRANCAAQfrvDWizEnWAzB2Hx2r/NyvIBO6KGBDL7wkZoKnz4Sm4+1P1dhD9fVEhbsdoq9RKEf8dvzTOZMaC/iLqZFKSN6";
         private static readonly string _testKeyId = "CapExedKid";
         private static readonly string _testTeamId = "CapExdTeam";
+        // This test JSON Web Token expires 9/25/2020 9:12:03 PM UTC
+        private static readonly string _testJwt = @"eyJhbGciOiJFUzI1NiIsImtpZCI6IkNhcEV4ZWRLaWQiLCJ0eXAiOiJKV1QifQ.eyJuYmYiOjE1ODc4NDkxMjMsImV4cCI6MTYwMTA2ODMyMywiaWF0IjoxNTg3ODQ5MTIzLCJpc3MiOiJDYXBFeGRUZWFtIn0.AYAD-abqynDb6JD0c44bhVHdO1qF8Qj91UTONz3iMe7aRkf9YtLAJB9ABZIoCWfuhzUGEau26zMFms_b3C62Lw";
 
-        private string _testJwt;
         private IConfiguration _config;
 
         [TestInitialize]
         public void TestInit()
         {
-            _testJwt = AppleMusicService.CreateSignedJwt(_testKey, _testKeyId, _testTeamId);
+            // Used to generate new test JWT
+            //_testJwt = AppleMusicService.CreateSignedJwt(_testKey, _testKeyId, _testTeamId);
+
             _config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
@@ -68,6 +71,28 @@ namespace PartyPlaylistsTests.IntegrationTests
         }
 
         [TestMethod]
+        public async Task GetSong_Config_Term_OK()
+        {
+            var amService = new AppleMusicService(_config) as IStreamingService;
+
+            var song = await amService.GetSong("test");
+
+            Assert.IsNotNull(song);
+            Assert.IsTrue(song.ServiceId.Contains("1031354882"));
+        }
+
+        [TestMethod]
+        public async Task GetSong_Config_Id_OK()
+        {
+            var amService = new AppleMusicService(_config) as IStreamingService;
+
+            var song = await amService.GetSong("1487502476");
+
+            Assert.IsNotNull(song);
+            Assert.IsTrue(song.ServiceId.Contains("1487502476"));
+        }
+
+        [TestMethod]
         public async Task GetSongs_Config_OK()
         {
             var amService = new AppleMusicService(_config) as IStreamingService;
@@ -76,30 +101,6 @@ namespace PartyPlaylistsTests.IntegrationTests
 
             Assert.IsNotNull(songs);
             Assert.IsTrue(songs.Count > 1);
-        }
-
-        [TestMethod]
-        public async Task GetSongs_Key_TooManyRequests()
-        {
-            var amService = new AppleMusicService(_testKey, _testKeyId, _testTeamId) as IStreamingService;
-
-            // TODO flush out any preliminary OK responses? Sometimes there is no exception thrown...
-            for (int i = 0; i < 3; i++) { try { await amService.GetSongs("test"); } catch { } Thread.Sleep(100); }
-
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(async () => await amService.GetSongs("test"));
-            Assert.IsTrue(ex.Message.Contains("Response status not OK. Too Many Requests."));
-        }
-
-        [TestMethod]
-        public async Task GetSongs_Jwt_TooManyRequests()
-        {
-            var amService = new AppleMusicService(_testJwt) as IStreamingService;
-
-            // TODO flush out any preliminary OK responses? Sometimes there is no exception thrown...
-            for (int i = 0; i < 3; i++) { try { await amService.GetSongs("test"); } catch { } Thread.Sleep(100); }
-
-            var ex = await Assert.ThrowsExceptionAsync<Exception>(async () => await amService.GetSongs("test"));
-            Assert.IsTrue(ex.Message.Contains("Response status not OK. Too Many Requests."));
         }
 
         private async Task<IRestResponse> PerformTestRequest(string jwt = null)
