@@ -16,12 +16,14 @@ using RestSharp.Authenticators;
 using RestSharp.Serialization.Json;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
-using PartyPlaylists.Droid;
+using System.Net;
 
 namespace PartyPlaylists.ViewModels
 {
     public class JoinRoomViewModel : BaseViewModel
     {
+        private readonly RestClient _partyPlaylistsClient;
+
         string _roomToJoin;
         public string RoomToJoin
         {
@@ -33,13 +35,33 @@ namespace PartyPlaylists.ViewModels
 
         public JoinRoomViewModel()
         {
-            Title = "Join a Room";
+            _partyPlaylistsClient = new RestClient(@"https://localhost:5001");
 
+            Title = "Join a Room";
             JoinRoomCommand = new Command(async () => await JoinRoom());
         }
 
         private async Task JoinRoom()
         {
+            async Task<string> GetNewToken()
+            {
+                var devAuth = "<YOUR_DEV_AUTH_CODE_HERE>";
+                var tokenRequest = new RestRequest($@"api/Token/{devAuth}", Method.POST);
+                var response = await _partyPlaylistsClient.ExecuteAsync(tokenRequest);
+                var token = response.Content;
+                await SecureStorage.SetAsync("jwtToken", token);
+                return token;
+            }
+
+            async Task<IRestResponse> GetRoom(string token)
+            {
+                var request = new RestRequest($@"api/room/{RoomToJoin}", Method.GET);
+                request.RequestFormat = DataFormat.Json;
+                request.AddHeader("Authorization", $"Bearer {token}");
+
+                return await _partyPlaylistsClient.ExecuteAsync(request);
+            }
+
             if (IsBusy)
                 return;
 
@@ -51,19 +73,18 @@ namespace PartyPlaylists.ViewModels
             try
             {
                 var storedToken = await SecureStorage.GetAsync("jwtToken");
-                if (storedToken == null || !TokenService.ValidateToken(storedToken, Keys.JwtKey))
+                if (string.IsNullOrEmpty(storedToken))
+                    storedToken = await GetNewToken();
+
+                IRestResponse response; 
+                response = await GetRoom(storedToken);
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
-                    var token = await TokenService.CreateTokenAsync(Keys.JwtKey);
-                    await SecureStorage.SetAsync("jwtToken", token);
-                    storedToken = token;
+                    SecureStorage.Remove("jwtToken");
+                    var newToken = await GetNewToken();
+                    response = await GetRoom(newToken);
                 }
-
-                var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
-                var request = new RestRequest($@"api/room/{RoomToJoin}", Method.GET);
-                request.RequestFormat = DataFormat.Json;
-                request.AddHeader("Authorization", $"Bearer {storedToken}");
-
-                var response = await client.ExecuteAsync(request);
+                    
                 var content = response.Content;
                 var room = JsonConvert.DeserializeObject<Room>(content);
 

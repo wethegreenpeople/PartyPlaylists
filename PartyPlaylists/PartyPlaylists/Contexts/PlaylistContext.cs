@@ -15,6 +15,7 @@ namespace PartyPlaylists.Contexts
         public DbSet<Token> Tokens { get; set; }
         public DbSet<RoomSong> RoomSongs { get; set; }
         public DbSet<RoomSongToken> RoomSongTokens { get; set; }
+        public DbSet<ApiKey> ApiKeys { get; set; }
 
         public PlaylistContext(DbContextOptions<PlaylistContext> options) : base(options)
         {

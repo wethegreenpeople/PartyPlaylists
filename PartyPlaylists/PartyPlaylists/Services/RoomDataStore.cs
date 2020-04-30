@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PartyPlaylists.Contexts;
-using PartyPlaylists.Droid;
 using PartyPlaylists.Models.DataModels;
 using SpotifyApi.NetCore;
 using System;
@@ -177,8 +176,8 @@ namespace PartyPlaylists.Services
                 throw new ArgumentException();
             if (vote != -1 && vote != 1)
                 throw new ArgumentException("Invalid vote", nameof(vote));
-            if (!TokenService.ValidateToken(userToken, Keys.JwtKey))
-                throw new ArgumentException("Invalid JWT token provided", nameof(userToken));
+            //if (!TokenService.ValidateToken(userToken, Keys.JwtKey))
+            //    throw new ArgumentException("Invalid JWT token provided", nameof(userToken));
 
             try
             {
