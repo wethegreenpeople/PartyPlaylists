@@ -176,8 +176,6 @@ namespace PartyPlaylists.Services
                 throw new ArgumentException();
             if (vote != -1 && vote != 1)
                 throw new ArgumentException("Invalid vote", nameof(vote));
-            //if (!TokenService.ValidateToken(userToken, Keys.JwtKey))
-            //    throw new ArgumentException("Invalid JWT token provided", nameof(userToken));
 
             try
             {
@@ -186,11 +184,15 @@ namespace PartyPlaylists.Services
                     .ThenInclude(e => e.Song)
                     .Include(e => e.RoomSongs)
                     .ThenInclude(e => e.RoomSongTokens)
+                    .ThenInclude(e => e.Token)
                     .Include(e => e.SpotifyPlaylist)
                     .SingleOrDefaultAsync(s => s.Id == roomId);
 
                 if (room == null)
                     throw new Exception("Could not find room");
+
+                if (room.RoomSongs.Any(s => s.RoomSongTokens.Any(c => c.Token.JWTToken == userToken)))
+                    throw new Exception("User already voted on this song");
 
                 var roomSong = room.RoomSongs.SingleOrDefault(s => s.SongId == songId);
                 roomSong.SongRating += vote;

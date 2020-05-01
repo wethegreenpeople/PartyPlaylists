@@ -24,6 +24,7 @@ namespace PartyPlaylists.Models.DataModels
         public int SongRating { get; set; }
         public bool PreviouslyPlayed { get; set; }
         
+        [JsonIgnore]
         public List<RoomSongToken> RoomSongTokens { get; set; }
         
         public string SongAddedBy { get; set; }

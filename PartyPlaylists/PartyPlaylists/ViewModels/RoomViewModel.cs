@@ -3,7 +3,9 @@ using PartyPlaylists.Models.DataModels;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Xamarin.Essentials;
@@ -20,10 +22,14 @@ namespace PartyPlaylists.ViewModels
             set { SetProperty(ref _roomName, value); }
         }
 
-        List<RoomSong> _roomSongs;
-        public List<RoomSong> RoomSongs
+        ObservableCollection<RoomSong> _roomSongs;
+        public ObservableCollection<RoomSong> RoomSongs
         {
-            get { return _currentRoom?.RoomSongs.OrderByDescending(s => s.SongRating)?.ToList(); }
+<<<<<<< HEAD
+            get { return _roomSongs; }
+=======
+            get { return new ObservableCollection<RoomSong>(_currentRoom?.RoomSongs.OrderByDescending(s => s.SongRating).ToList()); }
+>>>>>>> 4fa17c2... Add unique validation while voting for a song (one vote per token)
             set { SetProperty(ref _roomSongs, value); }
         }
 
@@ -45,7 +51,7 @@ namespace PartyPlaylists.ViewModels
         public RoomViewModel(Room room) : this()
         {
             CurrentRoom = room;
-           
+            RoomSongs = new ObservableCollection<RoomSong>(CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating).ToList());
         }
 
         private async Task AddVote(int songId)
@@ -60,6 +66,14 @@ namespace PartyPlaylists.ViewModels
             request.AddHeader("Authorization", $"Bearer {jwtToken}");
 
             var response = await client.ExecuteAsync(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+<<<<<<< HEAD
+                RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>(response.Content).RoomSongs.OrderByDescending(s => s.SongRating));
+=======
+                RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>(response.Content).RoomSongs);
+>>>>>>> 4fa17c2... Add unique validation while voting for a song (one vote per token)
+            }
         }
     }
 }
