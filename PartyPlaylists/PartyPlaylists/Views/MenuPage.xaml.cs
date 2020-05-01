@@ -21,6 +21,7 @@ namespace PartyPlaylists.Views
             menuItems = new List<HomeMenuItem>
             {
                 new HomeMenuItem {Id = MenuItemType.Join, Title="Join" },
+                new HomeMenuItem {Id = MenuItemType.Create, Title="Create" },
                 new HomeMenuItem {Id = MenuItemType.About, Title="About" }
             };
 

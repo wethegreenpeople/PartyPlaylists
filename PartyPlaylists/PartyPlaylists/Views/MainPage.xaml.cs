@@ -36,6 +36,9 @@ namespace PartyPlaylists.Views
                     case (int)MenuItemType.Join:
                         MenuPages.Add(id, new NavigationPage(new JoinRoomPage()));
                         break;
+                    case (int)MenuItemType.Create:
+                        MenuPages.Add(id, new NavigationPage(new CreateRoomPage()));
+                        break;
                     case (int)MenuItemType.About:
                         MenuPages.Add(id, new NavigationPage(new AboutPage()));
                         break;
