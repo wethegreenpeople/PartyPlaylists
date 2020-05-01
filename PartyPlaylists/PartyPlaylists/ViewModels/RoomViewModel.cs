@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using PartyPlaylists.Models.DataModels;
 using RestSharp;
+using Splat;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,9 +15,9 @@ using Xamarin.Forms;
 
 namespace PartyPlaylists.ViewModels
 {
-    public class RoomViewModel : BaseViewModel, IDisposable
+    public class RoomViewModel : BaseViewModel
     {
-        private readonly HubConnection _hubConnection;
+        private readonly HubConnection _hubConnection = Locator.Current.GetService<HubConnection>();
         private readonly RestClient _partyPlaylistsClient;
 
         string _roomName;
@@ -53,9 +54,10 @@ namespace PartyPlaylists.ViewModels
             CurrentRoom = room;
             RoomSongs = new ObservableCollection<RoomSong>(CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating).ToList());
             _partyPlaylistsClient = new RestClient(@"https://partyplaylists.azurewebsites.net");
-            _hubConnection = new HubConnectionBuilder().WithUrl($"https://partyplaylists.azurewebsites.net/roomhub")
-                                                       .Build();
-            _hubConnection.StartAsync();
+
+            if (_hubConnection.State == HubConnectionState.Disconnected)
+                _hubConnection.StartAsync();
+
             _hubConnection.On<string>("Update", async (roomId) =>
             {
                 var storedToken = await SecureStorage.GetAsync("jwtToken");
@@ -90,46 +92,7 @@ namespace PartyPlaylists.ViewModels
                 {
 
                 }
-                finally
-                {
-                    await _hubConnection.StopAsync();
-                }
             }   
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual async void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-
-                }
-
-                await _hubConnection.StopAsync();
-
-                disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~RoomViewModel()
-        // {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

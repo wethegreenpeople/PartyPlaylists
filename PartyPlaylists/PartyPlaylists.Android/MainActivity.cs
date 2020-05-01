@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Android.App;
 using Android.Content.PM;
 using Android.Runtime;
@@ -9,6 +8,7 @@ using Android.OS;
 using Microsoft.EntityFrameworkCore;
 using PartyPlaylists.Contexts;
 using Splat;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace PartyPlaylists.Droid
 {
@@ -17,6 +17,7 @@ namespace PartyPlaylists.Droid
     {
         protected override void OnCreate(Bundle savedInstanceState)
         {
+            Locator.CurrentMutable.RegisterLazySingleton(() => new HubConnectionBuilder().WithUrl($"https://partyplaylists.azurewebsites.net/roomhub").Build(), typeof(HubConnection));
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 

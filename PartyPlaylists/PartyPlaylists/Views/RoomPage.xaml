@@ -53,7 +53,7 @@
                                                 <Label FontSize="30" Text="{Binding Song.Name}"></Label>
                                                 <Label FontSize="20" Text="{Binding Song.Artist}" TextColor="#6c7585"></Label>
                                                 <Label FontSize="20" Text="{Binding SongAddedBy, StringFormat='Added by: {0}'}" TextColor="#6c7585"></Label>
-                                                <Button Text="{Binding SongRating, StringFormat='+{0}'}" FontSize="20" WidthRequest="50" HeightRequest="40" HorizontalOptions="Start" Command="{Binding BindingContext.AddVoteCommand, Source={x:Reference Name=RoomContentPage}}" CommandParameter="{Binding SongId}"></Button>
+                                                <Button Text="{Binding SongRating, StringFormat='+{0}'}" FontSize="20" WidthRequest="60" HeightRequest="40" HorizontalOptions="Start" Command="{Binding BindingContext.AddVoteCommand, Source={x:Reference Name=RoomContentPage}}" CommandParameter="{Binding SongId}"></Button>
                                             </StackLayout>
                                         </Grid>
                                     </Frame>
