@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using PartyPlaylists.Contexts;
 using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.Services;
@@ -17,10 +18,12 @@ namespace PartyPlaylists.MVC.Api.Controllers
     public class RoomController : ControllerBase
     {
         private readonly PlaylistContext _playlistContext;
+        private readonly IConfiguration _config;
 
-        public RoomController(PlaylistContext context)
+        public RoomController(PlaylistContext context, IConfiguration config)
         {
             _playlistContext = context;
+            _config = config;
         }
 
         [Authorize]
@@ -38,6 +41,21 @@ namespace PartyPlaylists.MVC.Api.Controllers
             var roomDataStore = new RoomDataStore(_playlistContext);
             var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
             return await roomDataStore.AddVoteToSong(token, roomId, songId, 1);
+        }
+
+        [Authorize]
+        [HttpPost("{roomName}")]
+        public async Task<Room> CreateRoom(string roomName)
+        {
+            var roomDataStore = new RoomDataStore(_playlistContext);
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var room = new Room()
+            {
+                Name = roomName,
+                Owner = new TokenService(_playlistContext, _config).GetNameFromToken(token),
+                IsSpotifyEnabled = false,
+            };
+            return await roomDataStore.AddItemAsync(room, token);
         }
     }
 }
