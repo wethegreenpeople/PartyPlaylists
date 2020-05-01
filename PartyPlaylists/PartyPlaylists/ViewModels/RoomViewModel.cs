@@ -25,11 +25,7 @@ namespace PartyPlaylists.ViewModels
         ObservableCollection<RoomSong> _roomSongs;
         public ObservableCollection<RoomSong> RoomSongs
         {
-<<<<<<< HEAD
             get { return _roomSongs; }
-=======
-            get { return new ObservableCollection<RoomSong>(_currentRoom?.RoomSongs.OrderByDescending(s => s.SongRating).ToList()); }
->>>>>>> 4fa17c2... Add unique validation while voting for a song (one vote per token)
             set { SetProperty(ref _roomSongs, value); }
         }
 
@@ -68,11 +64,7 @@ namespace PartyPlaylists.ViewModels
             var response = await client.ExecuteAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
             {
-<<<<<<< HEAD
                 RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>(response.Content).RoomSongs.OrderByDescending(s => s.SongRating));
-=======
-                RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>(response.Content).RoomSongs);
->>>>>>> 4fa17c2... Add unique validation while voting for a song (one vote per token)
             }
         }
     }
