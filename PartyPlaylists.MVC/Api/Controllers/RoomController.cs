@@ -44,6 +44,16 @@ namespace PartyPlaylists.MVC.Api.Controllers
         }
 
         [Authorize]
+        [HttpPost("{roomId:int}", Name = "AddSong")]
+        public async Task<Room> AddSongToRoom(int roomId, [FromBody]Song songToAdd)
+        {
+            var roomDataStore = new RoomDataStore(_playlistContext);
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var usernameAddingSong = new TokenService(_playlistContext, _config).GetNameFromToken(token);
+            return await roomDataStore.AddSongToRoomAsync(usernameAddingSong, roomId.ToString(), songToAdd);
+        }
+
+        [Authorize]
         [HttpPost("{roomName}")]
         public async Task<Room> CreateRoom(string roomName)
         {
