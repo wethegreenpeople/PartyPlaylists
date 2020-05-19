@@ -29,7 +29,7 @@ namespace PartyPlaylists.MVC.Api.Controllers
         [HttpGet("{songQuery}")]
         public async Task<List<Song>> GetSongs(string songQuery)
         {
-            var spotifyService = new SpotifyService("test-auth");
+            var spotifyService = new SpotifyService();
             var songs = await spotifyService.GetSongs(songQuery);
             return songs.Take(5).ToList();
         }
