@@ -148,6 +148,7 @@ namespace PartyPlaylists.Services
                         Name = result.Name,
                         ServiceAvailableOn = Enums.StreamingServiceTypes.Spotify,
                         ServiceId = result.Uri,
+                        AlbumArt = result.Album.Images[0].Url,
                     });
                 }
 
