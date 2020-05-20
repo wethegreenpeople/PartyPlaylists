@@ -31,6 +31,7 @@
                                 </Label.FormattedText>
                             </Label>
                             <Label FontSize="22" Text="{Binding CurrentRoom.Owner, StringFormat='By: {0}'}" TextColor="#6c7585"></Label>
+                            <Label FontSize="22" Text="{Binding CurrentRoom.Id, StringFormat='Join ID: {0}'}" TextColor="#6c7585"></Label>
                         </StackLayout>
                     </ContentView>
                 </StackLayout>

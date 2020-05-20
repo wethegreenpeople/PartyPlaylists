@@ -88,7 +88,7 @@ namespace PartyPlaylists.ViewModels
                 var content = response.Content;
                 var room = JsonConvert.DeserializeObject<Room>(content);
 
-                await RootPage.Detail.Navigation.PushAsync(new RoomPage(room));
+                await RootPage.Detail.Navigation.PushAsync(new RoomTabbedPage(room));
             }
             catch (Exception ex)
             {

@@ -27,11 +27,25 @@ namespace PartyPlaylists.ViewModels
             set { SetProperty(ref _roomName, value); }
         }
 
+        string _songName;
+        public string SongName
+        {
+            get { return _songName; }
+            set { SetProperty(ref _songName, value); }
+        }
+
         ObservableCollection<RoomSong> _roomSongs;
         public ObservableCollection<RoomSong> RoomSongs
         {
             get { return _roomSongs; }
             set { SetProperty(ref _roomSongs, value); }
+        }
+
+        ObservableCollection<Song> _searchedSongs;
+        public ObservableCollection<Song> SearchedSongs
+        {
+            get { return _searchedSongs; }
+            set { SetProperty(ref _searchedSongs, value); }
         }
 
         Room _currentRoom;
@@ -42,11 +56,15 @@ namespace PartyPlaylists.ViewModels
         }
 
         public Command AddVoteCommand { get; set; }
+        public Command SearchForSongCommand { get; set; }
+        public Command AddSongToRoomCommand { get; set; }
 
         public RoomViewModel()
         {
             Title = "Room"; 
             AddVoteCommand = new Command<int>(async (int songId) => await AddVote(songId));
+            SearchForSongCommand = new Command(async () => await SearchForSong());
+            AddSongToRoomCommand = new Command<Song>(async (Song songToAdd) => await AddSongToRoom(songToAdd));
         }
 
         public RoomViewModel(Room room) : this()
@@ -93,6 +111,52 @@ namespace PartyPlaylists.ViewModels
 
                 }
             }   
+        }
+
+        private async Task SearchForSong()
+        {
+            if (string.IsNullOrEmpty(SongName))
+                return;
+
+            IsBusy = true;
+
+            var jwtToken = await SecureStorage.GetAsync("jwtToken");
+            var request = new RestRequest($@"api/Song/{SongName}", Method.GET);
+            request.RequestFormat = DataFormat.Json;
+            request.AddHeader("Authorization", $"Bearer {jwtToken}");
+
+            try
+            {
+                var response = await _partyPlaylistsClient.ExecuteAsync(request);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    SearchedSongs = new ObservableCollection<Song>(JsonConvert.DeserializeObject<List<Song>>(response.Content));
+                }
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task AddSongToRoom(Song songToAdd)
+        {
+            if (string.IsNullOrEmpty(SongName))
+                return;
+
+            var jwtToken = await SecureStorage.GetAsync("jwtToken");
+            var request = new RestRequest($@"api/Room/{CurrentRoom.Id}", Method.POST);
+            request.RequestFormat = DataFormat.Json;
+            request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            request.AddJsonBody(songToAdd);
+
+            var response = await _partyPlaylistsClient.ExecuteAsync(request);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>((await _partyPlaylistsClient.ExecuteAsync(request)).Content).RoomSongs.OrderByDescending(s => s.SongRating));
+                SearchedSongs.Remove(songToAdd);
+                await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
+            }
         }
     }
 }
