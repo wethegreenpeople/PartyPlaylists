@@ -53,9 +53,9 @@ namespace PartyPlaylists.ViewModels
                 return token;
             }
 
-            async Task<IRestResponse> GetRoom(string token)
+            async Task<IRestResponse> CreateRoom(string token)
             {
-                var request = new RestRequest($@"api/room/{RoomName}", Method.GET);
+                var request = new RestRequest($@"api/room/{RoomName}", Method.POST);
                 request.RequestFormat = DataFormat.Json;
                 request.AddHeader("Authorization", $"Bearer {token}");
 
@@ -77,18 +77,18 @@ namespace PartyPlaylists.ViewModels
                     storedToken = await GetNewToken();
 
                 IRestResponse response; 
-                response = await GetRoom(storedToken);
+                response = await CreateRoom(storedToken);
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                 {
                     SecureStorage.Remove("jwtToken");
                     var newToken = await GetNewToken();
-                    response = await GetRoom(newToken);
+                    response = await CreateRoom(newToken);
                 }
                     
                 var content = response.Content;
                 var room = JsonConvert.DeserializeObject<Room>(content);
 
-                await RootPage.Detail.Navigation.PushAsync(new RoomPage(room));
+                await RootPage.Detail.Navigation.PushAsync(new RoomTabbedPage(room));
             }
             catch (Exception ex)
             {

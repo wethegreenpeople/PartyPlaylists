@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using ClassLibrary2;
+using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using PartyPlaylists.Models.DataModels;
 using RestSharp;
@@ -34,6 +35,8 @@ namespace PartyPlaylists.ViewModels
             set { SetProperty(ref _songName, value); }
         }
 
+        public bool IsSpotifyAuthorized => string.IsNullOrEmpty(CurrentRoom?.SpotifyAuthCode);
+
         ObservableCollection<RoomSong> _roomSongs;
         public ObservableCollection<RoomSong> RoomSongs
         {
@@ -58,6 +61,7 @@ namespace PartyPlaylists.ViewModels
         public Command AddVoteCommand { get; set; }
         public Command SearchForSongCommand { get; set; }
         public Command AddSongToRoomCommand { get; set; }
+        public Command AuthorizeSpotifyCommand { get; set; }
 
         public RoomViewModel()
         {
@@ -65,12 +69,16 @@ namespace PartyPlaylists.ViewModels
             AddVoteCommand = new Command<int>(async (int songId) => await AddVote(songId));
             SearchForSongCommand = new Command(async () => await SearchForSong());
             AddSongToRoomCommand = new Command<Song>(async (Song songToAdd) => await AddSongToRoom(songToAdd));
+            AuthorizeSpotifyCommand = new Command(async () => await AuthorizeSpotify());
+
+            var doot = new Class1();
         }
 
         public RoomViewModel(Room room) : this()
         {
             CurrentRoom = room;
-            RoomSongs = new ObservableCollection<RoomSong>(CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating).ToList());
+            if (CurrentRoom.RoomSongs != null)
+                RoomSongs = new ObservableCollection<RoomSong>(CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating).ToList());
             _partyPlaylistsClient = new RestClient(@"https://partyplaylists.azurewebsites.net");
 
             if (_hubConnection.State == HubConnectionState.Disconnected)
@@ -157,6 +165,11 @@ namespace PartyPlaylists.ViewModels
                 SearchedSongs.Remove(songToAdd);
                 await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
             }
+        }
+
+        private async Task AuthorizeSpotify()
+        {
+
         }
     }
 }

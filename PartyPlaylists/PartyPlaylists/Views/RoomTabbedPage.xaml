@@ -15,4 +15,5 @@
     
     <views:RoomPage Title="Room" BindingContext="{Binding .}"/>
     <views:AddSongPage Title="Add Songs" BindingContext="{Binding .}"/>
+    <views:RoomControlsPage Title="Controls" BindingContext="{Binding .}"/>
 </TabbedPage>

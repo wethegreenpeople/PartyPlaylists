@@ -1,0 +1,8 @@
+﻿<metadata>
+  <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Uris']" name="managedName">Spotify.ProtocolUris</attr>
+  <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Uri']" name="managedName">Spotify.ProtocolUri</attr>
+  <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Shuffle']" name="managedName">Spotify.ProtocolShuffle</attr>
+  <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Repeat']" name="managedName">Spotify.ProtocolRepeat</attr>
+  <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='PlaybackSpeed']" name="managedName">ProtocolPlaybackSpeed</attr>
+  <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Message']" name="managedName">Spotify.ProtocolMessage</attr>
+</metadata>

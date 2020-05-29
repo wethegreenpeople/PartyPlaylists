@@ -22,7 +22,7 @@
             
             <StackLayout Padding="10">
                 <Frame BorderColor="White" CornerRadius="5" BackgroundColor="#1d2528">
-                    <Entry Placeholder="Room Name" Keyboard="Text" TextColor="White" PlaceholderColor="White" Text="{Binding RoomToJoin}"></Entry>
+                    <Entry Placeholder="Room Name" Keyboard="Text" TextColor="White" PlaceholderColor="White" Text="{Binding RoomName}"></Entry>
                 </Frame>
                 <Button Text="Create Room" Command="{Binding CreateRoomCommand}"></Button>
                 <ActivityIndicator IsRunning="{Binding IsBusy}" />
