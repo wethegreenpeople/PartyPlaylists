@@ -54,7 +54,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ClassLibrary1">
-      <HintPath>..\..\ClassLibrary1\bin\Debug\ClassLibrary1.dll</HintPath>
+      <HintPath>..\..\SpotifyAndroidSDKWrapper\bin\Release\ClassLibrary1.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
@@ -66,6 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="GoogleGson">
+      <Version>2.8.5</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core">
       <Version>3.1.4</Version>
     </PackageReference>
@@ -87,10 +90,11 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.5.3" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Doot.cs" />
+    <Compile Include="Connector.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpotifyMobileSDK.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -123,6 +127,10 @@
     <Folder Include="Resources\drawable-xxxhdpi\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\SpotifyAndroidSDKWrapper\SpotifyAndroidSDKWrapper.csproj">
+      <Project>{DF699086-2185-4F7E-8ADD-D5858A9F49E2}</Project>
+      <Name>SpotifyAndroidSDKWrapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PartyPlaylists\PartyPlaylists.csproj">
       <Project>{fce6125e-d412-41d4-8ac8-b4c5e6a54dde}</Project>
       <Name>PartyPlaylists</Name>

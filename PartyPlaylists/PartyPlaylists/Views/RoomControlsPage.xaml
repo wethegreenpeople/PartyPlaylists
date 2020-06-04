@@ -14,12 +14,20 @@
 
             <StackLayout Padding="10">
                 <Button
-                    IsVisible="{Binding IsSpotifyAuthorized}" 
+                    IsVisible="{Binding ShowAuthenticateButton, Mode=TwoWay}" 
                     Text="Authorize Spotify" 
                     FontSize="20" 
                     HeightRequest="40" 
                     HorizontalOptions="FillAndExpand" 
-                    Command="{Binding BindingContext.AddSongToRoomCommand, Source={x:Reference Name=RoomContentControlsPage}}" CommandParameter="{Binding .}"></Button>
+                    Command="{Binding AuthorizeSpotifyCommand}"></Button>
+
+                <Button
+                    IsVisible="{Binding ShowPlayButton, Mode=TwoWay}" 
+                    Text="Play" 
+                    FontSize="20" 
+                    HeightRequest="40" 
+                    HorizontalOptions="FillAndExpand" 
+                    Command="{Binding StartPlaylistCommand}"></Button>
             </StackLayout>
         </Grid>
     </ContentPage.Content>

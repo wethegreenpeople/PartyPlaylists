@@ -45,7 +45,7 @@ namespace PartyPlaylists.ViewModels
         {
             async Task<string> GetNewToken()
             {
-                var devAuth = "<YOUR_DEV_AUTH_CODE_HERE>";
+                var devAuth = "<PARTYPLAYLISTS_API_KEY>";
                 var tokenRequest = new RestRequest($@"api/Token/{devAuth}", Method.POST);
                 var response = await _partyPlaylistsClient.ExecuteAsync(tokenRequest);
                 var token = response.Content.Trim('"');

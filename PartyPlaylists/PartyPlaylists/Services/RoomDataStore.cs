@@ -191,7 +191,7 @@ namespace PartyPlaylists.Services
                 if (room == null)
                     throw new Exception("Could not find room");
 
-                if (room.RoomSongs.Any(s => s.RoomSongTokens.Any(c => c.Token.JWTToken == userToken)))
+                if (room.RoomSongs.Any(s => s.RoomSongTokens.Any(c => c.Token.JWTToken == userToken) && s.SongId == songId))
                     throw new Exception("User already voted on this song");
 
                 var roomSong = room.RoomSongs.SingleOrDefault(s => s.SongId == songId);
