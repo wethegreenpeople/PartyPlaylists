@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="PartyPlaylists.Views.RoomControlsPage"
+             x:Name="RoomContentControlsPage">
+    <ContentPage.Content>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackLayout Padding="10">
+                <Button
+                    IsVisible="{Binding ShowAuthenticateButton, Mode=TwoWay}" 
+                    Text="Authorize Spotify" 
+                    FontSize="20" 
+                    HeightRequest="40" 
+                    HorizontalOptions="FillAndExpand" 
+                    Command="{Binding AuthorizeSpotifyCommand}"></Button>
+
+                <Button
+                    IsVisible="{Binding ShowPlayButton, Mode=TwoWay}" 
+                    Text="Play" 
+                    FontSize="20" 
+                    HeightRequest="40" 
+                    HorizontalOptions="FillAndExpand" 
+                    Command="{Binding StartPlaylistCommand}"></Button>
+            </StackLayout>
+        </Grid>
+    </ContentPage.Content>
+</ContentPage>

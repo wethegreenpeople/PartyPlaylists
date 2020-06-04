@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using PartyPlaylists.Contexts;
 using Splat;
 using Microsoft.AspNetCore.SignalR.Client;
+using PartyPlaylists.Services;
 
 namespace PartyPlaylists.Droid
 {
@@ -18,6 +19,7 @@ namespace PartyPlaylists.Droid
         protected override void OnCreate(Bundle savedInstanceState)
         {
             Locator.CurrentMutable.RegisterLazySingleton(() => new HubConnectionBuilder().WithUrl($"https://partyplaylists.azurewebsites.net/roomhub").Build(), typeof(HubConnection));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new SpotifyMobileSDK(), typeof(ISpotifyMobileSDK));
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 

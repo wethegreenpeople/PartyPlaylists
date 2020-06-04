@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using ClassLibrary2;
+using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using PartyPlaylists.Models.DataModels;
+using PartyPlaylists.Services;
 using RestSharp;
 using Splat;
 using System;
@@ -18,6 +20,7 @@ namespace PartyPlaylists.ViewModels
     public class RoomViewModel : BaseViewModel
     {
         private readonly HubConnection _hubConnection = Locator.Current.GetService<HubConnection>();
+        private readonly ISpotifyMobileSDK _spotifyMobileSDK = Locator.Current.GetService<ISpotifyMobileSDK>();
         private readonly RestClient _partyPlaylistsClient;
 
         string _roomName;
@@ -32,6 +35,20 @@ namespace PartyPlaylists.ViewModels
         {
             get { return _songName; }
             set { SetProperty(ref _songName, value); }
+        }
+
+        bool _showAuthenticateButton = true;
+        public bool ShowAuthenticateButton
+        {
+            get { return _showAuthenticateButton; }
+            set { SetProperty(ref _showAuthenticateButton, value); }
+        }
+
+        bool _showPlayButton = false;
+        public bool ShowPlayButton
+        {
+            get { return _showPlayButton; }
+            set { SetProperty(ref _showPlayButton, value); }
         }
 
         ObservableCollection<RoomSong> _roomSongs;
@@ -58,6 +75,8 @@ namespace PartyPlaylists.ViewModels
         public Command AddVoteCommand { get; set; }
         public Command SearchForSongCommand { get; set; }
         public Command AddSongToRoomCommand { get; set; }
+        public Command AuthorizeSpotifyCommand { get; set; }
+        public Command StartPlaylistCommand { get; set; }
 
         public RoomViewModel()
         {
@@ -65,12 +84,15 @@ namespace PartyPlaylists.ViewModels
             AddVoteCommand = new Command<int>(async (int songId) => await AddVote(songId));
             SearchForSongCommand = new Command(async () => await SearchForSong());
             AddSongToRoomCommand = new Command<Song>(async (Song songToAdd) => await AddSongToRoom(songToAdd));
+            AuthorizeSpotifyCommand = new Command(async () => await AuthorizeSpotify());
+            StartPlaylistCommand = new Command(() => StartPlaylist());
         }
 
         public RoomViewModel(Room room) : this()
         {
             CurrentRoom = room;
-            RoomSongs = new ObservableCollection<RoomSong>(CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating).ToList());
+            if (CurrentRoom.RoomSongs != null)
+                RoomSongs = new ObservableCollection<RoomSong>(CurrentRoom.RoomSongs.OrderByDescending(s => s.SongRating).ToList());
             _partyPlaylistsClient = new RestClient(@"https://partyplaylists.azurewebsites.net");
 
             if (_hubConnection.State == HubConnectionState.Disconnected)
@@ -158,5 +180,13 @@ namespace PartyPlaylists.ViewModels
                 await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
             }
         }
+
+        private async Task AuthorizeSpotify()
+        {
+            _spotifyMobileSDK.Authenticate(); // TODO: Figure out how to hook into the onconnected event 
+            ShowAuthenticateButton = false;
+            ShowPlayButton = true;
+        }
+        private void StartPlaylist() => _spotifyMobileSDK.PlaySong(RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().Song.ServiceId);
     }
 }
