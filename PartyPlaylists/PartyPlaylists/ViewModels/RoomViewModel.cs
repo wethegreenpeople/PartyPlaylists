@@ -1,5 +1,4 @@
-﻿using ClassLibrary2;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 using PartyPlaylists.Models.DataModels;
 using PartyPlaylists.Services;
