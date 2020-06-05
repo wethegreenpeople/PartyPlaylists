@@ -5,4 +5,6 @@
   <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Repeat']" name="managedName">Spotify.ProtocolRepeat</attr>
   <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='PlaybackSpeed']" name="managedName">ProtocolPlaybackSpeed</attr>
   <attr path="/api/package[@name='com.spotify.protocol.types']/class[@name='Message']" name="managedName">Spotify.ProtocolMessage</attr>
+
+  <attr path="/api/package[@name='com.test.test']/class[@name='TestClass']/constructor[@name='TestClass' and count(parameter)=3 and parameter[1][@type='java.lang.String'] and parameter[2][@type='java.lang.String'] and parameter[3][@type='java.lang.String']]/parameter[3]" name="managedType">Java.Lang.Object</attr>
 </metadata>

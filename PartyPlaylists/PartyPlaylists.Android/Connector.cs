@@ -29,7 +29,7 @@ namespace PartyPlaylists.Droid
                 return _members.JniPeerType.PeerReference.Handle;
             }
         }
-        public override global::Java.Interop.JniPeerMembers JniPeerMembers
+        public override JniPeerMembers JniPeerMembers
         {
             get { return _members; }
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PartyPlaylists.Models.DataModels;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,6 @@ namespace PartyPlaylists.Services
     {
         bool IsAuthenticated { get; }
         Task Authenticate();
-        void PlaySong(string spotifySongId);
+        void PlaySong(string spotifySongId, string roomId);
     }
 }

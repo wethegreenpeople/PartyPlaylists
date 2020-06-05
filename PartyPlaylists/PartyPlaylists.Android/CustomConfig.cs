@@ -22,16 +22,23 @@ namespace PartyPlaylists.Droid
 
         public async Task<ICustomConfig> Build(IFileStorage fileStorage)
         {
-            var configurationFile = await fileStorage.ReadAsString("appsettings.json");
-            var fileObjects = JObject.Parse(configurationFile);
-
-            var configuration = new CustomConfig()
+            try
             {
-                PartyPlaylistsKey = fileObjects["Keys"]["PartyPlaylists"]["Key"].ToString(),
-                SpotifyClientId = fileObjects["Keys"]["Spotify"]["ClientId"].ToString(),
-            };
+                var configurationFile = await fileStorage.ReadAsString("appsettings.json");
+                var fileObjects = JObject.Parse(configurationFile);
 
-            return configuration;
+                var configuration = new CustomConfig()
+                {
+                    PartyPlaylistsKey = fileObjects["Keys"]["PartyPlaylists"]["Key"].ToString(),
+                    SpotifyClientId = fileObjects["Keys"]["Spotify"]["ClientId"].ToString(),
+                };
+
+                return configuration;
+            }
+            catch (Exception ex)
+            {
+                return new CustomConfig();
+            }
         }
     }
 }

@@ -18,6 +18,8 @@ using Microsoft.AspNetCore.Connections;
 using MySql.Data.MySqlClient;
 using System.Threading.Tasks;
 using Splat;
+using PartyPlaylists.Models.DataModels;
+using static Com.Spotify.Protocol.Client.Subscription;
 
 namespace PartyPlaylists.Droid
 {
@@ -45,11 +47,13 @@ namespace PartyPlaylists.Droid
             SpotifyAppRemote.Connect(androidContext, connectionParams, _connector);
         }
 
-        public void PlaySong(string songId)
+        public void PlaySong(string songId, string roomId)
         {
             try
             {
                 _connector.SpotifyApp.PlayerApi.Play(songId);
+                var sub = _connector.SpotifyApp.PlayerApi.SubscribeToPlayerState();
+                sub.SetEventCallback(new SpotifyCallBack(roomId));
             }
             catch (Exception ex) { }
         }

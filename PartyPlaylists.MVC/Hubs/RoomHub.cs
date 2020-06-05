@@ -12,5 +12,10 @@ namespace PartyPlaylists.MVC.Hubs
         {
             await Clients.All.SendAsync("Update", roomId);
         }
+
+        public async Task PlayNextSongAsync(string roomId)
+        {
+            await Clients.All.SendAsync("PlayNextSong", roomId);
+        }
     }
 }

@@ -99,12 +99,23 @@ namespace PartyPlaylists.ViewModels
 
             _hubConnection.On<string>("Update", async (roomId) =>
             {
-                var storedToken = await SecureStorage.GetAsync("jwtToken");
-                var request = new RestRequest($@"api/room/{roomId}", Method.GET);
-                request.RequestFormat = DataFormat.Json;
-                request.AddHeader("Authorization", $"Bearer {storedToken}");
-                RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>((await _partyPlaylistsClient.ExecuteAsync(request)).Content).RoomSongs.OrderByDescending(s => s.SongRating));
+                await UpdateRoomSongs(roomId);
             });
+
+            _hubConnection.On<string>("PlayNextSong", async (roomId) =>
+            {
+                await UpdateRoomSongs(roomId);
+                StartPlaylist();
+            });
+        }
+
+        private async Task UpdateRoomSongs(string roomId)
+        {
+            var storedToken = await SecureStorage.GetAsync("jwtToken");
+            var request = new RestRequest($@"api/room/{roomId}", Method.GET);
+            request.RequestFormat = DataFormat.Json;
+            request.AddHeader("Authorization", $"Bearer {storedToken}");
+            RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>((await _partyPlaylistsClient.ExecuteAsync(request)).Content).RoomSongs.OrderByDescending(s => s.SongRating));
         }
 
         private async Task AddVote(int songId)
@@ -186,6 +197,10 @@ namespace PartyPlaylists.ViewModels
             ShowAuthenticateButton = false;
             ShowPlayButton = true;
         }
-        private void StartPlaylist() => _spotifyMobileSDK.PlaySong(RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().Song.ServiceId);
+        private void StartPlaylist()
+        {
+            if (RoomSongs.Count > 0)
+                _spotifyMobileSDK.PlaySong(RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().Song.ServiceId, CurrentRoom.Id.ToString());
+        }
     }
 }
