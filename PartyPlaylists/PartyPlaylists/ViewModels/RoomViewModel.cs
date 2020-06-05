@@ -104,7 +104,7 @@ namespace PartyPlaylists.ViewModels
 
             _hubConnection.On<string>("PlayNextSong", async (roomId) =>
             {
-                await UpdateRoomSongs(roomId);
+                await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
                 StartPlaylist();
             });
         }

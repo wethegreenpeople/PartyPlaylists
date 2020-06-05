@@ -9,11 +9,11 @@ namespace PartyPlaylists.Droid
     public class SpotifyCallBack : Java.Lang.Object, IEventCallback
     {
         private readonly HubConnection _hubConnection = Locator.Current.GetService<HubConnection>();
-        private readonly string _currentRoomId;
+        
+        public string CurrentRoomId { get; set; }
 
-        public SpotifyCallBack(string currentRoomId)
+        public SpotifyCallBack()
         {
-            _currentRoomId = currentRoomId;
             if (_hubConnection.State == HubConnectionState.Disconnected)
                 _hubConnection.StartAsync();
         }
@@ -40,9 +40,9 @@ namespace PartyPlaylists.Droid
 
         public async void OnEvent(Java.Lang.Object p0)
         {
-            if(((Com.Spotify.Protocol.Types.PlayerState)p0).IsPaused)
+            if(((Com.Spotify.Protocol.Types.PlayerState)p0).IsPaused && !string.IsNullOrEmpty(CurrentRoomId))
             {
-                await _hubConnection.InvokeAsync("PlayNextSongAsync", _currentRoomId);
+                await _hubConnection.InvokeAsync("PlayNextSongAsync", CurrentRoomId);
             }
         }
 

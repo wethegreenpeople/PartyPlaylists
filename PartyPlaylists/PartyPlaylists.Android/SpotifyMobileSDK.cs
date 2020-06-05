@@ -27,6 +27,7 @@ namespace PartyPlaylists.Droid
     {
         private readonly Connector _connector;
         private readonly Task<ICustomConfig> _config;
+        private readonly SpotifyCallBack _spotifyCallBack;
 
         public bool IsAuthenticated => _connector.SpotifyApp != null;
         public SpotifyMobileSDK()
@@ -34,6 +35,7 @@ namespace PartyPlaylists.Droid
             _connector = new Connector();
             var fileStorage = Locator.Current.GetService<IFileStorage>();
             _config = Locator.Current.GetService<ICustomConfig>().Build(fileStorage);
+            _spotifyCallBack = new SpotifyCallBack();
         }
 
         public async Task Authenticate()
@@ -53,7 +55,8 @@ namespace PartyPlaylists.Droid
             {
                 _connector.SpotifyApp.PlayerApi.Play(songId);
                 var sub = _connector.SpotifyApp.PlayerApi.SubscribeToPlayerState();
-                sub.SetEventCallback(new SpotifyCallBack(roomId));
+                _spotifyCallBack.CurrentRoomId = roomId;
+                sub.SetEventCallback(_spotifyCallBack);
             }
             catch (Exception ex) { }
         }
