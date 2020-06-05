@@ -20,6 +20,8 @@ namespace PartyPlaylists.Droid
         {
             Locator.CurrentMutable.RegisterLazySingleton(() => new HubConnectionBuilder().WithUrl($"https://partyplaylists.azurewebsites.net/roomhub").Build(), typeof(HubConnection));
             Locator.CurrentMutable.RegisterLazySingleton(() => new SpotifyMobileSDK(), typeof(ISpotifyMobileSDK));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new CustomConfig(), typeof(ICustomConfig));
+            Locator.CurrentMutable.RegisterLazySingleton(() => new FileStorage(), typeof(IFileStorage));
             TabLayoutResource = Resource.Layout.Tabbar;
             ToolbarResource = Resource.Layout.Toolbar;
 

@@ -91,12 +91,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connector.cs" />
+    <Compile Include="CustomConfig.cs" />
+    <Compile Include="FileStorage.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpotifyMobileSDK.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="..\PartyPlaylists\appsettings.json">
+      <Link>Assets\appsettings.json</Link>
+    </AndroidAsset>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
     <None Include="Properties\AndroidManifest.xml" />

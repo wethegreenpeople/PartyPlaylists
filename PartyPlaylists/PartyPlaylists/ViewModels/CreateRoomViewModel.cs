@@ -23,6 +23,7 @@ namespace PartyPlaylists.ViewModels
     public class CreateRoomViewModel : BaseViewModel
     {
         private readonly RestClient _partyPlaylistsClient;
+        private readonly Task<ICustomConfig> _config;
 
         string _roomName;
         public string RoomName
@@ -39,13 +40,16 @@ namespace PartyPlaylists.ViewModels
 
             Title = "Create a Room";
             CreateRoomCommand = new Command(async () => await CreateRoom());
+
+            var fileStorage = Locator.Current.GetService<IFileStorage>();
+            _config = Locator.Current.GetService<ICustomConfig>().Build(fileStorage);
         }
 
         private async Task CreateRoom()
         {
             async Task<string> GetNewToken()
             {
-                var devAuth = "<PARTYPLAYLISTS_API_KEY>";
+                var devAuth = (await _config).PartyPlaylistsKey;
                 var tokenRequest = new RestRequest($@"api/Token/{devAuth}", Method.POST);
                 var response = await _partyPlaylistsClient.ExecuteAsync(tokenRequest);
                 var token = response.Content.Trim('"');

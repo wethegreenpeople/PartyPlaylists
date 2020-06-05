@@ -5,10 +5,8 @@ using System.Threading.Tasks;
 
 namespace PartyPlaylists.Services
 {
-    public interface ISpotifyMobileSDK
+    public interface IFileStorage
     {
-        bool IsAuthenticated { get; }
-        Task Authenticate();
-        void PlaySong(string spotifySongId);
+        Task<string> ReadAsString(string filename);
     }
 }

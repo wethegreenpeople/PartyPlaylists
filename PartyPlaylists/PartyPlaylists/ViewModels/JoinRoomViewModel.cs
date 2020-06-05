@@ -17,12 +17,16 @@ using RestSharp.Serialization.Json;
 using Newtonsoft.Json;
 using Xamarin.Essentials;
 using System.Net;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace PartyPlaylists.ViewModels
 {
     public class JoinRoomViewModel : BaseViewModel
     {
         private readonly RestClient _partyPlaylistsClient;
+        private readonly Task<ICustomConfig> _config;
 
         string _roomToJoin;
         public string RoomToJoin
@@ -39,13 +43,16 @@ namespace PartyPlaylists.ViewModels
 
             Title = "Join a Room";
             JoinRoomCommand = new Command(async () => await JoinRoom());
+
+            var fileStorage = Locator.Current.GetService<IFileStorage>();
+            _config = Locator.Current.GetService<ICustomConfig>().Build(fileStorage);
         }
 
         private async Task JoinRoom()
         {
             async Task<string> GetNewToken()
             {
-                var devAuth = "<PARTYPLAYLISTS_API_KEY>";
+                var devAuth = (await _config).PartyPlaylistsKey;
                 var tokenRequest = new RestRequest($@"api/Token/{devAuth}", Method.POST);
                 var response = await _partyPlaylistsClient.ExecuteAsync(tokenRequest);
                 var token = response.Content.Trim('"');

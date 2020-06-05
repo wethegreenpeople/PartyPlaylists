@@ -16,22 +16,27 @@ using Com.Spotify.Android.Appremote.Internal;
 using PartyPlaylists.Services;
 using Microsoft.AspNetCore.Connections;
 using MySql.Data.MySqlClient;
+using System.Threading.Tasks;
+using Splat;
 
 namespace PartyPlaylists.Droid
 {
     public class SpotifyMobileSDK : ISpotifyMobileSDK
     {
         private readonly Connector _connector;
+        private readonly Task<ICustomConfig> _config;
 
         public bool IsAuthenticated => _connector.SpotifyApp != null;
         public SpotifyMobileSDK()
         {
             _connector = new Connector();
+            var fileStorage = Locator.Current.GetService<IFileStorage>();
+            _config = Locator.Current.GetService<ICustomConfig>().Build(fileStorage);
         }
 
-        public void Authenticate()
+        public async Task Authenticate()
         {
-            ConnectionParams connectionParams = new ConnectionParams.Builder("<SPOTIFY_CLIENT_ID>")
+            ConnectionParams connectionParams = new ConnectionParams.Builder((await _config).SpotifyClientId)
             .SetRedirectUri("https://partyplaylists.azurewebsites.net/Room/SpotifyAuthorized/")
             .ShowAuthView(true)
             .Build();

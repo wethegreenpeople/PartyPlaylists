@@ -182,7 +182,7 @@ namespace PartyPlaylists.ViewModels
 
         private async Task AuthorizeSpotify()
         {
-            _spotifyMobileSDK.Authenticate(); // TODO: Figure out how to hook into the onconnected event 
+            await _spotifyMobileSDK.Authenticate(); // TODO: Figure out how to hook into the onconnected event 
             ShowAuthenticateButton = false;
             ShowPlayButton = true;
         }
