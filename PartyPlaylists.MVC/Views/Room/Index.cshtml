@@ -25,7 +25,7 @@ else
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-7 scrollable-col">
-                        @if (Model?.CurrentRoom != null && !string.IsNullOrEmpty(Model?.CurrentRoom?.SpotifyAuthCode))
+                        @if (Model?.CurrentRoom != null)
                         {
                             <ul class="list-group list-group-flush" id="listOfSongs">
                                 <partial name="Components/_roomSongListItem" model="Model.CurrentRoom.RoomSongs" />
