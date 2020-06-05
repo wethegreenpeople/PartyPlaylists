@@ -268,5 +268,20 @@ namespace PartyPlaylists.Services
                 _playlistsContext.RoomSongs.Update(roomSong);
             }
         }
+
+        public async Task RemoveSongFromRoom(int songId, int currentRoomId)
+        {
+            var room = await _playlistsContext
+                .Rooms
+                .Include(s => s.RoomSongs)
+                    .ThenInclude(s => s.Song)
+                .SingleOrDefaultAsync(s => s.Id == currentRoomId);
+
+            var roomSong = room.RoomSongs.FirstOrDefault(s => s.SongId == songId);
+            room.RoomSongs.Remove(roomSong);
+
+            _playlistsContext.Rooms.Update(room);
+            await _playlistsContext.SaveChangesAsync();
+        }
     }
 }

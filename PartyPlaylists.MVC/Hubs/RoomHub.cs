@@ -12,17 +12,8 @@ namespace PartyPlaylists.MVC.Hubs
 {
     public class RoomHub : Hub
     {
-        private readonly RoomDataStore _roomDataStore;
-
-        public RoomHub(PlaylistContext playlistContext)
-        {
-            _roomDataStore = new RoomDataStore(playlistContext);
-        }
-
         public async Task UpdateSongsAsync(string roomId)
         {
-            await _roomDataStore.UpdatePreviouslyPlayedSongs(Convert.ToInt32(roomId));
-            await _roomDataStore.RemovePreviouslyPlayedSongsAsync(Convert.ToInt32(roomId));
             await Clients.All.SendAsync("Update", roomId);
         }
 

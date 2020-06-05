@@ -67,5 +67,14 @@ namespace PartyPlaylists.MVC.Api.Controllers
             };
             return await roomDataStore.AddItemAsync(room, token);
         }
+
+        [Authorize]
+        [HttpPost("{roomId}/remove/{songId}", Name = "Remove")]
+        public async Task<Room> RemoveSongFromRoom(int songId, int roomId)
+        {
+            var roomDataStore = new RoomDataStore(_playlistContext);
+            await roomDataStore.RemoveSongFromRoom(songId, roomId);
+            return await roomDataStore.GetItemAsync(roomId.ToString());
+        }
     }
 }

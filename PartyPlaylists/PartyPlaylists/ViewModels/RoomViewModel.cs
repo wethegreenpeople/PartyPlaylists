@@ -97,6 +97,8 @@ namespace PartyPlaylists.ViewModels
             if (_hubConnection.State == HubConnectionState.Disconnected)
                 _hubConnection.StartAsync();
 
+            // TODO: Ensure that these don't trigger on any signlarr update (updates outside of the current room)
+            // and if they do, that we don't take action upon them
             _hubConnection.On<string>("Update", async (roomId) =>
             {
                 await UpdateRoomSongs(roomId);
@@ -104,8 +106,9 @@ namespace PartyPlaylists.ViewModels
 
             _hubConnection.On<string>("PlayNextSong", async (roomId) =>
             {
+                await RemoveSong(roomId);
                 await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
-                StartPlaylist();
+                await StartPlaylist();
             });
         }
 
@@ -116,6 +119,15 @@ namespace PartyPlaylists.ViewModels
             request.RequestFormat = DataFormat.Json;
             request.AddHeader("Authorization", $"Bearer {storedToken}");
             RoomSongs = new ObservableCollection<RoomSong>(JsonConvert.DeserializeObject<Room>((await _partyPlaylistsClient.ExecuteAsync(request)).Content).RoomSongs.OrderByDescending(s => s.SongRating));
+        }
+
+        private async Task RemoveSong(string roomId)
+        {
+            var topSong = RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().Song;
+            var storedToken = await SecureStorage.GetAsync("jwtToken");
+            var request = new RestRequest($@"api/room/{roomId}/remove/{topSong.Id}", Method.POST);
+            request.RequestFormat = DataFormat.Json;
+            request.AddHeader("Authorization", $"Bearer {storedToken}");
         }
 
         private async Task AddVote(int songId)
@@ -197,7 +209,7 @@ namespace PartyPlaylists.ViewModels
             ShowAuthenticateButton = false;
             ShowPlayButton = true;
         }
-        private void StartPlaylist()
+        private async Task StartPlaylist()
         {
             if (RoomSongs.Count > 0)
                 _spotifyMobileSDK.PlaySong(RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().Song.ServiceId, CurrentRoom.Id.ToString());
