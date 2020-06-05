@@ -84,7 +84,7 @@ namespace PartyPlaylists.ViewModels
             SearchForSongCommand = new Command(async () => await SearchForSong());
             AddSongToRoomCommand = new Command<Song>(async (Song songToAdd) => await AddSongToRoom(songToAdd));
             AuthorizeSpotifyCommand = new Command(async () => await AuthorizeSpotify());
-            StartPlaylistCommand = new Command(() => StartPlaylist());
+            StartPlaylistCommand = new Command(async () => await StartPlaylist());
         }
 
         public RoomViewModel(Room room) : this()
@@ -107,6 +107,7 @@ namespace PartyPlaylists.ViewModels
             _hubConnection.On<string>("PlayNextSong", async (roomId) =>
             {
                 await RemoveSong(roomId);
+                await UpdateRoomSongs(roomId);
                 await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
                 await StartPlaylist();
             });
@@ -123,11 +124,12 @@ namespace PartyPlaylists.ViewModels
 
         private async Task RemoveSong(string roomId)
         {
-            var topSong = RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().Song;
+            var topSongId = RoomSongs.OrderByDescending(s => s.SongRating).FirstOrDefault().SongId;
             var storedToken = await SecureStorage.GetAsync("jwtToken");
-            var request = new RestRequest($@"api/room/{roomId}/remove/{topSong.Id}", Method.POST);
+            var request = new RestRequest($@"api/room/{roomId}/remove/{topSongId}", Method.POST);
             request.RequestFormat = DataFormat.Json;
             request.AddHeader("Authorization", $"Bearer {storedToken}");
+            var results = await _partyPlaylistsClient.ExecuteAsync(request);
         }
 
         private async Task AddVote(int songId)

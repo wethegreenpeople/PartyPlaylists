@@ -11,6 +11,7 @@ namespace PartyPlaylists.Droid
         private readonly HubConnection _hubConnection = Locator.Current.GetService<HubConnection>();
         
         public string CurrentRoomId { get; set; }
+        public string CurrentSongId { get; set; }
 
         public SpotifyCallBack()
         {
@@ -40,7 +41,10 @@ namespace PartyPlaylists.Droid
 
         public async void OnEvent(Java.Lang.Object p0)
         {
-            if(((Com.Spotify.Protocol.Types.PlayerState)p0).IsPaused && !string.IsNullOrEmpty(CurrentRoomId))
+            var song = (Com.Spotify.Protocol.Types.PlayerState)p0;
+            if (song == null) return;
+            var songPercentageComplete = ((float)song?.PlaybackPosition / song?.Track?.Duration) * 100;
+            if ((song.IsPaused && !string.IsNullOrEmpty(CurrentRoomId) && (songPercentageComplete > 98 || songPercentageComplete == 0) && song.Track.Uri == CurrentSongId))
             {
                 await _hubConnection.InvokeAsync("PlayNextSongAsync", CurrentRoomId);
             }
