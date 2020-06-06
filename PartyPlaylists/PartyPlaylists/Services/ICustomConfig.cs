@@ -9,7 +9,9 @@ namespace PartyPlaylists.Services
     {
         string PartyPlaylistsKey { get; }
         string SpotifyClientId { get; }
+        string PartyPlaylistsGeneratedToken { get; }
 
         Task<ICustomConfig> Build(IFileStorage fileStorage);
+        Task SetValue(IFileStorage fileStorage, string propertyToUpdate, string value);
     }
 }

@@ -30,6 +30,11 @@ namespace PartyPlaylists.iOS
             return System.Text.Encoding.UTF8.GetString(data);
         }
 
+        public async Task SaveFile(string filename, string fileContent)
+        {
+            await File.WriteAllTextAsync(filename, fileContent);
+        }
+
         public byte[] CleanByteOrderMark(byte[] bytes)
         {
             var bom = new byte[] { 0xEF, 0xBB, 0xBF };

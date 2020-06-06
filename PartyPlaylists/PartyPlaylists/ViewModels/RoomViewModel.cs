@@ -21,6 +21,9 @@ namespace PartyPlaylists.ViewModels
         private readonly HubConnection _hubConnection = Locator.Current.GetService<HubConnection>();
         private readonly ISpotifyMobileSDK _spotifyMobileSDK = Locator.Current.GetService<ISpotifyMobileSDK>();
         private readonly RestClient _partyPlaylistsClient;
+        private readonly Task<ICustomConfig> _config;
+        private readonly IFileStorage _fileStorage;
+        private readonly string _jwtToken;
 
         string _roomName;
         public string RoomName
@@ -111,6 +114,10 @@ namespace PartyPlaylists.ViewModels
                 await _hubConnection.InvokeAsync("UpdateSongsAsync", CurrentRoom.Id.ToString());
                 await StartPlaylist();
             });
+
+            _fileStorage = Locator.Current.GetService<IFileStorage>();
+            _config = Locator.Current.GetService<ICustomConfig>().Build(_fileStorage);
+            _jwtToken = (_config).Result.PartyPlaylistsGeneratedToken;
         }
 
         private async Task UpdateRoomSongs(string roomId)
@@ -137,11 +144,11 @@ namespace PartyPlaylists.ViewModels
             if (CurrentRoom == null)
                 return;
 
-            var jwtToken = await SecureStorage.GetAsync("jwtToken");
+            // var jwtToken = await SecureStorage.GetAsync("jwtToken");
             var client = new RestClient(@"https://partyplaylists.azurewebsites.net");
             var request = new RestRequest($@"api/room/{CurrentRoom.Id}/{songId}", Method.POST);
             request.RequestFormat = DataFormat.Json;
-            request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            request.AddHeader("Authorization", $"Bearer {_jwtToken}");
 
             var response = await client.ExecuteAsync(request);
             if (response.StatusCode == HttpStatusCode.OK)
@@ -166,10 +173,9 @@ namespace PartyPlaylists.ViewModels
 
             IsBusy = true;
 
-            var jwtToken = await SecureStorage.GetAsync("jwtToken");
             var request = new RestRequest($@"api/Song/{SongName}", Method.GET);
             request.RequestFormat = DataFormat.Json;
-            request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            request.AddHeader("Authorization", $"Bearer {_jwtToken}");
 
             try
             {
@@ -190,10 +196,9 @@ namespace PartyPlaylists.ViewModels
             if (string.IsNullOrEmpty(SongName))
                 return;
 
-            var jwtToken = await SecureStorage.GetAsync("jwtToken");
             var request = new RestRequest($@"api/Room/{CurrentRoom.Id}", Method.POST);
             request.RequestFormat = DataFormat.Json;
-            request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            request.AddHeader("Authorization", $"Bearer {_jwtToken}");
             request.AddJsonBody(songToAdd);
 
             var response = await _partyPlaylistsClient.ExecuteAsync(request);
