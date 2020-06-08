@@ -7,8 +7,7 @@ PartyPlaylists is an application currently being developed that gives you the ab
 
 # PartyPlaylists Web
 
-There is a web version of the partyplaylists application available at: https://partyplaylists.xyz
-The web verson of partyplaylists is built using c# and the blazor framework
+There is a web version of the partyplaylists application available at: https://partyplaylists.azurewebsites.net/
 
 # Partyplaylists Android
 
